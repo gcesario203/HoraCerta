@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace HoraCerta.Dominio._Shared.Abstracoes;
 
-public abstract class ValidadorBase<TEntity> : IServicoValidacao<TEntity> where TEntity : EntidadeBase<TEntity>
+public abstract class ServicoValidacaoBase<TEntity> : IServicoValidacao<TEntity> where TEntity : EntidadeBase<TEntity>
 {
     private readonly IEnumerable<IValidadorEspecificacao<TEntity>> _validacoes;
 
-    protected ValidadorBase()
+    protected ServicoValidacaoBase()
     {
         _validacoes = BuscarValidacoes();
     }

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace HoraCerta.Dominio.Procedimento;
 
-public class ValidadorProcedimento : ValidadorBase<Procedimento>
+public class ValidadorProcedimento : ServicoValidacaoBase<Procedimento>
 {
     public ValidadorProcedimento() : base()
     {
