@@ -13,7 +13,12 @@ namespace HoraCerta.Dominio.Procedimento;
 
 public class ValidadorProcedimento : ServicoValidacaoBase<Procedimento>
 {
-    public ValidadorProcedimento() : base()
+    public ValidadorProcedimento() : base(new List<IValidadorEspecificacao<Procedimento>>()
+    {
+        new ValidadorNome(),
+        new ValidadorValor(),
+        new ValidadorTempoEstimado()
+    })
     {
         
     }
