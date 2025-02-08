@@ -59,7 +59,7 @@ namespace HoraCerta.Testes.Unitarios
         }
 
         [Test]
-        public void CriarProcedimento_DeveLancarExcecao_ParaDuracaoInvalida()
+        public void CriarProcedimento_DeveLancarExcecao_ParaTempoEstimadoInvalido()
         {
             // Arrange
             string nome = "Massagem";
