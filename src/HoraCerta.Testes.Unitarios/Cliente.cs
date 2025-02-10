@@ -3,7 +3,7 @@ using HoraCerta.Dominio.Cliente;
 using System;
 using HoraCerta.Dominio;
 
-namespace HoraCerta.Testes.Unitarios;
+namespace HoraCerta.Testes.Unitarios.Dominio;
 
 [TestFixture]
 public class Cliente

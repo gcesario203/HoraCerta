@@ -2,10 +2,10 @@
 using HoraCerta.Dominio.Procedimento;
 using NUnit.Framework;
 
-namespace HoraCerta.Testes.Unitarios
+namespace HoraCerta.Testes.Unitarios.Dominio
 {
     [TestFixture]
-    public class ProcedimentoTests
+    public class Procedimento
     {
         private ProcedimentoEntidade _procedimento = new ProcedimentoEntidade("Teste", 100, TimeSpan.FromHours(3));
 

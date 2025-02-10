@@ -1,4 +1,5 @@
 ﻿
+using HoraCerta.Dominio.Cliente;
 using HoraCerta.Dominio.Procedimento;
 
 namespace HoraCerta.Dominio.Agendamento;
@@ -16,18 +17,19 @@ public class AgendamentoEntidade : EntidadeBase<AgendamentoEntidade>
 
     public ProcedimentoEntidade Procedimento { get; private set; }
 
-    /// TODO:: CLIENTE
-    /// 
+    public ClienteEntidade Cliente { get; set; }
 
     /// TODO:: TIPO DE COMUNICAÇÃO QUE O AGENDAMENTO FOI CRIADO
 
-    public AgendamentoEntidade(SlotHorarioEntidade slotHorario, ProcedimentoEntidade procedimento, AgendamentoEntidade? reagendamento = null)
+    public AgendamentoEntidade(SlotHorarioEntidade slotHorario, ProcedimentoEntidade procedimento, ClienteEntidade cliente, AgendamentoEntidade? reagendamento = null)
     {
         
         Estado = new AgendamentoPendente();
 
         AlocarSlot(slotHorario);
         Procedimento = procedimento;
+
+        Cliente = cliente;
 
         if(reagendamento != null)
                 Reagendamento = reagendamento;
@@ -76,7 +78,7 @@ public class AgendamentoEntidade : EntidadeBase<AgendamentoEntidade>
         if (!slot.VerificarDisponibilidade())
             throw new OperacaoInvalidaExcessao("Slot de agenda já reservado ou confirmado");
 
-        return new AgendamentoEntidade(slot, Procedimento, this);
+        return new AgendamentoEntidade(slot, Procedimento, Cliente, this);
     }
 
     public void AlocarSlot(SlotHorarioEntidade slotHorario)
