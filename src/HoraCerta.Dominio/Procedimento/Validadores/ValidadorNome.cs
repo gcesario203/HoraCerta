@@ -1,8 +1,8 @@
-﻿namespace HoraCerta.Dominio
+﻿namespace HoraCerta.Dominio.Procedimento
 {
-    public class ValidadorNome : IValidadorEspecificacao<Procedimento>
+    public class ValidadorNome : IValidadorEspecificacao<ProcedimentoEntidade>
     {
-        public void Valido(Procedimento entidade)
+        public void Valido(ProcedimentoEntidade entidade)
         {
             if (string.IsNullOrEmpty(entidade.Nome))
                 throw new EntidadeInvalidadeExcessao("Nome vazio");

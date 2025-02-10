@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HoraCerta.Dominio;
+namespace HoraCerta.Dominio.Agendamento;
 
 public interface IEstadoAgendamento
 {
     EstadoAgendamento EstadoAtual();
 
-    IEstadoAgendamento AlterarEstado(Agendamento agendamento, EstadoAgendamento novoStatus);
+    IEstadoAgendamento AlterarEstado(AgendamentoEntidade agendamento, EstadoAgendamento novoStatus);
 }

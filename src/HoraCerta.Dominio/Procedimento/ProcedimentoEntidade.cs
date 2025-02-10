@@ -1,13 +1,13 @@
 ﻿using HoraCerta.Dominio;
 
-namespace HoraCerta.Dominio;
+namespace HoraCerta.Dominio.Procedimento;
 
-public class Procedimento : EntidadeBase<Procedimento>
+public class ProcedimentoEntidade : EntidadeBase<ProcedimentoEntidade>
 {
     public string Nome { get; private set; }
     public decimal Valor { get; private set; }
     public TimeSpan TempoEstimado { get; private set; }
-    public Procedimento(string nome, decimal valor, TimeSpan tempoEstimado) : base(new ValidadorProcedimento())
+    public ProcedimentoEntidade(string nome, decimal valor, TimeSpan tempoEstimado) : base(new ValidadorProcedimento())
     {
         Nome = nome;
         Valor = valor;

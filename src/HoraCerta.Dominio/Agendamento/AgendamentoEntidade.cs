@@ -1,25 +1,27 @@
 ﻿
-namespace HoraCerta.Dominio;
+using HoraCerta.Dominio.Procedimento;
 
-public class Agendamento : EntidadeBase<Agendamento>
+namespace HoraCerta.Dominio.Agendamento;
+
+public class AgendamentoEntidade : EntidadeBase<AgendamentoEntidade>
 {
     /// <summary>
     /// Slot da agenda cujo qual este agendamento ocupa
     /// </summary>
-    public SlotHorario? SlotHorario { get; private set; }
+    public SlotHorarioEntidade? SlotHorario { get; private set; }
 
     public IEstadoAgendamento Estado { get; private set; }
 
-    public Agendamento? Reagendamento { get; private set; }
+    public AgendamentoEntidade? Reagendamento { get; private set; }
 
-    public Procedimento Procedimento { get; private set; }
+    public ProcedimentoEntidade Procedimento { get; private set; }
 
     /// TODO:: CLIENTE
     /// 
 
     /// TODO:: TIPO DE COMUNICAÇÃO QUE O AGENDAMENTO FOI CRIADO
 
-    public Agendamento(SlotHorario slotHorario, Procedimento procedimento, Agendamento? reagendamento = null)
+    public AgendamentoEntidade(SlotHorarioEntidade slotHorario, ProcedimentoEntidade procedimento, AgendamentoEntidade? reagendamento = null)
     {
         
         Estado = new AgendamentoPendente();
@@ -32,7 +34,7 @@ public class Agendamento : EntidadeBase<Agendamento>
 
     }
 
-    public void MudarProcedimento(Procedimento procedimento)
+    public void MudarProcedimento(ProcedimentoEntidade procedimento)
     {
         if(EstadoAtual() == EstadoAgendamento.PENDENTE)
             Procedimento = procedimento;
@@ -43,17 +45,17 @@ public class Agendamento : EntidadeBase<Agendamento>
     public EstadoAgendamento EstadoAtual()
         => Estado.EstadoAtual();
 
-    public Agendamento AlterarEstado(EstadoAgendamento novoEstado)
+    public AgendamentoEntidade AlterarEstado(EstadoAgendamento novoEstado)
     {
         if (Estado is null)
             throw new EntidadeInvalidadeExcessao("Agendamento inicializado sem controlador de estados");
 
 
-        Agendamento @return = this;
+        AgendamentoEntidade @return = this;
 
         if(novoEstado == EstadoAgendamento.REMARCADO)
         {
-            var slot = new SlotHorario(DateTime.Now);
+            var slot = new SlotHorarioEntidade(DateTime.Now);
 
 
             @return = Reagendar(slot);
@@ -66,7 +68,7 @@ public class Agendamento : EntidadeBase<Agendamento>
         return @return;
     }
 
-    private Agendamento Reagendar(SlotHorario slot)
+    private AgendamentoEntidade Reagendar(SlotHorarioEntidade slot)
     {
         if (AgendamentoFinalizado())
             throw new OperacaoInvalidaExcessao("Não é possivel reagendar um agendamento finalizado");
@@ -74,10 +76,10 @@ public class Agendamento : EntidadeBase<Agendamento>
         if (!slot.VerificarDisponibilidade())
             throw new OperacaoInvalidaExcessao("Slot de agenda já reservado ou confirmado");
 
-        return new Agendamento(slot, Procedimento, this);
+        return new AgendamentoEntidade(slot, Procedimento, this);
     }
 
-    public void AlocarSlot(SlotHorario slotHorario)
+    public void AlocarSlot(SlotHorarioEntidade slotHorario)
     {
         if (AgendamentoFinalizado())
             throw new OperacaoInvalidaExcessao("Agendamento finalizado!");

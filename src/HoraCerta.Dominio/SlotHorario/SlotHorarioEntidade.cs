@@ -1,12 +1,12 @@
 ﻿namespace HoraCerta.Dominio;
 
-public class SlotHorario : EntidadeBase<SlotHorario>
+public class SlotHorarioEntidade : EntidadeBase<SlotHorarioEntidade>
 {
     public DateTime DataHora { get; private set; }
 
     public StatusSlotAgendamento Status { get; private set; }
 
-    public SlotHorario(DateTime dataHora)
+    public SlotHorarioEntidade(DateTime dataHora)
     {
         DataHora = dataHora;
         Status = StatusSlotAgendamento.DISPONIVEL;

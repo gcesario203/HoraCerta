@@ -18,7 +18,7 @@ public class SlotHorario
         DateTime dataHora = DateTime.Now;
 
         // Act
-        var slot = new Dominio.SlotHorario(dataHora);
+        var slot = new Dominio.SlotHorarioEntidade(dataHora);
 
         // Assert
         Assert.That(StatusSlotAgendamento.DISPONIVEL, Is.EqualTo(slot.Status));
@@ -30,7 +30,7 @@ public class SlotHorario
     {
         // Arrange
         DateTime dataHora = DateTime.Now;
-        var slot = new Dominio.SlotHorario(dataHora);
+        var slot = new Dominio.SlotHorarioEntidade(dataHora);
 
         // Assert
         Assert.That(slot.VerificarDisponibilidade());
@@ -41,7 +41,7 @@ public class SlotHorario
     {
         // Arrange
         DateTime dataHora = DateTime.Now;
-        var slot = new Dominio.SlotHorario(dataHora);
+        var slot = new Dominio.SlotHorarioEntidade(dataHora);
 
         // Mudando o status para indisponível
         slot.AlterarStatus(Dominio.StatusSlotAgendamento.RESERVADO);
@@ -55,7 +55,7 @@ public class SlotHorario
     {
         // Arrange
         DateTime dataHora = DateTime.Now;
-        var slot = new Dominio.SlotHorario(dataHora);
+        var slot = new Dominio.SlotHorarioEntidade(dataHora);
 
         // Act
         slot.AlterarStatus(StatusSlotAgendamento.RESERVADO);
@@ -69,7 +69,7 @@ public class SlotHorario
     {
         // Arrange
         DateTime dataHora = DateTime.Now;
-        var slot = new Dominio.SlotHorario(dataHora);
+        var slot = new Dominio.SlotHorarioEntidade(dataHora);
 
         // Act
         slot.AlterarStatus(StatusSlotAgendamento.CONFIRMADO);

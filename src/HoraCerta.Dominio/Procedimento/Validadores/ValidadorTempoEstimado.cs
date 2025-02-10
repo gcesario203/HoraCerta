@@ -1,8 +1,8 @@
-﻿namespace HoraCerta.Dominio;
+﻿namespace HoraCerta.Dominio.Procedimento;
 
-public class ValidadorTempoEstimado : IValidadorEspecificacao<Procedimento>
+public class ValidadorTempoEstimado : IValidadorEspecificacao<ProcedimentoEntidade>
 {
-    public void Valido(Procedimento entidade)
+    public void Valido(ProcedimentoEntidade entidade)
     {
         if (entidade.TempoEstimado.TotalHours > 24)
             throw new EntidadeInvalidadeExcessao("Tempo estimado não pode ser maior que um dia");

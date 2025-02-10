@@ -1,4 +1,5 @@
 ﻿using HoraCerta.Dominio;
+using HoraCerta.Dominio.Procedimento;
 using NUnit.Framework;
 
 namespace HoraCerta.Testes.Unitarios
@@ -6,7 +7,7 @@ namespace HoraCerta.Testes.Unitarios
     [TestFixture]
     public class ProcedimentoTests
     {
-        private Procedimento _procedimento = new Procedimento("Teste", 100, TimeSpan.FromHours(3));
+        private ProcedimentoEntidade _procedimento = new ProcedimentoEntidade("Teste", 100, TimeSpan.FromHours(3));
 
         [Test]
         public void CriarProcedimento_DeveCriarComDadosValidos()
@@ -17,7 +18,7 @@ namespace HoraCerta.Testes.Unitarios
             TimeSpan duracao = TimeSpan.FromHours(1);
 
             // Act
-            var procedimento = new Procedimento(nome, valor, duracao);
+            var procedimento = new ProcedimentoEntidade(nome, valor, duracao);
 
             // Assert
             Assert.That(nome, Is.EqualTo(procedimento.Nome));
@@ -34,7 +35,7 @@ namespace HoraCerta.Testes.Unitarios
             TimeSpan duracao = TimeSpan.FromHours(1);
 
             // Act & Assert
-            Assert.Catch<EntidadeInvalidadeExcessao>(() => new Procedimento(nome, valor, duracao));
+            Assert.Catch<EntidadeInvalidadeExcessao>(() => new ProcedimentoEntidade(nome, valor, duracao));
 
             Assert.Catch<EntidadeInvalidadeExcessao>(() => _procedimento.AtualizarNome(nome));
         }
@@ -48,7 +49,7 @@ namespace HoraCerta.Testes.Unitarios
             TimeSpan duracao = TimeSpan.FromMinutes(30);
 
             // Act & Assert
-            Assert.Catch<EntidadeInvalidadeExcessao>(() => new Procedimento(nome, valor, duracao));
+            Assert.Catch<EntidadeInvalidadeExcessao>(() => new ProcedimentoEntidade(nome, valor, duracao));
             Assert.Catch<EntidadeInvalidadeExcessao>(() => _procedimento.AtualizarValor(valor));
         }
 
@@ -61,7 +62,7 @@ namespace HoraCerta.Testes.Unitarios
             TimeSpan duracao = TimeSpan.Zero; // Duração inválida
 
             // Act & Assert
-            Assert.Catch<EntidadeInvalidadeExcessao>(() => new Procedimento(nome, valor, duracao));
+            Assert.Catch<EntidadeInvalidadeExcessao>(() => new ProcedimentoEntidade(nome, valor, duracao));
 
             Assert.Catch<EntidadeInvalidadeExcessao>(() => _procedimento.AtualizarTempoEstimado(duracao));
         }

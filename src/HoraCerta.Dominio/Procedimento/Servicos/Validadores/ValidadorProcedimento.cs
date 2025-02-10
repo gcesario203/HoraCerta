@@ -1,8 +1,8 @@
-﻿namespace HoraCerta.Dominio;
+﻿namespace HoraCerta.Dominio.Procedimento;
 
-public class ValidadorProcedimento : ServicoValidacaoBase<Procedimento>
+public class ValidadorProcedimento : ServicoValidacaoBase<ProcedimentoEntidade>
 {
-    public ValidadorProcedimento() : base(new List<IValidadorEspecificacao<Procedimento>>()
+    public ValidadorProcedimento() : base(new List<IValidadorEspecificacao<ProcedimentoEntidade>>()
     {
         new ValidadorNome(),
         new ValidadorValor(),

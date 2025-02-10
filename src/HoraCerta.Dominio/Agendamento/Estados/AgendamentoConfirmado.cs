@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HoraCerta.Dominio;
+namespace HoraCerta.Dominio.Agendamento;
 
 public class AgendamentoConfirmado : EstadoAgendamentoAbstrato
 {
@@ -12,7 +12,7 @@ public class AgendamentoConfirmado : EstadoAgendamentoAbstrato
     {
         Estado = EstadoAgendamento.CONFIRMADO;
     }
-    public override IEstadoAgendamento AlterarEstado(Agendamento agendamento, EstadoAgendamento novoStatus)
+    public override IEstadoAgendamento AlterarEstado(AgendamentoEntidade agendamento, EstadoAgendamento novoStatus)
     {
         if(novoStatus == EstadoAgendamento.CANCELADO)
         {

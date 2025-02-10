@@ -1,8 +1,8 @@
-﻿namespace HoraCerta.Dominio;
+﻿namespace HoraCerta.Dominio.Procedimento;
 
-public class ValidadorValor : IValidadorEspecificacao<Procedimento>
+public class ValidadorValor : IValidadorEspecificacao<ProcedimentoEntidade>
 {
-    public void Valido(Procedimento entidade)
+    public void Valido(ProcedimentoEntidade entidade)
     {
         if (entidade.Valor < 0)
             throw new EntidadeInvalidadeExcessao("Valor menor do que zero");
