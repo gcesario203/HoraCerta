@@ -1,11 +1,11 @@
-﻿using HoraCerta.Dominio._Shared.Abstracoes;
+﻿using HoraCerta.Dominio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HoraCerta.Dominio._Shared.Excessoes;
+namespace HoraCerta.Dominio;
 
 public class EntidadeInvalidadeExcessao : ExceptionBase
 {

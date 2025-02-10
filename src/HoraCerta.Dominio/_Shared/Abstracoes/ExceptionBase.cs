@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HoraCerta.Dominio._Shared.Abstracoes;
+namespace HoraCerta.Dominio;
 
 public class ExceptionBase : Exception
 {

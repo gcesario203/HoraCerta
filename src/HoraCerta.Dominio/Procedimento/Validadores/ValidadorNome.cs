@@ -1,12 +1,4 @@
-﻿using HoraCerta.Dominio._Shared.Excessoes;
-using HoraCerta.Dominio._Shared.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HoraCerta.Dominio.Procedimento.Validadores
+﻿namespace HoraCerta.Dominio
 {
     public class ValidadorNome : IValidadorEspecificacao<Procedimento>
     {

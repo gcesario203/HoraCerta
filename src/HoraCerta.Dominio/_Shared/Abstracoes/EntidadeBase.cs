@@ -1,13 +1,6 @@
-﻿using HoraCerta.Dominio._Shared.Abstracoes;
-using HoraCerta.Dominio._Shared.Interfaces;
-using HoraCerta.Dominio.Shared.ValueObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using HoraCerta.Dominio;
 
-namespace HoraCerta.Dominio.@Shared.Abstracoes;
+namespace HoraCerta.Dominio;
 
 public abstract class EntidadeBase<TEntity> where TEntity : EntidadeBase<TEntity>
 {

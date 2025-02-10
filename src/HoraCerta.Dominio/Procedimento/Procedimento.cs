@@ -1,6 +1,6 @@
-﻿using HoraCerta.Dominio.Shared.Abstracoes;
+﻿using HoraCerta.Dominio;
 
-namespace HoraCerta.Dominio.Procedimento;
+namespace HoraCerta.Dominio;
 
 public class Procedimento : EntidadeBase<Procedimento>
 {

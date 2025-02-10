@@ -1,11 +1,5 @@
-﻿using HoraCerta.Dominio._Shared.Excessoes;
-using HoraCerta.Dominio.Procedimento;
+﻿using HoraCerta.Dominio;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HoraCerta.Testes.Unitarios
 {

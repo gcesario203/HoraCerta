@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace HoraCerta.Dominio;
+
+public abstract class EstadoAgendamentoAbstrato : IEstadoAgendamento
+{
+    public EstadoAgendamento Estado { get; protected set; }
+
+    public abstract IEstadoAgendamento AlterarEstado(Agendamento agendamento, EstadoAgendamento novoStatus);
+
+    public EstadoAgendamento EstadoAtual()
+        => Estado;
+}

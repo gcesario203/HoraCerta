@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace HoraCerta.Dominio;
 
-public record IdEntidade
+public class OperacaoInvalidaExcessao : ExceptionBase
 {
-    public string Valor { get; private set; }
-
-    public IdEntidade()
+    public OperacaoInvalidaExcessao(string mensagem) : base(mensagem)
     {
-        Valor = Guid.NewGuid().ToString();
     }
 }

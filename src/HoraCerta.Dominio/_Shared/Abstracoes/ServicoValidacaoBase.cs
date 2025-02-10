@@ -1,13 +1,4 @@
-﻿using HoraCerta.Dominio._Shared.Interfaces;
-using HoraCerta.Dominio.Shared.Abstracoes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HoraCerta.Dominio._Shared.Abstracoes;
+﻿namespace HoraCerta.Dominio;
 
 public abstract class ServicoValidacaoBase<TEntity> : IServicoValidacao<TEntity> where TEntity : EntidadeBase<TEntity>
 {

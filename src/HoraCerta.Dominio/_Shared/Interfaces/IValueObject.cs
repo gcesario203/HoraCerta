@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace HoraCerta.Dominio;
 
-public record IdEntidade
+/// <summary>
+/// Interface de tipificação de valores objetos do escopo de dominio
+/// </summary>
+public interface IValueObject
 {
-    public string Valor { get; private set; }
-
-    public IdEntidade()
-    {
-        Valor = Guid.NewGuid().ToString();
-    }
 }

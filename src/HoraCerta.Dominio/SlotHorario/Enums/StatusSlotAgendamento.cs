@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace HoraCerta.Dominio;
 
-public record IdEntidade
+public enum StatusSlotAgendamento
 {
-    public string Valor { get; private set; }
-
-    public IdEntidade()
-    {
-        Valor = Guid.NewGuid().ToString();
-    }
+    DISPONIVEL = 1,
+    RESERVADO,
+    CONFIRMADO
 }
