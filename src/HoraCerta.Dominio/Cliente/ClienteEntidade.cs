@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HoraCerta.Dominio.Agendamento;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,12 +13,18 @@ public class ClienteEntidade : EntidadeBase<ClienteEntidade>
 
     public string Telefone { get; private set; }
 
-    public ClienteEntidade(string nome, string telefone) : base(new ValidadorCliente())
+    public IGerenciadorAgendamentos GerenciadorAgendamentos { get; private set; }
+
+    public ClienteEntidade(string nome, string telefone, ICollection<AgendamentoEntidade> agendamentos = null) : base(new ValidadorCliente())
     {
         Nome = nome;
         Telefone = telefone;
 
         _validador.Validar(this);
+        
+        
+        GerenciadorAgendamentos = new GerenciadorAgendamentos(this, agendamentos);
+
     }
 
     public void AtualizarNome(string nome)

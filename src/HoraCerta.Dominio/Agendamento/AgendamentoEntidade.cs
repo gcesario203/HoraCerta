@@ -47,7 +47,7 @@ public class AgendamentoEntidade : EntidadeBase<AgendamentoEntidade>
     public EstadoAgendamento EstadoAtual()
         => Estado.EstadoAtual();
 
-    public AgendamentoEntidade AlterarEstado(EstadoAgendamento novoEstado)
+    public AgendamentoEntidade AlterarEstado(EstadoAgendamento novoEstado, SlotHorarioEntidade slot = null)
     {
         if (Estado is null)
             throw new EntidadeInvalidadeExcessao("Agendamento inicializado sem controlador de estados");
@@ -57,7 +57,8 @@ public class AgendamentoEntidade : EntidadeBase<AgendamentoEntidade>
 
         if(novoEstado == EstadoAgendamento.REMARCADO)
         {
-            var slot = new SlotHorarioEntidade(DateTime.Now);
+            if(slot is null)
+                slot = new SlotHorarioEntidade(DateTime.Now);
 
 
             @return = Reagendar(slot);

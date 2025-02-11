@@ -2,12 +2,15 @@
 using HoraCerta.Dominio.Cliente;
 using System;
 using HoraCerta.Dominio;
+using HoraCerta.Dominio.Procedimento;
 
 namespace HoraCerta.Testes.Unitarios.Dominio;
 
 [TestFixture]
 public class Cliente
 {
+    private readonly ProcedimentoEntidade procedimento = new ProcedimentoEntidade("Unhas", 40, TimeSpan.FromHours(1));
+
     [Test]
     public void CriarCliente_ComDadosValidos_DeveCriarComSucesso()
     {
@@ -71,5 +74,73 @@ public class Cliente
 
         // Act & Assert
         Assert.Catch<EntidadeInvalidadeExcessao>(() => cliente.AtualizarTelefone(telefoneInvalido));
+    }
+
+    [Test]
+    public void ClienteDeveCriarAgendamento()
+    {
+        var cliente = new ClienteEntidade("Carlos Mendes", "(31) 99876-5432");
+
+        var slot = new SlotHorarioEntidade(DateTime.Now);
+
+        var agendamento = cliente.GerenciadorAgendamentos.IniciarAgendamento(procedimento, slot);
+
+        Assert.That(agendamento.EstadoAtual() == HoraCerta.Dominio.Agendamento.EstadoAgendamento.PENDENTE && slot.Status == StatusSlotAgendamento.RESERVADO);
+    }
+
+    [Test]
+    public void ClienteDeveCancelarAgendamento()
+    {
+        var cliente = new ClienteEntidade("Carlos Mendes", "(31) 99876-5432");
+
+        var slot = new SlotHorarioEntidade(DateTime.Now);
+
+        var agendamento = cliente.GerenciadorAgendamentos.IniciarAgendamento(procedimento, slot);
+
+        Assert.That(agendamento.EstadoAtual() == HoraCerta.Dominio.Agendamento.EstadoAgendamento.PENDENTE && slot.Status == StatusSlotAgendamento.RESERVADO);
+
+        cliente.GerenciadorAgendamentos.CancelarAgendamento(agendamento.Id);
+
+        Assert.That(agendamento.EstadoAtual() == HoraCerta.Dominio.Agendamento.EstadoAgendamento.CANCELADO && slot.Status == StatusSlotAgendamento.DISPONIVEL);
+    }
+
+    [Test]
+    public void ClienteDeveConfirmarAgendamento()
+    {
+        var cliente = new ClienteEntidade("Carlos Mendes", "(31) 99876-5432");
+
+        var slot = new SlotHorarioEntidade(DateTime.Now);
+
+        var agendamento = cliente.GerenciadorAgendamentos.IniciarAgendamento(procedimento, slot);
+
+        Assert.That(agendamento.EstadoAtual() == HoraCerta.Dominio.Agendamento.EstadoAgendamento.PENDENTE && slot.Status == StatusSlotAgendamento.RESERVADO);
+
+        cliente.GerenciadorAgendamentos.ConfirmarAgendamento(agendamento.Id);
+
+        Assert.That(agendamento.EstadoAtual() == HoraCerta.Dominio.Agendamento.EstadoAgendamento.CONFIRMADO && slot.Status == StatusSlotAgendamento.RESERVADO);
+    }
+
+    [Test]
+    public void ClienteDeveRemarcarAgendamento()
+    {
+        var cliente = new ClienteEntidade("Carlos Mendes", "(31) 99876-5432");
+
+        var slot = new SlotHorarioEntidade(DateTime.Now);
+
+        var slo2 = new SlotHorarioEntidade(slot.DataHora.AddHours(2));
+
+        var agendamento = cliente.GerenciadorAgendamentos.IniciarAgendamento(procedimento, slot);
+
+        Assert.That(agendamento.EstadoAtual() == HoraCerta.Dominio.Agendamento.EstadoAgendamento.PENDENTE && slot.Status == StatusSlotAgendamento.RESERVADO);
+
+        cliente.GerenciadorAgendamentos.ConfirmarAgendamento(agendamento.Id);
+
+        var remarcado = cliente.GerenciadorAgendamentos.RemarcarAgendamento(agendamento.Id, slo2);
+
+        Assert.That(agendamento.EstadoAtual() == HoraCerta.Dominio.Agendamento.EstadoAgendamento.REMARCADO && slot.Status == StatusSlotAgendamento.DISPONIVEL);
+
+        Assert.That(agendamento.Id.Valor == remarcado.Reagendamento.Id.Valor && remarcado.SlotHorario.Id.Valor == slo2.Id.Valor);
+
+        Assert.That(remarcado.SlotHorario.Id.Valor == slo2.Id.Valor && slo2.Status == StatusSlotAgendamento.RESERVADO);
     }
 }
