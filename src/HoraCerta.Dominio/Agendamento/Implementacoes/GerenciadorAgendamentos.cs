@@ -33,35 +33,36 @@ public class GerenciadorAgendamentos : IGerenciadorAgendamentos
 
     public void ConfirmarAgendamento(IdEntidade id)
     {
-        var agendamento = Agendamentos.FirstOrDefault(x => x.Id.Valor == id.Valor);
-
-        if (agendamento is null)
-            throw new OperacaoInvalidaExcessao("Agendamento não encontrado");
+        var agendamento = BuscarAgendamentoPorId(id);
 
         agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
     }
 
     public void CancelarAgendamento(IdEntidade id)
     {
-        var agendamento = Agendamentos.FirstOrDefault(x => x.Id.Valor == id.Valor);
-
-        if (agendamento is null)
-            throw new OperacaoInvalidaExcessao("Agendamento não encontrado");
+        var agendamento = BuscarAgendamentoPorId(id);
 
         agendamento.AlterarEstado(EstadoAgendamento.CANCELADO);
     }
 
     public AgendamentoEntidade RemarcarAgendamento(IdEntidade id, SlotHorarioEntidade slot)
     {
-        var agendamento = Agendamentos.FirstOrDefault(x => x.Id.Valor == id.Valor);
-
-        if (agendamento is null)
-            throw new OperacaoInvalidaExcessao("Agendamento não encontrado");
+        var agendamento = BuscarAgendamentoPorId(id);
 
         var remarcacao = agendamento.AlterarEstado(EstadoAgendamento.REMARCADO, slot);
 
         Agendamentos.Add(remarcacao);
 
         return remarcacao;
+    }
+
+    public AgendamentoEntidade BuscarAgendamentoPorId(IdEntidade id)
+    {
+        var agendamento = Agendamentos.FirstOrDefault(x => x.Id.Valor == id.Valor);
+
+        if (agendamento is null)
+            throw new OperacaoInvalidaExcessao("Agendamento não encontrado");
+
+        return agendamento;
     }
 }

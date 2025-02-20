@@ -14,7 +14,7 @@ public class ValidadorNome : IValidadorEspecificacao<ClienteEntidade>
         if (string.IsNullOrEmpty(entidade.Nome))
             throw new EntidadeInvalidadeExcessao("Nome é obrigatório");
 
-        if (entidade.Nome.Length <= 0 && entidade.Nome.Length > 150)
+        if (entidade.Nome.Length <= 0 || entidade.Nome.Length > 150)
             throw new EntidadeInvalidadeExcessao("Nome com tamanho invalido");
     }
 }

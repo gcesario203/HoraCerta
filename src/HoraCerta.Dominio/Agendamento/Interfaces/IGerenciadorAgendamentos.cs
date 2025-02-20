@@ -15,4 +15,6 @@ public interface IGerenciadorAgendamentos
     void CancelarAgendamento(IdEntidade id);
 
     AgendamentoEntidade RemarcarAgendamento(IdEntidade id, SlotHorarioEntidade slot);
+
+    AgendamentoEntidade BuscarAgendamentoPorId(IdEntidade id);
 }
