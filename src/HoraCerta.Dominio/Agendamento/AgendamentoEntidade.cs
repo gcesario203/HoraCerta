@@ -26,13 +26,14 @@ public class AgendamentoEntidade : EntidadeBase<AgendamentoEntidade>
         
         Estado = new AgendamentoPendente();
 
-        AlocarSlot(slotHorario);
         Procedimento = procedimento;
-
         Cliente = cliente;
 
         if(reagendamento != null)
                 Reagendamento = reagendamento;
+
+
+        AlocarSlot(slotHorario);
 
     }
 
@@ -58,7 +59,11 @@ public class AgendamentoEntidade : EntidadeBase<AgendamentoEntidade>
         if(novoEstado == EstadoAgendamento.REMARCADO)
         {
             if(slot is null)
+            {
                 slot = new SlotHorarioEntidade(DateTime.Now);
+
+                slot.AlterarDuracao(Procedimento.TempoEstimado);
+            }
 
 
             @return = Reagendar(slot);
@@ -95,6 +100,8 @@ public class AgendamentoEntidade : EntidadeBase<AgendamentoEntidade>
 
         SlotHorario = slotHorario;
 
+        SlotHorario.AlterarDuracao(Procedimento.TempoEstimado);
+
         SlotHorario.AlterarStatus(StatusSlotAgendamento.RESERVADO);
 
         Atualizar();
@@ -109,6 +116,8 @@ public class AgendamentoEntidade : EntidadeBase<AgendamentoEntidade>
             return;
 
         SlotHorario.AlterarStatus(StatusSlotAgendamento.DISPONIVEL);
+
+        SlotHorario.AlterarDuracao(TimeSpan.Zero);
 
         SlotHorario = null;
 

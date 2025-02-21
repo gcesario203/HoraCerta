@@ -127,7 +127,7 @@ public class Cliente
 
         var slot = new SlotHorarioEntidade(DateTime.Now);
 
-        var slo2 = new SlotHorarioEntidade(slot.DataHora.AddHours(2));
+        var slo2 = new SlotHorarioEntidade(slot.Inicio.AddHours(2));
 
         var agendamento = cliente.GerenciadorAgendamentos.IniciarAgendamento(procedimento, slot);
 
