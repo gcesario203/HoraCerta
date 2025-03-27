@@ -6,7 +6,7 @@ namespace HoraCerta.Dominio.SlotHorario;
 
 public class SlotHorarioDTO : DTOBase
 {
-    public SlotHorarioDTO(DateTime inicio, DateTime? fim, StatusSlotAgendamento statusSlotAgendamento, string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade) : base(id, dataCriacao, dataAlteracao, estadoEntidade)
+    public SlotHorarioDTO(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, DateTime inicio, DateTime? fim, StatusSlotAgendamento statusSlotAgendamento) : base(id, dataCriacao, dataAlteracao, estadoEntidade)
     {
         Inicio = inicio;
         Fim = fim;

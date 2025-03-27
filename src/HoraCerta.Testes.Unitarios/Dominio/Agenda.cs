@@ -65,7 +65,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         public void CriarAtendimento_DeveLancarExcecaoSeAgendamentoForInvalido()
         {
             var slot = new SlotHorarioEntidade(DateTime.Now);
-            var agendamento = new AgendamentoEntidade(slot, procedimento, cliente);
+            var agendamento = new AgendamentoEntidade(slot, procedimento);
             Assert.Throws<OperacaoInvalidaExcessao>(() => _gerenciadorAgenda.CriarAtendimento(agendamento));
         }
 
@@ -85,7 +85,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         {
             var slot = new SlotHorarioEntidade(DateTime.Now.AddHours(2));
             var procedimento = new ProcedimentoEntidade("Procedimento Teste", 100, TimeSpan.FromMinutes(30));
-            var agendamento = new AgendamentoEntidade(slot, procedimento, cliente);
+            var agendamento = new AgendamentoEntidade(slot, procedimento);
             agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
             return agendamento;
         }

@@ -18,12 +18,8 @@ public class ProcedimentoEntidade : EntidadeBase<ProcedimentoEntidade>
     }
 
     private ProcedimentoEntidade(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, string nome, decimal valor, TimeSpan tempoEstimado)
-    : base(true, new ValidadorProcedimento())
+    : base(id, dataCriacao, dataAlteracao, estadoEntidade, new ValidadorProcedimento())
     {
-        Id = new IdEntidade(id);
-        DataCriacao = dataCriacao;
-        DataAlteracao = dataAlteracao;
-        EstadoEntidade = estadoEntidade;
         Nome = nome;
         Valor = valor;
         TempoEstimado = tempoEstimado;

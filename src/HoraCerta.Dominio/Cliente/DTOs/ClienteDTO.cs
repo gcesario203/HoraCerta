@@ -7,7 +7,7 @@ namespace HoraCerta.Dominio.Cliente;
 
 public class ClienteDTO : DTOBase
 {
-    public ClienteDTO(string nome, string telefone, ICollection<AgendamentoDTO> agendamentos, string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade) : base(id, dataCriacao, dataAlteracao, estadoEntidade)
+    public ClienteDTO(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade,string nome, string telefone, ICollection<AgendamentoDTO> agendamentos) : base(id, dataCriacao, dataAlteracao, estadoEntidade)
     {
         Nome = nome;
         Telefone = telefone;

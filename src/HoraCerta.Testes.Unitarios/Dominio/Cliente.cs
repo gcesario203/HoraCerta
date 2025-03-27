@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using HoraCerta.Dominio.Cliente;
-using System;
+using System.Linq;
 using HoraCerta.Dominio;
 using HoraCerta.Dominio.Procedimento;
 
@@ -142,5 +142,43 @@ public class Cliente
         Assert.That(agendamento.Id.Valor == remarcado.Reagendamento.Id.Valor && remarcado.SlotHorario.Id.Valor == slo2.Id.Valor);
 
         Assert.That(remarcado.SlotHorario.Id.Valor == slo2.Id.Valor && slo2.Status == StatusSlotAgendamento.RESERVADO);
+    }
+
+    [Test]
+    public void Cliente_DeveConverter_ParaDTO()
+    {
+        var cliente = new ClienteEntidade("Carlos Mendes", "(31) 99876-5432");
+
+        var slot = new SlotHorarioEntidade(DateTime.Now);
+
+        cliente.GerenciadorAgendamentos.IniciarAgendamento(procedimento, slot);
+
+        var clienteDTO = ClienteEntidade.ParaDTO(cliente);
+
+        Assert.That(clienteDTO.Id == cliente.Id.Valor);
+        Assert.That(clienteDTO.Nome == cliente.Nome);
+        Assert.That(clienteDTO.Telefone == cliente.Telefone);
+        Assert.That(clienteDTO.DataCriacao == cliente.DataCriacao);
+        Assert.That(clienteDTO.DataAlteracao == cliente.DataAlteracao);
+    }
+
+    [Test]
+    public void ClientDTO_DeveConverter_ParaEntidade()
+    {
+        var cliente = new ClienteEntidade("Carlos Mendes", "(31) 99876-5432");
+
+        var slot = new SlotHorarioEntidade(DateTime.Now);
+
+        cliente.GerenciadorAgendamentos.IniciarAgendamento(procedimento, slot);
+
+        var clienteDTO = ClienteEntidade.ParaDTO(cliente);
+
+        var clienteEntidade = ClienteEntidade.ParaEntidade(clienteDTO);
+
+        Assert.That(clienteEntidade.Id.Valor == cliente.Id.Valor);
+        Assert.That(clienteEntidade.Nome == cliente.Nome);
+        Assert.That(clienteEntidade.Telefone == cliente.Telefone);
+        Assert.That(clienteEntidade.DataCriacao == cliente.DataCriacao);
+        Assert.That(clienteEntidade.DataAlteracao == cliente.DataAlteracao);
     }
 }

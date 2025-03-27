@@ -17,4 +17,6 @@ public interface IGerenciadorAgendamentos
     AgendamentoEntidade RemarcarAgendamento(IdEntidade id, SlotHorarioEntidade slot);
 
     AgendamentoEntidade BuscarAgendamentoPorId(IdEntidade id);
+
+    ICollection<AgendamentoEntidade> BuscarAgendamentos();
 }

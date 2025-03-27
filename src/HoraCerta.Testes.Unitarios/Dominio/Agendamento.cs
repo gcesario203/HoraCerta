@@ -19,20 +19,19 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         [Test]
         public void Construtor_DeveIniciarAgendamento_Pendente()
         {
-            var agendamento = new AgendamentoEntidade(slotHorario2, procedimento1, client);
+            var agendamento = new AgendamentoEntidade(slotHorario2, procedimento1);
 
             Assert.That(agendamento.EstadoAtual(), Is.EqualTo(EstadoAgendamento.PENDENTE));
             Assert.That(agendamento.SlotHorario, Is.Not.Null);
             Assert.That(agendamento.Procedimento, Is.Not.Null);
             Assert.That(agendamento.Reagendamento, Is.Null);
             Assert.That(agendamento.Estado, Is.TypeOf<AgendamentoPendente>());
-            Assert.That(agendamento.Cliente != null);
         }
 
         [Test]
         public void AlterarSlot_DeveAlterarSlot()
         {
-            var agendamento = new AgendamentoEntidade(slotHorario2, procedimento1, client);
+            var agendamento = new AgendamentoEntidade(slotHorario2, procedimento1);
 
             Assert.That(agendamento.SlotHorario.Status, Is.EqualTo(StatusSlotAgendamento.RESERVADO));
 
@@ -47,14 +46,14 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         public void NaoDeveIniciarAgendamentoComSlotIndisponivel()
         {
             slotHorario2.AlterarStatus(StatusSlotAgendamento.RESERVADO);
-            Assert.Catch<OperacaoInvalidaExcessao>(() => new AgendamentoEntidade(slotHorario2, procedimento2, client));
+            Assert.Catch<OperacaoInvalidaExcessao>(() => new AgendamentoEntidade(slotHorario2, procedimento2));
         }
 
         [Test]
         public void LiberarSlotDeveRemoverSlotDoAgendamento()
         {
             slotHorario2.AlterarStatus(StatusSlotAgendamento.DISPONIVEL);
-            var agendamento = new AgendamentoEntidade(slotHorario2, procedimento2, client);
+            var agendamento = new AgendamentoEntidade(slotHorario2, procedimento2);
 
             agendamento.LiberarSlot();
 
@@ -66,7 +65,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         public void AlterarStatus_AgendamentoConfirmado()
         {
             var slot = new SlotHorarioEntidade(DateTime.Now);
-            var agendamento = new AgendamentoEntidade(slot, procedimento1, client);
+            var agendamento = new AgendamentoEntidade(slot, procedimento1);
 
             agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
 
@@ -79,7 +78,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         public void AlterarStatus_CancelarAgendamento()
         {
             var slot = new SlotHorarioEntidade(DateTime.Now);
-            var agendamento = new AgendamentoEntidade(slot, procedimento1, client);
+            var agendamento = new AgendamentoEntidade(slot, procedimento1);
 
             agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
             agendamento.AlterarEstado(EstadoAgendamento.CANCELADO);
@@ -95,8 +94,8 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         [Test]
         public void AlterarStatus_Reagendar()
         {
-            var slot = new  SlotHorarioEntidade(DateTime.Now);
-            var agendamento = new AgendamentoEntidade(slot, procedimento1, client);
+            var slot = new SlotHorarioEntidade(DateTime.Now);
+            var agendamento = new AgendamentoEntidade(slot, procedimento1);
 
             agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
             var remarcado = agendamento.AlterarEstado(EstadoAgendamento.REMARCADO);
@@ -104,7 +103,6 @@ namespace HoraCerta.Testes.Unitarios.Dominio
             Assert.That(agendamento.EstadoAtual(), Is.EqualTo(EstadoAgendamento.REMARCADO));
             Assert.That(agendamento.Estado, Is.TypeOf<AgendamentoRemarcado>());
             Assert.That(remarcado.EstadoAtual(), Is.EqualTo(EstadoAgendamento.PENDENTE));
-            Assert.That(remarcado.Cliente.Id.Valor == agendamento.Cliente.Id.Valor);
 
             Assert.Catch<OperacaoInvalidaExcessao>(() => agendamento.AlterarEstado(EstadoAgendamento.PENDENTE));
         }
@@ -113,7 +111,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         public void AlterarStatus_FinalizarAgendamento()
         {
             var slot = new SlotHorarioEntidade(DateTime.Now);
-            var agendamento = new AgendamentoEntidade(slot, procedimento1, client);
+            var agendamento = new AgendamentoEntidade(slot, procedimento1);
 
             agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
             agendamento.AlterarEstado(EstadoAgendamento.FINALIZADO);
@@ -122,6 +120,44 @@ namespace HoraCerta.Testes.Unitarios.Dominio
             Assert.That(agendamento.Estado, Is.TypeOf<AgendamentoFinalizado>());
 
             Assert.Catch<OperacaoInvalidaExcessao>(() => agendamento.AlterarEstado(EstadoAgendamento.PENDENTE));
+        }
+
+        [Test]
+        public void Agendamento_DeveConverter_ParaDTO()
+        {
+            var slot = new SlotHorarioEntidade(DateTime.Now);
+            var agendamento = new AgendamentoEntidade(slot, procedimento1);
+
+            agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
+            agendamento.AlterarEstado(EstadoAgendamento.FINALIZADO);
+
+            var agendamentoDTO = AgendamentoEntidade.ParaDTO(agendamento);
+
+            Assert.That(agendamentoDTO.Estado == agendamento.EstadoAtual());
+            Assert.That(agendamentoDTO.Id == agendamento.Id.Valor);
+            Assert.That(agendamentoDTO.DataAlteracao == agendamento.DataAlteracao);
+            Assert.That(agendamentoDTO.DataCriacao == agendamento.DataCriacao);
+            Assert.That(agendamentoDTO.EstadoEntidade == agendamento.EstadoEntidade);
+        }
+
+        [Test]
+        public void AgendamentoDTO_DeveConverter_ParaEntidade()
+        {
+            var slot = new SlotHorarioEntidade(DateTime.Now);
+            var agendamento = new AgendamentoEntidade(slot, procedimento1);
+
+            agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
+            agendamento.AlterarEstado(EstadoAgendamento.FINALIZADO);
+
+            var agendamentoDTO = AgendamentoEntidade.ParaDTO(agendamento);
+
+            var agendamentoEntidade = AgendamentoEntidade.ParaEntidade(agendamentoDTO);
+
+            Assert.That(agendamentoEntidade.EstadoAtual() == agendamento.EstadoAtual());
+            Assert.That(agendamentoEntidade.Id.Valor == agendamento.Id.Valor);
+            Assert.That(agendamentoEntidade.DataAlteracao == agendamento.DataAlteracao);
+            Assert.That(agendamentoEntidade.DataCriacao == agendamento.DataCriacao);
+            Assert.That(agendamentoEntidade.EstadoEntidade == agendamento.EstadoEntidade);
         }
     }
 }

@@ -24,7 +24,7 @@ public class GerenciadorAgendamentos : IGerenciadorAgendamentos
     }
     public AgendamentoEntidade IniciarAgendamento(ProcedimentoEntidade procedimento, SlotHorarioEntidade slot)
     { 
-        var agendamento = new AgendamentoEntidade(slot, procedimento, _cliente);
+        var agendamento = new AgendamentoEntidade(slot, procedimento);
 
         Agendamentos.Add(agendamento);
 
@@ -65,4 +65,7 @@ public class GerenciadorAgendamentos : IGerenciadorAgendamentos
 
         return agendamento;
     }
+
+    public ICollection<AgendamentoEntidade> BuscarAgendamentos()
+    => Agendamentos;
 }

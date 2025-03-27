@@ -13,7 +13,7 @@ public abstract class EntidadeBase<TEntity> where TEntity : EntidadeBase<TEntity
 
     public EstadoEntidade EstadoEntidade { get; protected set; } = EstadoEntidade.ATIVO;
 
-    protected readonly IServicoValidacao<TEntity> _validador;
+    protected readonly IServicoValidacao<TEntity>? _validador;
 
     protected EntidadeBase(IServicoValidacao<TEntity> validador = null)
     {
@@ -27,8 +27,13 @@ public abstract class EntidadeBase<TEntity> where TEntity : EntidadeBase<TEntity
         _validador = validador;
     }
 
-    protected EntidadeBase(bool fromDTO, IServicoValidacao<TEntity> validador = null)
+    protected EntidadeBase(string? id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, IServicoValidacao<TEntity> validador = null)
     {
+        Id =  string.IsNullOrEmpty(id) ? new IdEntidade() : new IdEntidade(id);
+        DataCriacao = dataCriacao;
+        DataAlteracao = dataAlteracao;
+        EstadoEntidade = estadoEntidade;
+
         if (validador is null)
             return;
 

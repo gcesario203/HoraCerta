@@ -16,9 +16,6 @@ public class ValidadorAgendamento : IValidadorEspecificacao<AtendimentoEntidade>
         if (entidade.Origem.EstadoAtual() != Agendamento.EstadoAgendamento.FINALIZADO)
             throw new EntidadeInvalidadeExcessao("Atendimento não deve ser criado a partir de Agendamentos não finalizados");
 
-        if (entidade.Origem.Cliente is null)
-            throw new EntidadeInvalidadeExcessao("Atendimento deve conter um cliente");
-
         if (entidade.Origem.Procedimento is null)
             throw new EntidadeInvalidadeExcessao("Atendimetno deve conter um procedimento");
 

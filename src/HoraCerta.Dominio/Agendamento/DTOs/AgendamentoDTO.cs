@@ -8,23 +8,19 @@ namespace HoraCerta.Dominio.Agendamento;
 
 public class AgendamentoDTO : DTOBase
 {
-    public AgendamentoDTO(SlotHorarioDTO slotHorario, EstadoAgendamento estado, AgendamentoDTO? reagendamento, ProcedimentoDTO procedimento
-    , ClienteDTO cliente, string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade) : base(id, dataCriacao, dataAlteracao, estadoEntidade)
+    public AgendamentoDTO(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade,SlotHorarioDTO? slotHorario, EstadoAgendamento estado, AgendamentoDTO? reagendamento, ProcedimentoDTO procedimento) : base(id, dataCriacao, dataAlteracao, estadoEntidade)
     {
-        SlotHotario = slotHorario;
+        SlotHorario = slotHorario;
         Estado = estado;
         Reagendamento = reagendamento;
         Procedimento = procedimento;
-        Cliente = cliente;
     }
 
-    public SlotHorarioDTO SlotHotario { get; private set; }
+    public SlotHorarioDTO? SlotHorario { get; private set; }
 
     public EstadoAgendamento Estado { get; private set; }
 
     public AgendamentoDTO? Reagendamento { get; private set; }
 
     public ProcedimentoDTO Procedimento { get; private set; }
-
-    public ClienteDTO Cliente { get; private set; }
 }

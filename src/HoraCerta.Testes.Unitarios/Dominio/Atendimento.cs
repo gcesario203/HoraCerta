@@ -24,7 +24,7 @@ public class Atendimento
     public void DeveCriarAtendimentoAPartirDeUmAgendamento()
     {
         var slot = new SlotHorarioEntidade(DateTime.Now);
-        var agendamento = new AgendamentoEntidade(slot, procedimento2, client);
+        var agendamento = new AgendamentoEntidade(slot, procedimento2);
 
         agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
 
@@ -43,7 +43,7 @@ public class Atendimento
     public void NaoDeveCriarComAgendamentoDiferenteDeFinalizado()
     {
         var slot = new SlotHorarioEntidade(DateTime.Now);
-        var agendamento = new AgendamentoEntidade(slot, procedimento2, client);
+        var agendamento = new AgendamentoEntidade(slot, procedimento2);
 
         Assert.Catch<EntidadeInvalidadeExcessao>(() => new AtendimentoEntidade(agendamento, 50));
 
@@ -64,7 +64,7 @@ public class Atendimento
     public void NaoDeveCriarComValorNegociadoInvalido()
     {
         var slot = new SlotHorarioEntidade(DateTime.Now);
-        var agendamento = new AgendamentoEntidade(slot, procedimento2, client);
+        var agendamento = new AgendamentoEntidade(slot, procedimento2);
 
         agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
 
@@ -78,7 +78,7 @@ public class Atendimento
     {
         var slot = new SlotHorarioEntidade(DateTime.Now);
 
-        var agendamento = new AgendamentoEntidade(slot, procedimento2, client);
+        var agendamento = new AgendamentoEntidade(slot, procedimento2);
 
         agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
 
@@ -97,7 +97,7 @@ public class Atendimento
     {
         var slot = new SlotHorarioEntidade(DateTime.Now);
 
-        var agendamento = new AgendamentoEntidade(slot, procedimento2, client);
+        var agendamento = new AgendamentoEntidade(slot, procedimento2);
 
         agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
 
@@ -115,7 +115,7 @@ public class Atendimento
     {
         var slot = new SlotHorarioEntidade(DateTime.Now);
 
-        var agendamento = new AgendamentoEntidade(slot, procedimento2, client);
+        var agendamento = new AgendamentoEntidade(slot, procedimento2);
 
         agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
 
@@ -133,7 +133,7 @@ public class Atendimento
     {
         var slot = new SlotHorarioEntidade(DateTime.Now);
 
-        var agendamento = new AgendamentoEntidade(slot, procedimento2, client);
+        var agendamento = new AgendamentoEntidade(slot, procedimento2);
 
         agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
 
@@ -149,7 +149,7 @@ public class Atendimento
     {
         var slot = new SlotHorarioEntidade(DateTime.Now);
 
-        var agendamento = new AgendamentoEntidade(slot, procedimento2, client);
+        var agendamento = new AgendamentoEntidade(slot, procedimento2);
 
         agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
 
@@ -167,7 +167,7 @@ public class Atendimento
     {
         var slot = new SlotHorarioEntidade(DateTime.Now);
 
-        var agendamento = new AgendamentoEntidade(slot, procedimento2, client);
+        var agendamento = new AgendamentoEntidade(slot, procedimento2);
 
         agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
 
