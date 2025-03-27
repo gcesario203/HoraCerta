@@ -23,7 +23,7 @@ public class AgendamentoConfirmado : EstadoAgendamentoAbstrato
 
         if(novoStatus == EstadoAgendamento.FINALIZADO)
         {
-            agendamento.SlotHorario.AlterarStatus(StatusSlotAgendamento.CONFIRMADO);
+            agendamento.SlotHorario?.AlterarStatus(StatusSlotAgendamento.CONFIRMADO);
 
             return new AgendamentoFinalizado();
         }

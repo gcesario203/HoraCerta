@@ -13,7 +13,7 @@ public class GerenciadorAgendamentos : IGerenciadorAgendamentos
     private readonly ClienteEntidade _cliente;
     public ICollection<AgendamentoEntidade> Agendamentos { get; private set; }
 
-    public GerenciadorAgendamentos(ClienteEntidade cliente, ICollection<AgendamentoEntidade> agendamentos)
+    public GerenciadorAgendamentos(ClienteEntidade cliente, ICollection<AgendamentoEntidade>? agendamentos)
     {
         if (agendamentos is null || !agendamentos.Any())
             Agendamentos = new List<AgendamentoEntidade>();

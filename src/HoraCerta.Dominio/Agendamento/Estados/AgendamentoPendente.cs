@@ -22,7 +22,7 @@ public class AgendamentoPendente : EstadoAgendamentoAbstrato
 
         if (novoStatus == EstadoAgendamento.CONFIRMADO)
         {
-            agendamento.SlotHorario.AlterarStatus(StatusSlotAgendamento.RESERVADO);
+            agendamento.SlotHorario?.AlterarStatus(StatusSlotAgendamento.RESERVADO);
 
             return new AgendamentoConfirmado();
         }

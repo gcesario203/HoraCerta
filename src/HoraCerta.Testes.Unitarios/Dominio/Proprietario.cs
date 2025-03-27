@@ -10,8 +10,8 @@ namespace HoraCerta.Testes.Unitarios.Dominio
     [TestFixture]
     public class Proprietario
     {
-        private ProprietarioEntidade _proprietario;
-        private GerenciadorProcedimentos _gerenciador;
+        private ProprietarioEntidade? _proprietario;
+        private GerenciadorProcedimentos? _gerenciador;
 
         [SetUp]
         public void SetUp()
@@ -68,15 +68,15 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         public void GerenciadorProcedimentos_DeveInicializarComListaVazia()
         {
             // Assert
-            Assert.That(_gerenciador.Procedimentos != null);
-            Assert.That(!_gerenciador.Procedimentos.Any());
+            Assert.That(_gerenciador!.Procedimentos != null);
+            Assert.That(!_gerenciador!.Procedimentos!.Any());
         }
 
         [Test]
         public void CriarProcedimento_DeveAdicionarNovoProcedimento()
         {
             // Act
-            _gerenciador.CriarProcedimento("Procedimento Teste", 100m, TimeSpan.FromMinutes(30));
+            _gerenciador!.CriarProcedimento("Procedimento Teste", 100m, TimeSpan.FromMinutes(30));
 
             // Assert
             Assert.That(1 == _gerenciador.Procedimentos.Count);
@@ -87,7 +87,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         public void AlterarProcedimento_DeveAtualizarProcedimentoCorretamente()
         {
             // Arrange
-            _gerenciador.CriarProcedimento("Procedimento Antigo", 100m, TimeSpan.FromMinutes(30));
+            _gerenciador!.CriarProcedimento("Procedimento Antigo", 100m, TimeSpan.FromMinutes(30));
             var procedimento = _gerenciador.Procedimentos.First();
 
             // Act
@@ -109,29 +109,29 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         public void InativarProcedimento_DeveAlterarStatusParaInativo()
         {
             // Arrange
-            _gerenciador.CriarProcedimento("Procedimento Teste", 100m, TimeSpan.FromMinutes(30));
+            _gerenciador!.CriarProcedimento("Procedimento Teste", 100m, TimeSpan.FromMinutes(30));
             var procedimento = _gerenciador.Procedimentos.First();
 
             // Act
             _gerenciador.InativarProcedimento(procedimento);
 
             // Assert
-            Assert.That(EstadoEntidade.INATIVO == EstadoEntidade.INATIVO);
+            Assert.That(procedimento!.EstadoEntidade == EstadoEntidade.INATIVO);
         }
 
         [Test]
         public void AtivarProcedimento_DeveAlterarStatusParaAtivo()
         {
             // Arrange
-            _gerenciador.CriarProcedimento("Procedimento Teste", 100m, TimeSpan.FromMinutes(30));
+            _gerenciador!.CriarProcedimento("Procedimento Teste", 100m, TimeSpan.FromMinutes(30));
             var procedimento = _gerenciador.Procedimentos.First();
             _gerenciador.InativarProcedimento(procedimento);
 
             // Act
-            _gerenciador.AtivarProcedimento(procedimento);
+            _gerenciador!.AtivarProcedimento(procedimento);
 
             // Assert
-            Assert.That(EstadoEntidade.ATIVO == EstadoEntidade.ATIVO);
+            Assert.That(procedimento!.EstadoEntidade == EstadoEntidade.ATIVO);
         }
     }
 }

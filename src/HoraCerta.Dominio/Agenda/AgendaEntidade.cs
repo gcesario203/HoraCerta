@@ -10,7 +10,7 @@ public class AgendaEntidade : EntidadeBase<AgendaEntidade>
 
     public ICollection<AtendimentoEntidade> Atendimentos { get; private set; }
 
-    public AgendaEntidade(ICollection<SlotHorarioEntidade> horarios, ICollection<AtendimentoEntidade> atendimentos)
+    public AgendaEntidade(ICollection<SlotHorarioEntidade>? horarios, ICollection<AtendimentoEntidade>? atendimentos)
     {
         if(horarios == null || !horarios.Any())
             Horarios = new List<SlotHorarioEntidade>();

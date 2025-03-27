@@ -23,7 +23,7 @@ public class AtendimentoEntidade : EntidadeBase<AtendimentoEntidade>
 
         Estado = new AtendimentoPendente();
 
-        _validador.Validar(this);
+        _validador!.Validar(this);
     }
 
     public void AlterarEstado(EstadoAtendimento novoEstado)
@@ -40,7 +40,7 @@ public class AtendimentoEntidade : EntidadeBase<AtendimentoEntidade>
 
         ValorNegociado = valorNegociado;
 
-        _validador.Validar(this);
+        _validador!.Validar(this);
 
         Atualizar();
     }

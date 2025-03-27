@@ -139,9 +139,9 @@ public class Cliente
 
         Assert.That(agendamento.EstadoAtual() == HoraCerta.Dominio.Agendamento.EstadoAgendamento.REMARCADO && slot.Status == StatusSlotAgendamento.DISPONIVEL);
 
-        Assert.That(agendamento.Id.Valor == remarcado.Reagendamento.Id.Valor && remarcado.SlotHorario.Id.Valor == slo2.Id.Valor);
+        Assert.That(agendamento.Id.Valor == remarcado.Reagendamento?.Id.Valor && remarcado.SlotHorario?.Id.Valor == slo2.Id.Valor);
 
-        Assert.That(remarcado.SlotHorario.Id.Valor == slo2.Id.Valor && slo2.Status == StatusSlotAgendamento.RESERVADO);
+        Assert.That(remarcado.SlotHorario?.Id.Valor == slo2.Id.Valor && slo2.Status == StatusSlotAgendamento.RESERVADO);
     }
 
     [Test]

@@ -12,22 +12,22 @@ public class ProprietarioEntidade : EntidadeBase<ProprietarioEntidade>
 
     public IGerenciadorAgenda GerenciadorAgenda { get; private set; }
 
-    public ProprietarioEntidade(string nome, ICollection<ProcedimentoEntidade> procedimentos = null, ICollection<SlotHorarioEntidade> horarios = null, ICollection<AtendimentoEntidade> atendimentos = null) :  base(new ValidadorProprietario())
+    public ProprietarioEntidade(string nome, ICollection<ProcedimentoEntidade>? procedimentos = null, ICollection<SlotHorarioEntidade>? horarios = null, ICollection<AtendimentoEntidade>? atendimentos = null) :  base(new ValidadorProprietario())
     {
         Nome = nome;
 
-        GerenciadorProcedimentos = new GerenciadorProcedimentos(this, procedimentos);
+        GerenciadorProcedimentos = new GerenciadorProcedimentos(this, procedimentos ?? null);
 
         GerenciadorAgenda = new GerenciadorAgenda(this, horarios, atendimentos);
 
-        _validador.Validar(this);
+        _validador!.Validar(this);
     }
 
     public void AtualizarNome(string nome)
     {
         Nome = nome;
 
-        _validador.Validar(this);
+        _validador!.Validar(this);
 
         Atualizar();
     }

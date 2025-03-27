@@ -9,7 +9,7 @@ public class GerenciadorAgenda : IGerenciadorAgenda
     private readonly ProprietarioEntidade _proprietario;
 
     public AgendaEntidade Agenda { get; private set; }
-    public GerenciadorAgenda(ProprietarioEntidade proprietario, ICollection<SlotHorarioEntidade> horarios, ICollection<AtendimentoEntidade> atendimentos)
+    public GerenciadorAgenda(ProprietarioEntidade proprietario, ICollection<SlotHorarioEntidade>? horarios, ICollection<AtendimentoEntidade>? atendimentos)
     {
         _proprietario = proprietario;
         Agenda = new AgendaEntidade(horarios, atendimentos);
@@ -30,7 +30,7 @@ public class GerenciadorAgenda : IGerenciadorAgenda
         if (agendamento is null || agendamento.EstadoAtual() != EstadoAgendamento.CONFIRMADO)
             throw new OperacaoInvalidaExcessao("Nao é possivel criar atendimento a partir de um agendamento inválido");
 
-        if (BuscarHorariosPorStatus(StatusSlotAgendamento.CONFIRMADO).Any(agendamento.SlotHorario.ConflitaCom))
+        if (BuscarHorariosPorStatus(StatusSlotAgendamento.CONFIRMADO).Any(x => agendamento is null || agendamento.SlotHorario is null ? false : agendamento.SlotHorario.ConflitaCom(x)))
             throw new OperacaoInvalidaExcessao("Agendamento com horário que coincide com outros");
 
         agendamento.AlterarEstado(EstadoAgendamento.FINALIZADO);
@@ -49,7 +49,7 @@ public class GerenciadorAgenda : IGerenciadorAgenda
 
     public AtendimentoEntidade BuscarAtendimentoPorHorario(IdEntidade idHorario)
     {
-        var atendimento = Agenda.Atendimentos.FirstOrDefault(x => x.Origem.SlotHorario.Id.Valor == idHorario.Valor);
+        var atendimento = Agenda.Atendimentos.FirstOrDefault(x => x.Origem.SlotHorario?.Id.Valor == idHorario.Valor);
 
         if (atendimento is null)
             throw new OperacaoInvalidaExcessao("Atendimento não encontrado");

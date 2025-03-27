@@ -16,25 +16,25 @@ public class ClienteEntidade : EntidadeBase<ClienteEntidade>
 
     public IGerenciadorAgendamentos GerenciadorAgendamentos { get; private set; }
 
-    public ClienteEntidade(string nome, string telefone, ICollection<AgendamentoEntidade> agendamentos = null) : base(new ValidadorCliente())
+    public ClienteEntidade(string nome, string telefone, ICollection<AgendamentoEntidade>? agendamentos = null) : base(new ValidadorCliente())
     {
         Nome = nome;
         Telefone = telefone;
 
-        _validador.Validar(this);
+        _validador?.Validar(this);
 
 
         GerenciadorAgendamentos = new GerenciadorAgendamentos(this, agendamentos);
 
     }
 
-    private ClienteEntidade(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, string nome, string telefone, ICollection<AgendamentoEntidade> agendamentos = null)
+    private ClienteEntidade(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, string nome, string telefone, ICollection<AgendamentoEntidade>? agendamentos = null)
     : base(id, dataCriacao, dataAlteracao, estadoEntidade, new ValidadorCliente())
     {
         Nome = nome;
         Telefone = telefone;
 
-        _validador.Validar(this);
+        _validador?.Validar(this);
 
 
         GerenciadorAgendamentos = new GerenciadorAgendamentos(this, agendamentos);
@@ -44,7 +44,7 @@ public class ClienteEntidade : EntidadeBase<ClienteEntidade>
     {
         Nome = nome;
 
-        _validador.Validar(this);
+        _validador?.Validar(this);
 
         Atualizar();
     }
@@ -53,7 +53,7 @@ public class ClienteEntidade : EntidadeBase<ClienteEntidade>
     {
         Telefone = telefone;
 
-        _validador.Validar(this);
+        _validador?.Validar(this);
 
         Atualizar();
     }

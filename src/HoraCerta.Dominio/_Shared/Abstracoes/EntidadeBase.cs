@@ -15,7 +15,7 @@ public abstract class EntidadeBase<TEntity> where TEntity : EntidadeBase<TEntity
 
     protected readonly IServicoValidacao<TEntity>? _validador;
 
-    protected EntidadeBase(IServicoValidacao<TEntity> validador = null)
+    protected EntidadeBase(IServicoValidacao<TEntity>? validador = null)
     {
         Id = new IdEntidade();
 
@@ -27,7 +27,7 @@ public abstract class EntidadeBase<TEntity> where TEntity : EntidadeBase<TEntity
         _validador = validador;
     }
 
-    protected EntidadeBase(string? id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, IServicoValidacao<TEntity> validador = null)
+    protected EntidadeBase(string? id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, IServicoValidacao<TEntity>? validador = null)
     {
         Id =  string.IsNullOrEmpty(id) ? new IdEntidade() : new IdEntidade(id);
         DataCriacao = dataCriacao;

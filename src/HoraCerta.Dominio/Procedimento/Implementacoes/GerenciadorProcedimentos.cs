@@ -7,7 +7,7 @@ public class GerenciadorProcedimentos : IGerenciadorProcedimentos
     private readonly ProprietarioEntidade _proprietario;
     public ICollection<ProcedimentoEntidade> Procedimentos { get ; private set; }
 
-    public GerenciadorProcedimentos(ProprietarioEntidade proprietario, ICollection<ProcedimentoEntidade> procedimentos)
+    public GerenciadorProcedimentos(ProprietarioEntidade proprietario, ICollection<ProcedimentoEntidade>? procedimentos)
     {
         if (procedimentos == null || !procedimentos.Any())
             Procedimentos = new List<ProcedimentoEntidade>();

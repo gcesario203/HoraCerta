@@ -36,7 +36,7 @@ public class Atendimento
 
         Assert.That(atendimento.ValorNegociado == 50);
 
-        Assert.That(atendimento.Origem.SlotHorario.Status == StatusSlotAgendamento.CONFIRMADO);
+        Assert.That(atendimento!.Origem.SlotHorario!.Status == StatusSlotAgendamento.CONFIRMADO);
     }
 
     [Test]

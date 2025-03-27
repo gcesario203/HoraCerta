@@ -33,11 +33,11 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         {
             var agendamento = new AgendamentoEntidade(slotHorario2, procedimento1);
 
-            Assert.That(agendamento.SlotHorario.Status, Is.EqualTo(StatusSlotAgendamento.RESERVADO));
+            Assert.That(agendamento.SlotHorario?.Status, Is.EqualTo(StatusSlotAgendamento.RESERVADO));
 
             agendamento.AlocarSlot(slotHorario1);
 
-            Assert.That(agendamento.SlotHorario.Id.Valor, Is.EqualTo(slotHorario1.Id.Valor));
+            Assert.That(agendamento.SlotHorario?.Id.Valor, Is.EqualTo(slotHorario1.Id.Valor));
             Assert.That(slotHorario1.Status, Is.EqualTo(StatusSlotAgendamento.RESERVADO));
             Assert.That(slotHorario2.Status, Is.EqualTo(StatusSlotAgendamento.DISPONIVEL));
         }
@@ -69,7 +69,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
 
             agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
 
-            Assert.That(agendamento.SlotHorario.Status, Is.EqualTo(StatusSlotAgendamento.RESERVADO));
+            Assert.That(agendamento.SlotHorario?.Status, Is.EqualTo(StatusSlotAgendamento.RESERVADO));
             Assert.That(agendamento.EstadoAtual(), Is.EqualTo(EstadoAgendamento.CONFIRMADO));
             Assert.That(agendamento.Estado, Is.TypeOf<AgendamentoConfirmado>());
         }
