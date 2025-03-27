@@ -14,4 +14,6 @@ public record IdEntidade
     {
         Valor = Guid.NewGuid().ToString();
     }
+
+    public IdEntidade(string valor) { Valor = valor; }
 }

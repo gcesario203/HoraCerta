@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HoraCerta.Testes.Integracao
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HoraCerta.Testes.Unitarios", "HoraCerta.Testes.Unitarios\HoraCerta.Testes.Unitarios.csproj", "{C2F28C20-7360-4653-A175-27679DE5A047}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoraCerta.Transversal", "HoraCerta.Transversal\HoraCerta.Transversal.csproj", "{239226F4-7202-4BF8-86D3-FC5B5C8906E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{C2F28C20-7360-4653-A175-27679DE5A047}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2F28C20-7360-4653-A175-27679DE5A047}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2F28C20-7360-4653-A175-27679DE5A047}.Release|Any CPU.Build.0 = Release|Any CPU
+		{239226F4-7202-4BF8-86D3-FC5B5C8906E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{239226F4-7202-4BF8-86D3-FC5B5C8906E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{239226F4-7202-4BF8-86D3-FC5B5C8906E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{239226F4-7202-4BF8-86D3-FC5B5C8906E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,6 +63,7 @@ Global
 		{E72A246D-1F45-45AC-96BD-912A9222BA7F} = {5D76D779-D26B-4022-ABD6-0CB8218EB4B2}
 		{5B69766D-B893-4D9B-9A55-E94724567F44} = {CBC4416B-0F4C-417A-9EDB-AD4EB99A3949}
 		{C2F28C20-7360-4653-A175-27679DE5A047} = {CBC4416B-0F4C-417A-9EDB-AD4EB99A3949}
+		{239226F4-7202-4BF8-86D3-FC5B5C8906E6} = {5D76D779-D26B-4022-ABD6-0CB8218EB4B2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {385EDC90-0DE5-409A-B820-46A15E9109CA}

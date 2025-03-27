@@ -1,4 +1,5 @@
 ﻿using HoraCerta.Dominio;
+using HoraCerta.Dominio._Shared.Enums;
 
 namespace HoraCerta.Dominio.Procedimento;
 
@@ -9,6 +10,20 @@ public class ProcedimentoEntidade : EntidadeBase<ProcedimentoEntidade>
     public TimeSpan TempoEstimado { get; private set; }
     public ProcedimentoEntidade(string nome, decimal valor, TimeSpan tempoEstimado) : base(new ValidadorProcedimento())
     {
+        Nome = nome;
+        Valor = valor;
+        TempoEstimado = tempoEstimado;
+
+        _validador.Validar(this);
+    }
+
+    private ProcedimentoEntidade(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, string nome, decimal valor, TimeSpan tempoEstimado)
+    : base(true, new ValidadorProcedimento())
+    {
+        Id = new IdEntidade(id);
+        DataCriacao = dataCriacao;
+        DataAlteracao = dataAlteracao;
+        EstadoEntidade = estadoEntidade;
         Nome = nome;
         Valor = valor;
         TempoEstimado = tempoEstimado;
@@ -41,6 +56,16 @@ public class ProcedimentoEntidade : EntidadeBase<ProcedimentoEntidade>
         TempoEstimado = tempoEstimado;
 
         _validador.Validar(this);
+    }
+
+    public static ProcedimentoDTO ParaDTO(ProcedimentoEntidade entidade)
+    {
+        return new ProcedimentoDTO(entidade.Id.Valor, entidade.DataCriacao, entidade.DataAlteracao, entidade.EstadoEntidade, entidade.Nome, entidade.Valor, entidade.TempoEstimado);
+    }
+
+    public static ProcedimentoEntidade ParaEntidade(ProcedimentoDTO dto)
+    {
+        return new ProcedimentoEntidade(dto.Id, dto.DataCriacao, dto.DataAlteracao, dto.EstadoEntidade, dto.Nome, dto.Valor, dto.TempoEstimado);
     }
 
 }

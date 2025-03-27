@@ -8,6 +8,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HoraCerta.Dominio\HoraCerta.Dominio.csproj" />
+    <ProjectReference Include="..\HoraCerta.Transversal\HoraCerta.Transversal.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Agendamento\" />
+    <Folder Include="Cliente\" />
+    <Folder Include="Procedimento\Implementacoes\" />
+    <Folder Include="SlotHorario\" />
+    <Folder Include="_Shared\Abstracoes\" />
+    <Folder Include="_Shared\Interfaces\" />
   </ItemGroup>
 
 </Project>

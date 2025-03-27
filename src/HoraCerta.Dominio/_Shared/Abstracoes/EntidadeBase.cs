@@ -5,13 +5,13 @@ namespace HoraCerta.Dominio;
 
 public abstract class EntidadeBase<TEntity> where TEntity : EntidadeBase<TEntity>
 {
-    public IdEntidade Id { get; }
+    public IdEntidade Id { get; protected set; }
 
-    public DateTime DataCriacao { get; }
+    public DateTime DataCriacao { get; protected set; }
 
-    public DateTime? DataAlteracao { get; private set; }
+    public DateTime? DataAlteracao { get; protected set; }
 
-    public EstadoEntidade EstadoEntidade { get; private set; } = EstadoEntidade.ATIVO;
+    public EstadoEntidade EstadoEntidade { get; protected set; } = EstadoEntidade.ATIVO;
 
     protected readonly IServicoValidacao<TEntity> _validador;
 
@@ -21,6 +21,14 @@ public abstract class EntidadeBase<TEntity> where TEntity : EntidadeBase<TEntity
 
         DataCriacao = DateTime.UtcNow;
 
+        if (validador is null)
+            return;
+
+        _validador = validador;
+    }
+
+    protected EntidadeBase(bool fromDTO, IServicoValidacao<TEntity> validador = null)
+    {
         if (validador is null)
             return;
 

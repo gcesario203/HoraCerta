@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\HoraCerta.Aplicacao\HoraCerta.Aplicacao.csproj" />
     <ProjectReference Include="..\HoraCerta.Dominio\HoraCerta.Dominio.csproj" />
+    <ProjectReference Include="..\HoraCerta.Transversal\HoraCerta.Transversal.csproj" />
   </ItemGroup>
 
 </Project>
