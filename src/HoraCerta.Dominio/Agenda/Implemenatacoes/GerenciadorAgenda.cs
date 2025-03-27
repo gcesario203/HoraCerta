@@ -25,24 +25,64 @@ public class GerenciadorAgenda : IGerenciadorAgenda
         Agenda.Horarios.Add(novoSlot);
     }
 
-    public void CriarAtendimento(AgendamentoEntidade agendamento, decimal? valorNegociado = null)
+    public AgendamentoEntidade CriarAtendimento(AgendamentoEntidade agendamento, decimal? valorNegociado = null)
     {
         if (agendamento is null || agendamento.EstadoAtual() != EstadoAgendamento.CONFIRMADO)
-            throw new OperacaoInvalidaExcessao("Nao é possivel criar atendimento a partir de um agendamento inválido");
+            throw new OperacaoInvalidaExcessao("Não é possível criar atendimento a partir de um agendamento inválido");
 
-        // Verifica nos horarios confirmados se há conflitos com o agendamento cujo qual estamos tentando criar um atendimento
-        if (BuscarHorariosPorStatus(StatusSlotAgendamento.CONFIRMADO).Any(x => agendamento is null || agendamento.SlotHorario is null ? false : agendamento.SlotHorario.ConflitaCom(x)))
-            throw new OperacaoInvalidaExcessao("Agendamento com horário que coincide com outros");
+        // Validação de conflitos de horários
+        agendamento = ValidarConflitosDeHorario(agendamento);
 
-        /// Verifica nos atendimentos pendentes se o horario do novo agendamento cujo qual estaos tentando criar um atendimento se coincide
-        if (Agenda.Atendimentos.Any() && Agenda.Atendimentos.Any(x => x.Origem.SlotHorario != null && x.EstadoAtual() == EstadoAtendimento.PENDENTE && x.Origem.SlotHorario!.ConflitaCom(agendamento.SlotHorario!)))
-            throw new OperacaoInvalidaExcessao("Agendamento com horário que coincide com outros");
+        if(agendamento.EstadoAtual() == EstadoAgendamento.PENDENTE)
+            return agendamento;
 
+        // Atualiza o estado do agendamento e o status do horário
         agendamento.AlterarEstado(EstadoAgendamento.FINALIZADO);
+        agendamento.SlotHorario!.AlterarStatus(StatusSlotAgendamento.CONFIRMADO);
 
+        // Cria o novo atendimento e adiciona na agenda
         var novoAtendimento = new AtendimentoEntidade(agendamento, valorNegociado ?? agendamento.Procedimento.Valor);
-
         Agenda.Atendimentos.Add(novoAtendimento);
+        Agenda.Horarios.Add(agendamento.SlotHorario!);
+
+        return agendamento;
+    }
+
+    private AgendamentoEntidade ValidarConflitosDeHorario(AgendamentoEntidade agendamento)
+    {
+        // Verifica se o agendamento já tem horário confirmado
+        if (BuscarHorariosPorStatus(StatusSlotAgendamento.CONFIRMADO)
+            .Any(x => agendamento.SlotHorario != null && agendamento.SlotHorario.ConflitaCom(x)))
+        {
+            throw new OperacaoInvalidaExcessao("Agendamento com horário que coincide com outros");
+        }
+
+        // Verifica conflitos com atendimentos pendentes
+        if (Agenda.Atendimentos.Any(x => x.EstadoAtual() == EstadoAtendimento.PENDENTE
+            && x.Origem.SlotHorario != null
+            && x.Origem.SlotHorario!.ConflitaCom(agendamento.SlotHorario!)))
+        {
+            throw new OperacaoInvalidaExcessao("Agendamento com horário que coincide com outros");
+        }
+
+        // Verifica se o horário do novo agendamento conflita com algum horário disponível
+        var slotDeTempoConflitante = BuscarHorariosPorStatus(StatusSlotAgendamento.DISPONIVEL)
+            .FirstOrDefault(x => agendamento.SlotHorario!.ConflitaCom(x));
+
+        if (slotDeTempoConflitante != null)
+        {
+            // Caso haja conflito, reagenda o agendamento
+            return Reagendar(agendamento, slotDeTempoConflitante);
+        }
+
+        return agendamento;
+    }
+
+    private AgendamentoEntidade Reagendar(AgendamentoEntidade agendamento, SlotHorarioEntidade slotConflitante)
+    {
+        Agenda.Horarios.Remove(slotConflitante);
+
+        return agendamento.AlterarEstado(EstadoAgendamento.REMARCADO, new SlotHorarioEntidade(slotConflitante.Inicio, agendamento.Procedimento.TempoEstimado));
     }
 
     public void AlterarStatusAtendimento(EstadoAtendimento estado, IdEntidade idAtendimento)
@@ -68,6 +108,16 @@ public class GerenciadorAgenda : IGerenciadorAgenda
     public AtendimentoEntidade BuscarAtendimentoPorId(IdEntidade idAtendimento)
     {
         var atendimento = Agenda.Atendimentos.FirstOrDefault(x => x.Id.Valor == idAtendimento.Valor);
+
+        if (atendimento is null)
+            throw new OperacaoInvalidaExcessao("Atendimento não encontrado");
+
+        return atendimento;
+    }
+
+    public AtendimentoEntidade BuscarAtendimentoPorAgendamento(IdEntidade idAgendamento)
+    {
+        var atendimento = Agenda.Atendimentos.FirstOrDefault(x => x.Origem.Id.Valor == idAgendamento.Valor);
 
         if (atendimento is null)
             throw new OperacaoInvalidaExcessao("Atendimento não encontrado");

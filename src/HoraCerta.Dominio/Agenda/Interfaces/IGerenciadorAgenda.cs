@@ -14,11 +14,12 @@ public interface IGerenciadorAgenda
 
     void CriarHorarioDisponivel(DateTime inicioDoHorario);
 
-    void CriarAtendimento(AgendamentoEntidade agendamento, decimal? valorNegociado = null);
+    AgendamentoEntidade CriarAtendimento(AgendamentoEntidade agendamento, decimal? valorNegociado = null);
 
     AtendimentoEntidade BuscarAtendimentoPorHorario(IdEntidade idHorario);
 
     AtendimentoEntidade BuscarAtendimentoPorId(IdEntidade idAtendimento);
+    AtendimentoEntidade BuscarAtendimentoPorAgendamento(IdEntidade idAgendamento);
 
     void AlterarStatusAtendimento(EstadoAtendimento estado, IdEntidade idAtendimento);
 }

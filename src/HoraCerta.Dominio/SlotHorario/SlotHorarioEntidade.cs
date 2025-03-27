@@ -55,6 +55,8 @@ public class SlotHorarioEntidade : EntidadeBase<SlotHorarioEntidade>
             throw new OperacaoInvalidaExcessao("Não é possivel alterar o tempo de duração de um slot de tempo nao disponivel");
 
         Fim = Inicio.Add(duracao);
+
+        Atualizar();
     }
 
     public static SlotHorarioDTO ParaDTO(SlotHorarioEntidade entidade)
