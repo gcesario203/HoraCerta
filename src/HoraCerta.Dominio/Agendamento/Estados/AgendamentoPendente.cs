@@ -15,11 +15,6 @@ public class AgendamentoPendente : EstadoAgendamentoAbstrato
 
     public override IEstadoAgendamento AlterarEstado(AgendamentoEntidade agendamento, EstadoAgendamento novoStatus)
     {
-        if (novoStatus == EstadoAgendamento.PENDENTE)
-        {
-            return this;
-        }
-
         if (novoStatus == EstadoAgendamento.CONFIRMADO)
         {
             agendamento.SlotHorario?.AlterarStatus(StatusSlotAgendamento.RESERVADO);

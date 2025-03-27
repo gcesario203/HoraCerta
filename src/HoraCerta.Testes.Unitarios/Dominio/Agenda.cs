@@ -79,10 +79,57 @@ namespace HoraCerta.Testes.Unitarios.Dominio
             Assert.That(atendimento.EstadoAtual(), Is.EqualTo(EstadoAtendimento.CANCELADO));
         }
 
+        [Test]
+        public void DeveCriarAgendaComValoresPreenchidos()
+        {
+            var agendamentoValido = CriarAgendamentoValido();
+
+            agendamentoValido.AlterarEstado(EstadoAgendamento.FINALIZADO);
+
+            var novoAtendimento = new AtendimentoEntidade(agendamentoValido, agendamentoValido.Procedimento.Valor);
+
+            var novoSlot = new SlotHorarioEntidade(DateTime.Now);
+
+            var novaAgenda = new GerenciadorAgenda(_proprietario!, new List<SlotHorarioEntidade> { novoSlot }, new List<AtendimentoEntidade> { novoAtendimento });
+
+            Assert.That(novaAgenda.Agenda.Horarios, Has.Exactly(1).Matches<SlotHorarioEntidade>(h => h.Inicio == novoSlot.Inicio));
+            Assert.That(novaAgenda.Agenda.Atendimentos, Has.Exactly(1).Matches<AtendimentoEntidade>(h => h.Id.Valor == novoAtendimento.Id.Valor));
+        }
+
+        [Test]
+        public void DeveRetornarExcessãoNasBuscarComIdInexistente()
+        {
+            var agendamento = CriarAgendamentoValido();
+            _gerenciadorAgenda!.CriarAtendimento(agendamento);
+            var atendimento = _gerenciadorAgenda.BuscarAtendimentoPorHorario(agendamento!.SlotHorario!.Id!);
+
+            Assert.Catch<OperacaoInvalidaExcessao>(() => _gerenciadorAgenda.BuscarAtendimentoPorHorario(new IdEntidade(new Guid().ToString())));
+            Assert.Catch<OperacaoInvalidaExcessao>(() => _gerenciadorAgenda.BuscarAtendimentoPorId(new IdEntidade(new Guid().ToString())));
+        }
+
+        [Test]
+        public void NaoDeveCriarAtendimentoComSlotsDeHorariosQueCoincidem()
+        {
+            var agendamento = CriarAgendamentoValido();
+            _gerenciadorAgenda!.CriarAtendimento(agendamento);
+
+            var agendamento2 = CriarAgendamentoValido2();
+
+            Assert.Catch<OperacaoInvalidaExcessao>(() => _gerenciadorAgenda!.CriarAtendimento(agendamento2));
+        }
+
         private AgendamentoEntidade CriarAgendamentoValido()
         {
             var slot = new SlotHorarioEntidade(DateTime.Now.AddHours(2));
             var procedimento = new ProcedimentoEntidade("Procedimento Teste", 100, TimeSpan.FromMinutes(30));
+            var agendamento = new AgendamentoEntidade(slot, procedimento);
+            agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
+            return agendamento;
+        }
+        private AgendamentoEntidade CriarAgendamentoValido2()
+        {
+            var slot = new SlotHorarioEntidade(DateTime.Now.AddHours(1));
+            var procedimento = new ProcedimentoEntidade("Procedimento Teste", 100, TimeSpan.FromMinutes(60));
             var agendamento = new AgendamentoEntidade(slot, procedimento);
             agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
             return agendamento;

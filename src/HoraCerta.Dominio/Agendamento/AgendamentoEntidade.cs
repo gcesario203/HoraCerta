@@ -49,7 +49,11 @@ public class AgendamentoEntidade : EntidadeBase<AgendamentoEntidade>
     public void MudarProcedimento(ProcedimentoEntidade procedimento)
     {
         if (EstadoAtual() == EstadoAgendamento.PENDENTE)
+        {
             Procedimento = procedimento;
+
+            return;
+        }
 
         throw new OperacaoInvalidaExcessao("O procedimento deve ser alterado enquanto o agendamento está pendente");
     }
@@ -59,10 +63,6 @@ public class AgendamentoEntidade : EntidadeBase<AgendamentoEntidade>
 
     public AgendamentoEntidade AlterarEstado(EstadoAgendamento novoEstado, SlotHorarioEntidade? slot = null)
     {
-        if (Estado is null)
-            throw new EntidadeInvalidadeExcessao("Agendamento inicializado sem controlador de estados");
-
-
         AgendamentoEntidade @return = this;
 
         if (novoEstado == EstadoAgendamento.REMARCADO)
@@ -134,7 +134,7 @@ public class AgendamentoEntidade : EntidadeBase<AgendamentoEntidade>
     }
 
     public bool AgendamentoFinalizado()
-        => EstadoAtual() == EstadoAgendamento.CANCELADO || EstadoAtual() == EstadoAgendamento.REMARCADO || EstadoAtual() == EstadoAgendamento.FINALIZADO;
+        => EstadoAtual() == EstadoAgendamento.REMARCADO || EstadoAtual() == EstadoAgendamento.FINALIZADO;
 
     public static AgendamentoDTO ParaDTO(AgendamentoEntidade entidade)
         => new AgendamentoDTO(entidade.Id.Valor, entidade.DataCriacao, entidade.DataAlteracao, entidade.EstadoEntidade, entidade.SlotHorario is null ? null : SlotHorarioEntidade.ParaDTO(entidade.SlotHorario), entidade.Estado.EstadoAtual(), entidade.Reagendamento is null ? null : ParaDTO(entidade.Reagendamento), ProcedimentoEntidade.ParaDTO(entidade.Procedimento));

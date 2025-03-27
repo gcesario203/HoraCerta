@@ -38,6 +38,11 @@ namespace HoraCerta.Testes.Unitarios.Dominio
             Assert.Catch<EntidadeInvalidadeExcessao>(() => new ProcedimentoEntidade(nome, valor, duracao));
 
             Assert.Catch<EntidadeInvalidadeExcessao>(() => _procedimento.AtualizarNome(nome));
+
+            nome = "ABJKSBJKASBJKASBJKASBASJKBJKASASBJKBASJKASBJKASJKLJKLÇASKLHJASHJKASGHJASGHJASHJGASGHJASHJVVAHJSJAHSVHJVASAS";
+            Assert.Catch<EntidadeInvalidadeExcessao>(() => new ProcedimentoEntidade(nome, valor, duracao));
+
+            Assert.Catch<EntidadeInvalidadeExcessao>(() => _procedimento.AtualizarNome(nome));
         }
 
         [Test]
@@ -61,6 +66,12 @@ namespace HoraCerta.Testes.Unitarios.Dominio
             decimal valor = 100.00m;
             TimeSpan duracao = TimeSpan.Zero; // Duração inválida
 
+            // Act & Assert
+            Assert.Catch<EntidadeInvalidadeExcessao>(() => new ProcedimentoEntidade(nome, valor, duracao));
+
+            Assert.Catch<EntidadeInvalidadeExcessao>(() => _procedimento.AtualizarTempoEstimado(duracao));
+
+            duracao = TimeSpan.FromDays(2);
             // Act & Assert
             Assert.Catch<EntidadeInvalidadeExcessao>(() => new ProcedimentoEntidade(nome, valor, duracao));
 
@@ -97,7 +108,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
             Assert.That(procedimentoDaDTO.Valor, Is.EqualTo(procedimentoDTO.Valor));
             Assert.That(procedimentoDaDTO.TempoEstimado, Is.EqualTo(procedimentoDTO.TempoEstimado));
 
-            
+
             Assert.That(procedimentoDaDTO.Id.Valor, Is.EqualTo(novoProcedimento.Id.Valor));
             Assert.That(procedimentoDaDTO.DataAlteracao, Is.EqualTo(novoProcedimento.DataAlteracao));
             Assert.That(procedimentoDaDTO.DataCriacao, Is.EqualTo(novoProcedimento.DataCriacao));

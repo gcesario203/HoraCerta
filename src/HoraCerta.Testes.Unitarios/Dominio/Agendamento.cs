@@ -123,6 +123,35 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         }
 
         [Test]
+        public void AlterarStatus_Remarcar_AgendamentoCancelado()
+        {
+            var slot = new SlotHorarioEntidade(DateTime.Now);
+            var agendamento = new AgendamentoEntidade(slot, procedimento1);
+
+            agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
+            agendamento.AlterarEstado(EstadoAgendamento.CANCELADO);
+
+            Assert.That(agendamento.EstadoAtual(), Is.EqualTo(EstadoAgendamento.CANCELADO));
+            Assert.That(agendamento.Estado, Is.TypeOf<AgendamentoCancelado>());
+            Assert.That(agendamento.SlotHorario, Is.Null);
+
+            agendamento.AlterarEstado(EstadoAgendamento.REMARCADO);
+
+            Assert.That(agendamento.EstadoAtual(), Is.EqualTo(EstadoAgendamento.REMARCADO));
+            Assert.That(agendamento.Estado, Is.TypeOf<AgendamentoRemarcado>());
+        }
+
+        [Test]
+        public void NaoDeve_AlterarPara_StatusInvalido_AgendamentoPendente()
+        {
+            var slot = new SlotHorarioEntidade(DateTime.Now);
+            var agendamento = new AgendamentoEntidade(slot, procedimento1);
+
+
+            Assert.Catch<OperacaoInvalidaExcessao>(() => agendamento.AlterarEstado(EstadoAgendamento.REMARCADO));
+        }
+
+        [Test]
         public void Agendamento_DeveConverter_ParaDTO()
         {
             var slot = new SlotHorarioEntidade(DateTime.Now);
@@ -138,6 +167,28 @@ namespace HoraCerta.Testes.Unitarios.Dominio
             Assert.That(agendamentoDTO.DataAlteracao == agendamento.DataAlteracao);
             Assert.That(agendamentoDTO.DataCriacao == agendamento.DataCriacao);
             Assert.That(agendamentoDTO.EstadoEntidade == agendamento.EstadoEntidade);
+        }
+
+        [Test]
+        public void DeveMudar_Procedimento_AgendamentoPendente()
+        {
+            var slot = new SlotHorarioEntidade(DateTime.Now);
+            var agendamento = new AgendamentoEntidade(slot, procedimento1);
+
+            agendamento.MudarProcedimento(procedimento2);
+
+            Assert.That(agendamento.Procedimento.Id.Valor == procedimento2.Id.Valor);
+        }
+
+        [Test]
+        public void NaoDeveMudar_Procedimento_AgendamentoNaoPendente()
+        {
+            var slot = new SlotHorarioEntidade(DateTime.Now);
+            var agendamento = new AgendamentoEntidade(slot, procedimento1);
+
+            agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
+
+            Assert.Catch<OperacaoInvalidaExcessao>(() => agendamento.MudarProcedimento(procedimento2));
         }
 
         [Test]
@@ -158,6 +209,47 @@ namespace HoraCerta.Testes.Unitarios.Dominio
             Assert.That(agendamentoEntidade.DataAlteracao == agendamento.DataAlteracao);
             Assert.That(agendamentoEntidade.DataCriacao == agendamento.DataCriacao);
             Assert.That(agendamentoEntidade.EstadoEntidade == agendamento.EstadoEntidade);
+        }
+
+        [Test]
+        public void MontaObjetoDeEstado_DeveRetornarAgendamentoPendente_QuandoEstadoForPendente()
+        {
+            var estado = UtilidadesDeEstado.MontaObjetoDeEstado(EstadoAgendamento.PENDENTE);
+            Assert.That(estado, Is.InstanceOf<AgendamentoPendente>());
+        }
+
+        [Test]
+        public void MontaObjetoDeEstado_DeveRetornarAgendamentoConfirmado_QuandoEstadoForConfirmado()
+        {
+            var estado = UtilidadesDeEstado.MontaObjetoDeEstado(EstadoAgendamento.CONFIRMADO);
+            Assert.That(estado, Is.InstanceOf<AgendamentoConfirmado>());
+        }
+
+        [Test]
+        public void MontaObjetoDeEstado_DeveRetornarAgendamentoCancelado_QuandoEstadoForCancelado()
+        {
+            var estado = UtilidadesDeEstado.MontaObjetoDeEstado(EstadoAgendamento.CANCELADO);
+            Assert.That(estado, Is.InstanceOf<AgendamentoCancelado>());
+        }
+
+        [Test]
+        public void MontaObjetoDeEstado_DeveRetornarAgendamentoRemarcado_QuandoEstadoForRemarcado()
+        {
+            var estado = UtilidadesDeEstado.MontaObjetoDeEstado(EstadoAgendamento.REMARCADO);
+            Assert.That(estado, Is.InstanceOf<AgendamentoRemarcado>());
+        }
+
+        [Test]
+        public void MontaObjetoDeEstado_DeveRetornarAgendamentoFinalizado_QuandoEstadoForFinalizado()
+        {
+            var estado = UtilidadesDeEstado.MontaObjetoDeEstado(EstadoAgendamento.FINALIZADO);
+            Assert.That(estado, Is.InstanceOf<AgendamentoFinalizado>());
+        }
+
+        [Test]
+        public void MontaObjetoDeEstado_DeveLancarExcecao_QuandoEstadoForInvalido()
+        {
+            Assert.That(() => UtilidadesDeEstado.MontaObjetoDeEstado((EstadoAgendamento)999), Throws.TypeOf<OperacaoInvalidaExcessao>());
         }
     }
 }

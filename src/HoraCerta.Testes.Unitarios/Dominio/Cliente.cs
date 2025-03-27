@@ -35,6 +35,21 @@ public class Cliente
 
         // Act & Assert
         Assert.Catch<EntidadeInvalidadeExcessao>(() => new ClienteEntidade(nome, telefone));
+
+        telefone = string.Empty;
+
+        Assert.Catch<EntidadeInvalidadeExcessao>(() => new ClienteEntidade(nome, telefone));
+    }
+
+    [Test]
+    public void CriarCliente_ComNomeInvalido_DeveLancarExcecao()
+    {
+        // Arrange
+        string telefone = "1234"; // Telefone inválido
+
+        // Act & Assert
+        Assert.Catch<EntidadeInvalidadeExcessao>(() => new ClienteEntidade(string.Empty, telefone));
+        Assert.Catch<EntidadeInvalidadeExcessao>(() => new ClienteEntidade("ASNJKLASJKASBJKASBJKASBJKASBJKASBJKASBJKASJKBABJKSAJKSBAJKSBJAKBAJKSBAJKSBJKASBJKABJKSAKSBJASBJKABKJSAJKBSBKJASBJKAJKSBAJKSBAJKSBAJKSBJKASBJKABSJKABSJKABSKJABJKSBAJKSBJKA", telefone));
     }
 
     [Test]
@@ -49,6 +64,16 @@ public class Cliente
 
         // Assert
         Assert.That(cliente.Nome, Is.EqualTo(novoNome));
+    }
+
+    [Test]
+    public void AtualizarNome_NaoDeveMudar_ParaValorInvalido()
+    {
+        // Arrange
+        var cliente = new ClienteEntidade("Pedro Oliveira", "(11) 99999-9999");
+
+        Assert.Catch<EntidadeInvalidadeExcessao>(() => cliente.AtualizarNome(string.Empty));
+        Assert.Catch<EntidadeInvalidadeExcessao>(() => cliente.AtualizarNome("ASNJKLASJKASBJKASBJKASBJKASBJKASBJKASBJKASJKBABJKSAJKSBAJKSBJAKBAJKSBAJKSBJKASBJKABJKSAKSBJASBJKABKJSAJKBSBKJASBJKAJKSBAJKSBAJKSBAJKSBJKASBJKABSJKABSJKABSKJABJKSBAJKSBJKA"));
     }
 
     [Test]
@@ -73,6 +98,10 @@ public class Cliente
         string telefoneInvalido = "9999";
 
         // Act & Assert
+        Assert.Catch<EntidadeInvalidadeExcessao>(() => cliente.AtualizarTelefone(telefoneInvalido));
+
+        telefoneInvalido = string.Empty;
+
         Assert.Catch<EntidadeInvalidadeExcessao>(() => cliente.AtualizarTelefone(telefoneInvalido));
     }
 

@@ -61,6 +61,12 @@ public class Atendimento
     }
 
     [Test]
+    public void NaoDeveCriarSemAgendamento()
+    {
+        Assert.Catch<EntidadeInvalidadeExcessao>(() => new AtendimentoEntidade(null, 50));
+    }
+
+    [Test]
     public void NaoDeveCriarComValorNegociadoInvalido()
     {
         var slot = new SlotHorarioEntidade(DateTime.Now);
@@ -89,6 +95,26 @@ public class Atendimento
         atendimento.AlterarEstado(EstadoAtendimento.CANCELADO);
 
         Assert.That(atendimento.EstadoAtual() == EstadoAtendimento.CANCELADO);
+    }
+
+    [Test]
+    public void NaoDeveSerPossivelAlterarAtendimentoCancelado()
+    {
+        var slot = new SlotHorarioEntidade(DateTime.Now);
+
+        var agendamento = new AgendamentoEntidade(slot, procedimento2);
+
+        agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
+
+        agendamento.AlterarEstado(EstadoAgendamento.FINALIZADO);
+
+        var atendimento = new AtendimentoEntidade(agendamento, 50);
+
+        atendimento.AlterarEstado(EstadoAtendimento.CANCELADO);
+
+        Assert.That(atendimento.EstadoAtual() == EstadoAtendimento.CANCELADO);
+
+        Assert.Catch<OperacaoInvalidaExcessao>(() => atendimento.AlterarEstado(EstadoAtendimento.PENDENTE));
     }
 
 
@@ -178,5 +204,57 @@ public class Atendimento
         atendimento.AlterarEstado(EstadoAtendimento.CANCELADO);
 
         Assert.Catch<OperacaoInvalidaExcessao>(() => atendimento.AlterarValorNegociado(-76));
+    }
+
+    [Test]
+    public void NaoDeveMudarEstadoDeAtendimentoFinalizado()
+    {
+        var slot = new SlotHorarioEntidade(DateTime.Now);
+
+        var agendamento = new AgendamentoEntidade(slot, procedimento2);
+
+        agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
+
+        agendamento.AlterarEstado(EstadoAgendamento.FINALIZADO);
+
+        var atendimento = new AtendimentoEntidade(agendamento, 50);
+
+        atendimento.AlterarEstado(EstadoAtendimento.REALIZADO);
+
+        Assert.That(atendimento.EstadoAtual() == EstadoAtendimento.REALIZADO);
+
+        Assert.Catch<OperacaoInvalidaExcessao>(() => atendimento.AlterarEstado(EstadoAtendimento.PENDENTE));
+    }
+
+    [Test]
+    public void NaoDeveCriarAtendimentoComSlotInvalido()
+    {
+        var slot = new SlotHorarioEntidade(DateTime.Now);
+
+        var agendamento = new AgendamentoEntidade(slot, procedimento2);
+
+        agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
+
+        agendamento.AlterarEstado(EstadoAgendamento.FINALIZADO);
+
+        slot.AlterarStatus(StatusSlotAgendamento.DISPONIVEL);
+
+        Assert.Catch<EntidadeInvalidadeExcessao>(() => new AtendimentoEntidade(agendamento, 50));
+    }
+
+    [Test]
+    public void NaoDeveMudarAtendimentoParaStatusInvalido()
+    {
+        var slot = new SlotHorarioEntidade(DateTime.Now);
+
+        var agendamento = new AgendamentoEntidade(slot, procedimento2);
+
+        agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
+
+        agendamento.AlterarEstado(EstadoAgendamento.FINALIZADO);
+
+        var atendimento = new AtendimentoEntidade(agendamento, 50);
+
+        Assert.Catch<OperacaoInvalidaExcessao>(() => atendimento.AlterarEstado(EstadoAtendimento.PENDENTE));
     }
 }

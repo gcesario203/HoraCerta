@@ -30,7 +30,12 @@ public class GerenciadorAgenda : IGerenciadorAgenda
         if (agendamento is null || agendamento.EstadoAtual() != EstadoAgendamento.CONFIRMADO)
             throw new OperacaoInvalidaExcessao("Nao é possivel criar atendimento a partir de um agendamento inválido");
 
+        // Verifica nos horarios confirmados se há conflitos com o agendamento cujo qual estamos tentando criar um atendimento
         if (BuscarHorariosPorStatus(StatusSlotAgendamento.CONFIRMADO).Any(x => agendamento is null || agendamento.SlotHorario is null ? false : agendamento.SlotHorario.ConflitaCom(x)))
+            throw new OperacaoInvalidaExcessao("Agendamento com horário que coincide com outros");
+
+        /// Verifica nos atendimentos pendentes se o horario do novo agendamento cujo qual estaos tentando criar um atendimento se coincide
+        if (Agenda.Atendimentos.Any() && Agenda.Atendimentos.Any(x => x.Origem.SlotHorario != null && x.EstadoAtual() == EstadoAtendimento.PENDENTE && x.Origem.SlotHorario!.ConflitaCom(agendamento.SlotHorario!)))
             throw new OperacaoInvalidaExcessao("Agendamento com horário que coincide com outros");
 
         agendamento.AlterarEstado(EstadoAgendamento.FINALIZADO);

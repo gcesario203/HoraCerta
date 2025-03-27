@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HoraCerta.Dominio;
 
-public record IdEntidade
+public class IdEntidade
 {
     public string Valor { get; private set; }
 

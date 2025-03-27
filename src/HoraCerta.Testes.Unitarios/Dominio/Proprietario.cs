@@ -133,5 +133,24 @@ namespace HoraCerta.Testes.Unitarios.Dominio
             // Assert
             Assert.That(procedimento!.EstadoEntidade == EstadoEntidade.ATIVO);
         }
+
+        [Test]
+        public void DeveCriar_Gerenciador_ComProcedimentos()
+        {
+            _gerenciador!.CriarProcedimento("Procedimento Teste", 100m, TimeSpan.FromMinutes(30));
+            var procedimento = _gerenciador.Procedimentos.First();
+
+            var novoGerenciador = new GerenciadorProcedimentos(_proprietario!, new List<ProcedimentoEntidade>(){
+                procedimento
+            });
+
+            Assert.That(novoGerenciador.Procedimentos, Has.Exactly(1).Matches<ProcedimentoEntidade>(h => h.Id.Valor == procedimento.Id.Valor));
+        }
+
+        [Test]
+        public void NaoDeve_BuscarProcimento_Inexistente()
+        {
+            Assert.Catch<OperacaoInvalidaExcessao>(() => _gerenciador!.BuscarProcedimentoPorId(new IdEntidade(new Guid().ToString())));
+        }
     }
 }
