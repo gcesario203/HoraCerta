@@ -1,20 +1,15 @@
-﻿using HoraCerta.Dominio.Proprietario;
-
-namespace HoraCerta.Dominio.Procedimento;
+﻿namespace HoraCerta.Dominio.Procedimento;
 
 public class GerenciadorProcedimentos : IGerenciadorProcedimentos
 {
-    private readonly ProprietarioEntidade _proprietario;
     public ICollection<ProcedimentoEntidade> Procedimentos { get ; private set; }
 
-    public GerenciadorProcedimentos(ProprietarioEntidade proprietario, ICollection<ProcedimentoEntidade>? procedimentos)
+    public GerenciadorProcedimentos(ICollection<ProcedimentoEntidade>? procedimentos)
     {
         if (procedimentos == null || !procedimentos.Any())
             Procedimentos = new List<ProcedimentoEntidade>();
         else
             Procedimentos = procedimentos;
-
-        _proprietario = proprietario;
     }
 
     public void CriarProcedimento(string nome, decimal valor, TimeSpan tempoEstimado)
@@ -57,4 +52,7 @@ public class GerenciadorProcedimentos : IGerenciadorProcedimentos
 
         return procedimento;
     }
+
+    public ICollection<ProcedimentoEntidade> RecuperarProcedimentos()
+        => Procedimentos;
 }

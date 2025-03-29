@@ -29,7 +29,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
             _proprietario = new ProprietarioEntidade("Roberatao da massa");
             _horarios = new List<SlotHorarioEntidade>();
             _atendimentos = new List<AtendimentoEntidade>();
-            _gerenciadorAgenda = new GerenciadorAgenda(_proprietario, _horarios, _atendimentos);
+            _gerenciadorAgenda = new GerenciadorAgenda(_horarios, _atendimentos);
         }
 
         [Test]
@@ -90,7 +90,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
 
             var novoSlot = new SlotHorarioEntidade(DateTime.Now);
 
-            var novaAgenda = new GerenciadorAgenda(_proprietario!, new List<SlotHorarioEntidade> { novoSlot }, new List<AtendimentoEntidade> { novoAtendimento });
+            var novaAgenda = new GerenciadorAgenda( new List<SlotHorarioEntidade> { novoSlot }, new List<AtendimentoEntidade> { novoAtendimento });
 
             Assert.That(novaAgenda.Agenda.Horarios, Has.Exactly(1).Matches<SlotHorarioEntidade>(h => h.Inicio == novoSlot.Inicio));
             Assert.That(novaAgenda.Agenda.Atendimentos, Has.Exactly(1).Matches<AtendimentoEntidade>(h => h.Id.Valor == novoAtendimento.Id.Valor));

@@ -6,13 +6,20 @@ namespace HoraCerta.Dominio.Agenda;
 
 public class GerenciadorAgenda : IGerenciadorAgenda
 {
-    private readonly ProprietarioEntidade _proprietario;
+
 
     public AgendaEntidade Agenda { get; private set; }
-    public GerenciadorAgenda(ProprietarioEntidade proprietario, ICollection<SlotHorarioEntidade>? horarios, ICollection<AtendimentoEntidade>? atendimentos)
+    public GerenciadorAgenda(ICollection<SlotHorarioEntidade>? horarios, ICollection<AtendimentoEntidade>? atendimentos)
     {
-        _proprietario = proprietario;
         Agenda = new AgendaEntidade(horarios, atendimentos);
+    }
+
+    public AgendaEntidade RecuperarAgenda()
+        => Agenda;
+
+    public GerenciadorAgenda(AgendaEntidade agenda)
+    {
+        Agenda = agenda;
     }
 
     public void CriarHorarioDisponivel(DateTime inicioDoHorario)
@@ -33,7 +40,7 @@ public class GerenciadorAgenda : IGerenciadorAgenda
         // Validação de conflitos de horários
         agendamento = ValidarConflitosDeHorario(agendamento);
 
-        if(agendamento.EstadoAtual() == EstadoAgendamento.PENDENTE)
+        if (agendamento.EstadoAtual() == EstadoAgendamento.PENDENTE)
             return agendamento;
 
         // Atualiza o estado do agendamento e o status do horário

@@ -22,4 +22,6 @@ public interface IGerenciadorAgenda
     AtendimentoEntidade BuscarAtendimentoPorAgendamento(IdEntidade idAgendamento);
 
     void AlterarStatusAtendimento(EstadoAtendimento estado, IdEntidade idAtendimento);
+
+    AgendaEntidade RecuperarAgenda();
 }

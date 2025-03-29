@@ -16,5 +16,7 @@ public interface IGerenciadorProcedimentos
 
     void AtivarProcedimento(ProcedimentoEntidade procedimentoEntidade);
 
+    ICollection<ProcedimentoEntidade> RecuperarProcedimentos();
+
     ProcedimentoEntidade BuscarProcedimentoPorId(IdEntidade idEntidade);
 }

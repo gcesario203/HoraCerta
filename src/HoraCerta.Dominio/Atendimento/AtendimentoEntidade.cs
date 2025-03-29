@@ -1,9 +1,5 @@
-﻿using HoraCerta.Dominio.Agendamento;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using HoraCerta.Dominio._Shared.Enums;
+using HoraCerta.Dominio.Agendamento;
 
 namespace HoraCerta.Dominio.Atendimento;
 
@@ -26,9 +22,21 @@ public class AtendimentoEntidade : EntidadeBase<AtendimentoEntidade>
         _validador!.Validar(this);
     }
 
+    private AtendimentoEntidade(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, AgendamentoEntidade origem, decimal valorNegociado, EstadoAtendimento estadoAtendimento)
+    :base(id, dataCriacao, dataAlteracao, estadoEntidade, new ValidadorAtendimento())
+    {
+        Origem = origem;
+
+        ValorNegociado = valorNegociado;
+
+        Estado = UtilidadesDeEstado.MontaObjetoDeEstado(estadoAtendimento);
+
+        _validador!.Validar(this);
+    }
+
     public void AlterarEstado(EstadoAtendimento novoEstado)
     {
-        Estado = Estado.AlterarEstado(this,novoEstado);
+        Estado = Estado.AlterarEstado(this, novoEstado);
 
         Atualizar();
     }
@@ -48,4 +56,10 @@ public class AtendimentoEntidade : EntidadeBase<AtendimentoEntidade>
     public EstadoAtendimento EstadoAtual()
         => Estado.EstadoAtual();
 
+    
+    public static AtendimentoDTO ParaDTO(AtendimentoEntidade atendimento)
+        => new AtendimentoDTO(atendimento.Id.Valor, atendimento.DataCriacao, atendimento.DataAlteracao, atendimento.EstadoEntidade, AgendamentoEntidade.ParaDTO(atendimento.Origem), atendimento.ValorNegociado, atendimento.EstadoAtual());
+
+    public static AtendimentoEntidade ParaEntidade(AtendimentoDTO atendimento)
+        => new AtendimentoEntidade(atendimento.Id, atendimento.DataCriacao, atendimento.DataAlteracao, atendimento.EstadoEntidade, AgendamentoEntidade.ParaEntidade(atendimento.Origem), atendimento.ValorNegociado, atendimento.Estado);
 }

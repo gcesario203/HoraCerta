@@ -1,4 +1,5 @@
-﻿using HoraCerta.Dominio.Agenda;
+﻿using HoraCerta.Dominio._Shared.Enums;
+using HoraCerta.Dominio.Agenda;
 using HoraCerta.Dominio.Atendimento;
 using HoraCerta.Dominio.Procedimento;
 
@@ -12,13 +13,25 @@ public class ProprietarioEntidade : EntidadeBase<ProprietarioEntidade>
 
     public IGerenciadorAgenda GerenciadorAgenda { get; private set; }
 
-    public ProprietarioEntidade(string nome, ICollection<ProcedimentoEntidade>? procedimentos = null, ICollection<SlotHorarioEntidade>? horarios = null, ICollection<AtendimentoEntidade>? atendimentos = null) :  base(new ValidadorProprietario())
+    public ProprietarioEntidade(string nome, ICollection<ProcedimentoEntidade>? procedimentos = null, ICollection<SlotHorarioEntidade>? horarios = null, ICollection<AtendimentoEntidade>? atendimentos = null) : base(new ValidadorProprietario())
     {
         Nome = nome;
 
-        GerenciadorProcedimentos = new GerenciadorProcedimentos(this, procedimentos ?? null);
+        GerenciadorProcedimentos = new GerenciadorProcedimentos(procedimentos ?? null);
 
-        GerenciadorAgenda = new GerenciadorAgenda(this, horarios, atendimentos);
+        GerenciadorAgenda = new GerenciadorAgenda(horarios, atendimentos);
+
+        _validador!.Validar(this);
+    }
+
+    private ProprietarioEntidade(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, string nome, AgendaEntidade? agenda = null, ICollection<ProcedimentoEntidade>? procedimentos = null)
+    : base(id, dataCriacao, dataAlteracao, estadoEntidade, new ValidadorProprietario())
+    {
+        Nome = nome;
+
+        GerenciadorProcedimentos = new GerenciadorProcedimentos(procedimentos ?? null);
+
+        GerenciadorAgenda = new GerenciadorAgenda(agenda ?? new AgendaEntidade(null, null));
 
         _validador!.Validar(this);
     }
@@ -31,4 +44,7 @@ public class ProprietarioEntidade : EntidadeBase<ProprietarioEntidade>
 
         Atualizar();
     }
+
+    public static ProprietarioDTO ParaDTO(ProprietarioEntidade proprietario)
+     => new ProprietarioDTO(proprietario.Id.Valor, proprietario.DataCriacao, proprietario.DataAlteracao, proprietario.EstadoEntidade, proprietario.Nome, AgendaEntidade.ParaDTO(proprietario.GerenciadorAgenda.RecuperarAgenda()), proprietario.GerenciadorProcedimentos.RecuperarProcedimentos()?.Select(ProcedimentoEntidade.ParaDTO)?.ToList());
 }
