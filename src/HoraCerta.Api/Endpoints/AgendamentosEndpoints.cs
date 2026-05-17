@@ -11,11 +11,11 @@ namespace HoraCerta.Api.Endpoints;
 
 public static class AgendamentosEndpoints
 {
-    public static RouteGroupBuilder MapAgendamentos(this IEndpointRouteBuilder app)
+    public static void MapAgendamentos(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/agendamentos").WithTags("Agendamentos");
+        const string route = "/api/agendamentos";
 
-        group.MapPost("/iniciar", (IniciarAgendamentoRequisicao req, IniciarAgendamentoHandler handler) =>
+        app.MapPost($"{route}/iniciar", (IniciarAgendamentoRequisicao req, IniciarAgendamentoHandler handler) =>
         {
             var agendamento = handler.Executar(new IniciarAgendamentoCommand(
                 RespostaMapeamento.Id(req.ProprietarioId),
@@ -26,11 +26,13 @@ public static class AgendamentosEndpoints
             return Results.Created(
                 $"/api/agendamentos/{agendamento.Id.Valor}",
                 RespostaMapeamento.ParaResposta(agendamento, req.ClienteId));
-        });
+        }).WithTags("Agendamentos");
 
-        var protegido = group.RequireAuthorization();
+        var auth = app.MapGroup(route)
+            .WithTags("Agendamentos")
+            .RequireAuthorization();
 
-        protegido.MapPost("/{agendamentoId}/confirmar", (
+        auth.MapPost("/{agendamentoId}/confirmar", (
             string agendamentoId,
             ConfirmarAgendamentoRequisicao req,
             ConfirmarAgendamentoHandler handler) =>
@@ -43,7 +45,7 @@ public static class AgendamentosEndpoints
             return Results.Ok(RespostaMapeamento.ParaResposta(agendamento, req.ClienteId));
         }).AddEndpointFilter<ProprietarioBodyAuthorizationFilter>();
 
-        protegido.MapPost("/{agendamentoId}/cancelar", (
+        auth.MapPost("/{agendamentoId}/cancelar", (
             string agendamentoId,
             CancelarAgendamentoRequisicao req,
             CancelarAgendamentoHandler handler) =>
@@ -56,7 +58,7 @@ public static class AgendamentosEndpoints
             return Results.Ok(RespostaMapeamento.ParaResposta(agendamento, req.ClienteId));
         }).AddEndpointFilter<ProprietarioBodyAuthorizationFilter>();
 
-        protegido.MapPost("/{agendamentoId}/remarcar", (
+        auth.MapPost("/{agendamentoId}/remarcar", (
             string agendamentoId,
             RemarcarAgendamentoRequisicao req,
             RemarcarAgendamentoHandler handler) =>
@@ -72,7 +74,7 @@ public static class AgendamentosEndpoints
                 RespostaMapeamento.ParaResposta(agendamento, req.ClienteId));
         }).AddEndpointFilter<ProprietarioBodyAuthorizationFilter>();
 
-        protegido.MapPost("/{agendamentoId}/atendimento", (
+        auth.MapPost("/{agendamentoId}/atendimento", (
             string agendamentoId,
             RegistrarAtendimentoRequisicao req,
             RegistrarAtendimentoHandler handler) =>
@@ -123,7 +125,5 @@ public static class AgendamentosEndpoints
         .WithTags("Agendamentos")
         .RequireAuthorization()
         .AddEndpointFilter<ProprietarioAuthorizationFilter>();
-
-        return group;
     }
 }

@@ -4,35 +4,70 @@ import { ctx } from '../support/context';
 
 const { When, Then } = createBdd();
 
+async function aguardarSessaoProprietario(page: import('@playwright/test').Page) {
+  await page.waitForResponse(
+    (r) => r.url().includes('/api/bff/auth/session'),
+    { timeout: 15_000 },
+  );
+  await page
+    .locator('.ant-spin-spinning')
+    .waitFor({ state: 'hidden', timeout: 15_000 })
+    .catch(() => undefined);
+}
+
 When(
   'cadastro o procedimento {string} com valor {int} e duração {int} minutos',
   async ({ page }, nome: string, valor: number, minutos: number) => {
     ctx.nomeProcedimento = nome;
     await page.goto('/proprietario/procedimentos');
+    await aguardarSessaoProprietario(page);
     await page.getByRole('button', { name: 'Novo procedimento' }).click();
-    await page.getByLabel('Nome').fill(nome);
-    await page.getByLabel('Valor (R$)').fill(String(valor));
-    await page.getByLabel('Tempo estimado (minutos)').fill(String(minutos));
-    await page.getByRole('button', { name: 'Salvar' }).click();
+    const modal = page.locator('.ant-modal');
+    await expect(modal).toBeVisible();
+    const inputs = modal.locator('input');
+    await inputs.nth(0).fill(nome);
+    await inputs.nth(1).click();
+    await inputs.nth(1).fill(String(valor));
+    await inputs.nth(2).click();
+    await inputs.nth(2).fill(String(minutos));
+    const criar = page.waitForResponse(
+      (r) =>
+        r.url().includes('/procedimentos') &&
+        r.request().method() === 'POST' &&
+        r.ok(),
+    );
+    await modal.getByRole('button', { name: 'Salvar' }).click();
+    await criar;
+    await expect(modal).toBeHidden({ timeout: 10_000 });
     await expect(page.getByRole('cell', { name: nome })).toBeVisible({ timeout: 15_000 });
   },
 );
 
 When('disponibilizo um horário na agenda', async ({ page }) => {
   await page.goto('/proprietario/agenda');
-  await page.getByRole('button', { name: 'Novo horário' }).click();
-  await page.getByLabel('Data e hora').click();
-  const nowBtn = page.locator('.ant-picker-now-btn');
-  if (await nowBtn.isVisible()) {
-    await nowBtn.click();
-  }
-  await page.locator('.ant-picker-ok button').click();
-  await page.getByRole('button', { name: 'Salvar' }).click();
+  await aguardarSessaoProprietario(page);
+
+  const session = await page.request.get('/api/bff/auth/session');
+  expect(session.ok()).toBeTruthy();
+  const { proprietarioId } = (await session.json()) as { proprietarioId: string };
+
+  const inicio = new Date();
+  inicio.setDate(inicio.getDate() + 1);
+  inicio.setHours(10, 0, 0, 0);
+
+  const res = await page.request.post(`/api/bff/proprietarios/${proprietarioId}/slots`, {
+    data: { inicio: inicio.toISOString() },
+  });
+  expect(res.ok()).toBeTruthy();
+
+  await page.reload();
+  await aguardarSessaoProprietario(page);
   await expect(page.locator('.ant-table-tbody tr').first()).toBeVisible({ timeout: 15_000 });
 });
 
 When('confirmo o agendamento pendente do cliente', async ({ page }) => {
   await page.goto('/proprietario/agendamentos');
+  await aguardarSessaoProprietario(page);
   const row = page.locator('tr', { hasText: ctx.nomeCliente });
   await expect(row).toBeVisible({ timeout: 15_000 });
   await row.getByRole('button', { name: 'Confirmar' }).click();
@@ -41,17 +76,33 @@ When('confirmo o agendamento pendente do cliente', async ({ page }) => {
 
 When('registro o atendimento do agendamento confirmado', async ({ page }) => {
   await page.goto('/proprietario/agendamentos');
+  await aguardarSessaoProprietario(page);
   const row = page.locator('tr', { hasText: ctx.nomeCliente });
+  await expect(row).toBeVisible({ timeout: 15_000 });
   await row.getByRole('button', { name: 'Atendimento' }).click();
+  const registrar = page.waitForResponse(
+    (r) =>
+      r.url().includes('/atendimento') &&
+      r.request().method() === 'POST' &&
+      r.ok(),
+  );
   await page.getByRole('button', { name: 'Registrar atendimento' }).click();
-  await page.waitForTimeout(1000);
+  await registrar;
 });
 
 When('marco o atendimento como realizado', async ({ page }) => {
   await page.goto('/proprietario/atendimentos');
+  await aguardarSessaoProprietario(page);
+  await expect(page.locator('.ant-table-tbody tr').first()).toBeVisible({ timeout: 15_000 });
+  const patch = page.waitForResponse(
+    (r) =>
+      r.url().includes('/atendimentos/') &&
+      r.request().method() === 'PATCH' &&
+      r.ok(),
+  );
   await page.getByRole('combobox').first().click();
   await page.getByTitle('Realizado').click();
-  await page.waitForTimeout(1000);
+  await patch;
 });
 
 When('consulto a avaliação do agendamento do cliente', async ({ page }) => {

@@ -25,12 +25,12 @@ import { obterAvaliacaoUseCase } from '@/avaliacao/application';
 import type { AvaliacaoDto } from '@/avaliacao/application/dtos/avaliacao.dto';
 import { listarSlotsDisponiveisUseCase } from '@/slot-horario/application';
 import type { SlotHorarioDto } from '@/slot-horario/application/dtos/slot-horario.dto';
-import { useAuthStore } from '@/auth/presentation/stores/auth.store';
+import { useProprietarioSessao } from '@/auth/presentation/hooks/use-proprietario-sessao';
 import { extractApiMessage } from '@/shared/infrastructure/http/api-error';
 import { formatarDataHora, labelEstado } from '@/shared/presentation/format';
 
 export default function AgendamentosPage() {
-  const proprietarioId = useAuthStore((s) => s.proprietarioId);
+  const { proprietarioId, canAct } = useProprietarioSessao();
   const { message } = App.useApp();
   const [lista, setLista] = useState<AgendamentoListagemDto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ export default function AgendamentosPage() {
   const [valorAtendimento, setValorAtendimento] = useState<number | undefined>();
 
   const carregar = useCallback(async () => {
-    if (!proprietarioId) return;
+    if (!canAct || !proprietarioId) return;
     setLoading(true);
     try {
       const data = await listarAgendamentosProprietarioUseCase.execute(proprietarioId);
@@ -52,7 +52,7 @@ export default function AgendamentosPage() {
     } finally {
       setLoading(false);
     }
-  }, [proprietarioId, message]);
+  }, [canAct, proprietarioId, message]);
 
   useEffect(() => {
     carregar();
@@ -62,7 +62,7 @@ export default function AgendamentosPage() {
     tipo: 'confirmar' | 'cancelar',
     ag: AgendamentoListagemDto,
   ) => {
-    if (!proprietarioId) return;
+    if (!canAct || !proprietarioId) return;
     try {
       const body = { proprietarioId, clienteId: ag.clienteId };
       if (tipo === 'confirmar') {
@@ -79,7 +79,7 @@ export default function AgendamentosPage() {
   };
 
   const abrirRemarcar = async (ag: AgendamentoListagemDto) => {
-    if (!proprietarioId) return;
+    if (!canAct || !proprietarioId) return;
     setRemarcarId(ag.agendamentoId);
     try {
       const s = await listarSlotsDisponiveisUseCase.execute(proprietarioId);
@@ -109,7 +109,7 @@ export default function AgendamentosPage() {
   };
 
   const registrarAtendimento = async (ag: AgendamentoListagemDto, valor?: number) => {
-    if (!proprietarioId) return;
+    if (!canAct || !proprietarioId) return;
     try {
       await registrarAtendimentoUseCase.execute(ag.agendamentoId, {
         proprietarioId,
@@ -124,7 +124,7 @@ export default function AgendamentosPage() {
   };
 
   const verAvaliacao = async (agendamentoId: string) => {
-    if (!proprietarioId) return;
+    if (!canAct || !proprietarioId) return;
     try {
       const av = await obterAvaliacaoUseCase.execute(proprietarioId, agendamentoId);
       setAvaliacao(av);

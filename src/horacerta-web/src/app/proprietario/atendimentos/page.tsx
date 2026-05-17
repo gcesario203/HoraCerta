@@ -7,20 +7,20 @@ import {
   listarAtendimentosUseCase,
 } from '@/atendimento/application';
 import type { AtendimentoDto } from '@/atendimento/application/dtos/atendimento.dto';
-import { useAuthStore } from '@/auth/presentation/stores/auth.store';
+import { useProprietarioSessao } from '@/auth/presentation/hooks/use-proprietario-sessao';
 import { extractApiMessage } from '@/shared/infrastructure/http/api-error';
 import { labelEstado } from '@/shared/presentation/format';
 
 const estados = ['REALIZADO', 'CANCELADO', 'FALHA'];
 
 export default function AtendimentosPage() {
-  const proprietarioId = useAuthStore((s) => s.proprietarioId);
+  const { proprietarioId, canAct } = useProprietarioSessao();
   const { message } = App.useApp();
   const [lista, setLista] = useState<AtendimentoDto[]>([]);
   const [loading, setLoading] = useState(true);
 
   const carregar = useCallback(async () => {
-    if (!proprietarioId) return;
+    if (!canAct || !proprietarioId) return;
     setLoading(true);
     try {
       const data = await listarAtendimentosUseCase.execute(proprietarioId);
@@ -30,14 +30,14 @@ export default function AtendimentosPage() {
     } finally {
       setLoading(false);
     }
-  }, [proprietarioId, message]);
+  }, [canAct, proprietarioId, message]);
 
   useEffect(() => {
     carregar();
   }, [carregar]);
 
   const alterarEstado = async (atendimentoId: string, estado: string) => {
-    if (!proprietarioId) return;
+    if (!canAct || !proprietarioId) return;
     try {
       await alterarEstadoAtendimentoUseCase.execute(proprietarioId, atendimentoId, {
         estado,

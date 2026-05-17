@@ -10,18 +10,26 @@ const bffRoot = createApiClient('', true);
 
 export function SessaoHydrator() {
   const setAuth = useAuthStore((s) => s.setSession);
+  const setHydrated = useAuthStore((s) => s.setHydrated);
   const setCliente = useClienteSessaoStore((s) => s.setSessao);
 
   useEffect(() => {
-    bffRoot
-      .get<{ proprietarioId: string }>('/api/bff/auth/session')
-      .then((r) => setAuth(r.data.proprietarioId))
-      .catch(() => undefined);
+    void (async () => {
+      try {
+        const { data } = await bffRoot.get<{ proprietarioId: string }>(
+          '/api/bff/auth/session',
+        );
+        if (data.proprietarioId) setAuth(data.proprietarioId);
+      } catch {
+        /* sem sessão */
+      } finally {
+        setHydrated();
+      }
 
-    obterSessaoCliente().then((sessao) => {
+      const sessao = await obterSessaoCliente();
       if (sessao) setCliente(sessao.clienteId, sessao.proprietarioId);
-    });
-  }, [setAuth, setCliente]);
+    })();
+  }, [setAuth, setHydrated, setCliente]);
 
   return null;
 }

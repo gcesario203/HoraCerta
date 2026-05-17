@@ -1,4 +1,5 @@
 using HoraCerta.Dominio;
+using HoraCerta.Dominio._Shared.Enums;
 using HoraCerta.Dominio.Agendamento;
 using HoraCerta.Dominio.Procedimento;
 using HoraCerta.Dominio.Proprietario;
@@ -16,7 +17,9 @@ public static class AgendamentoMapper
             DataAlteracao = entidade.DataAlteracao,
             EstadoEntidade = entidade.EstadoEntidade,
             ProcedimentoId = entidade.Procedimento.Id.Valor,
+            ProcedimentoNome = entidade.Procedimento.Nome,
             SlotHorarioId = entidade.SlotHorario?.Id.Valor,
+            SlotInicio = entidade.SlotHorario?.Inicio,
             ReagendamentoId = entidade.Reagendamento?.Id.Valor,
             Estado = entidade.EstadoAtual()
         };
@@ -44,11 +47,8 @@ public static class AgendamentoMapper
     /// </summary>
     public static AgendamentoEntidade ParaEntidadeLegado(AgendamentoModelo modelo)
     {
-        var procedimento = modelo.Procedimento is not null
-            ? ProcedimentoMapper.ParaEntidade(modelo.Procedimento)
-            : throw new OperacaoInvalidaExcessao("Procedimento do agendamento não informado na persistência");
-
-        var slot = modelo.SlotHorario is null ? null : SlotHorarioMapper.ParaEntidade(modelo.SlotHorario);
+        var procedimento = ResolverProcedimentoLegado(modelo);
+        var slot = ResolverSlotLegado(modelo);
         var reagendamento = modelo.Reagendamento is null ? null : ParaEntidadeLegado(modelo.Reagendamento);
 
         return new AgendamentoEntidade(
@@ -131,13 +131,50 @@ public static class AgendamentoMapper
     {
         if (!string.IsNullOrEmpty(modelo.SlotHorarioId))
         {
-            return proprietario.Horarios.FirstOrDefault(s => s.Id.Valor == modelo.SlotHorarioId)
-                ?? throw new OperacaoInvalidaExcessao($"Slot {modelo.SlotHorarioId} não encontrado no estabelecimento");
+            return proprietario.Horarios.FirstOrDefault(s => s.Id.Valor == modelo.SlotHorarioId);
         }
 
         if (modelo.SlotHorario is not null)
             return SlotHorarioMapper.ParaEntidade(modelo.SlotHorario);
 
         return null;
+    }
+
+    private static ProcedimentoEntidade ResolverProcedimentoLegado(AgendamentoModelo modelo)
+    {
+        if (modelo.Procedimento is not null)
+            return ProcedimentoMapper.ParaEntidade(modelo.Procedimento);
+
+        if (!string.IsNullOrEmpty(modelo.ProcedimentoId))
+        {
+            return new ProcedimentoEntidade(
+                modelo.ProcedimentoId,
+                modelo.DataCriacao,
+                modelo.DataAlteracao,
+                modelo.EstadoEntidade,
+                modelo.ProcedimentoNome ?? "Procedimento",
+                0m,
+                TimeSpan.FromMinutes(30));
+        }
+
+        throw new OperacaoInvalidaExcessao("Procedimento do agendamento não informado na persistência");
+    }
+
+    private static SlotHorarioEntidade? ResolverSlotLegado(AgendamentoModelo modelo)
+    {
+        if (modelo.SlotHorario is not null)
+            return SlotHorarioMapper.ParaEntidade(modelo.SlotHorario);
+
+        if (string.IsNullOrEmpty(modelo.SlotHorarioId) || !modelo.SlotInicio.HasValue)
+            return null;
+
+        return new SlotHorarioEntidade(
+            modelo.SlotHorarioId,
+            modelo.DataCriacao,
+            modelo.DataAlteracao,
+            modelo.EstadoEntidade,
+            modelo.SlotInicio.Value,
+            null,
+            StatusSlotAgendamento.RESERVADO);
     }
 }

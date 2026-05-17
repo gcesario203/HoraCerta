@@ -9,32 +9,33 @@ namespace HoraCerta.Api.Endpoints;
 
 public static class SlotsEndpoints
 {
-    public static RouteGroupBuilder MapSlots(this IEndpointRouteBuilder app)
+    public static void MapSlots(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/proprietarios/{proprietarioId}/slots")
-            .WithTags("Slots");
+        const string route = "/api/proprietarios/{proprietarioId}/slots";
 
-        group.MapGet("/disponiveis", (string proprietarioId, ListarSlotsDisponiveisHandler handler) =>
+        app.MapGet($"{route}/disponiveis", (string proprietarioId, ListarSlotsDisponiveisHandler handler) =>
         {
             var slots = handler.Executar(new ListarSlotsDisponiveisQuery(RespostaMapeamento.Id(proprietarioId)));
             return Results.Ok(slots.Select(RespostaMapeamento.ParaResposta));
+        }).WithTags("Slots");
+
+        var auth = app.MapGroup(route)
+            .WithTags("Slots")
+            .RequireAuthorization()
+            .AddEndpointFilter<ProprietarioAuthorizationFilter>();
+
+        auth.MapPost("/", (
+            string proprietarioId,
+            CriarSlotRequisicao req,
+            CriarSlotDisponivelHandler handler) =>
+        {
+            var slot = handler.Executar(new CriarSlotDisponivelCommand(
+                RespostaMapeamento.Id(proprietarioId),
+                req.Inicio));
+
+            return Results.Created(
+                $"/api/proprietarios/{proprietarioId}/slots/{slot.Id.Valor}",
+                RespostaMapeamento.ParaResposta(slot));
         });
-
-        group.RequireAuthorization().AddEndpointFilter<ProprietarioAuthorizationFilter>()
-            .MapPost("/", (
-                string proprietarioId,
-                CriarSlotRequisicao req,
-                CriarSlotDisponivelHandler handler) =>
-            {
-                var slot = handler.Executar(new CriarSlotDisponivelCommand(
-                    RespostaMapeamento.Id(proprietarioId),
-                    req.Inicio));
-
-                return Results.Created(
-                    $"/api/proprietarios/{proprietarioId}/slots/{slot.Id.Valor}",
-                    RespostaMapeamento.ParaResposta(slot));
-            });
-
-        return group;
     }
 }

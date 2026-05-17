@@ -9,20 +9,22 @@ namespace HoraCerta.Api.Endpoints;
 
 public static class ProcedimentosEndpoints
 {
-    public static RouteGroupBuilder MapProcedimentos(this IEndpointRouteBuilder app)
+    public static void MapProcedimentos(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/proprietarios/{proprietarioId}/procedimentos")
-            .WithTags("Procedimentos");
+        const string route = "/api/proprietarios/{proprietarioId}/procedimentos";
 
-        group.MapGet("/", (string proprietarioId, ListarProcedimentosAtivosHandler handler) =>
+        app.MapGet($"{route}/", (string proprietarioId, ListarProcedimentosAtivosHandler handler) =>
         {
             var procedimentos = handler.Executar(new ListarProcedimentosAtivosQuery(RespostaMapeamento.Id(proprietarioId)));
             return Results.Ok(procedimentos.Select(RespostaMapeamento.ParaResposta));
-        });
+        }).WithTags("Procedimentos");
 
-        var protegido = group.RequireAuthorization().AddEndpointFilter<ProprietarioAuthorizationFilter>();
+        var auth = app.MapGroup(route)
+            .WithTags("Procedimentos")
+            .RequireAuthorization()
+            .AddEndpointFilter<ProprietarioAuthorizationFilter>();
 
-        protegido.MapPost("/", (
+        auth.MapPost("/", (
             string proprietarioId,
             CriarProcedimentoRequisicao req,
             CriarProcedimentoHandler handler) =>
@@ -38,7 +40,7 @@ public static class ProcedimentosEndpoints
                 RespostaMapeamento.ParaResposta(procedimento));
         });
 
-        protegido.MapPost("/{procedimentoId}/inativar", (
+        auth.MapPost("/{procedimentoId}/inativar", (
             string proprietarioId,
             string procedimentoId,
             InativarProcedimentoHandler handler) =>
@@ -49,7 +51,5 @@ public static class ProcedimentosEndpoints
 
             return Results.Ok(RespostaMapeamento.ParaResposta(procedimento));
         });
-
-        return group;
     }
 }

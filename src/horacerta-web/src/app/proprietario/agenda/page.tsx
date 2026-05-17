@@ -5,12 +5,12 @@ import { App, Button, DatePicker, Form, Modal, Table, Tag } from 'antd';
 import dayjs from 'dayjs';
 import { criarSlotUseCase, listarSlotsDisponiveisUseCase } from '@/slot-horario/application';
 import type { SlotHorarioDto } from '@/slot-horario/application/dtos/slot-horario.dto';
-import { useAuthStore } from '@/auth/presentation/stores/auth.store';
+import { useProprietarioSessao } from '@/auth/presentation/hooks/use-proprietario-sessao';
 import { extractApiMessage } from '@/shared/infrastructure/http/api-error';
 import { formatarDataHora, labelEstado } from '@/shared/presentation/format';
 
 export default function AgendaPage() {
-  const proprietarioId = useAuthStore((s) => s.proprietarioId);
+  const { proprietarioId, canAct } = useProprietarioSessao();
   const { message } = App.useApp();
   const [lista, setLista] = useState<SlotHorarioDto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,7 @@ export default function AgendaPage() {
   const [salvando, setSalvando] = useState(false);
 
   const carregar = useCallback(async () => {
-    if (!proprietarioId) return;
+    if (!canAct || !proprietarioId) return;
     setLoading(true);
     try {
       const data = await listarSlotsDisponiveisUseCase.execute(proprietarioId);
@@ -28,14 +28,14 @@ export default function AgendaPage() {
     } finally {
       setLoading(false);
     }
-  }, [proprietarioId, message]);
+  }, [canAct, proprietarioId, message]);
 
   useEffect(() => {
     carregar();
   }, [carregar]);
 
   const criar = async (values: { inicio: dayjs.Dayjs }) => {
-    if (!proprietarioId) return;
+    if (!canAct || !proprietarioId) return;
     setSalvando(true);
     try {
       await criarSlotUseCase.execute(

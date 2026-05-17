@@ -8,6 +8,12 @@ public class AgendamentoModelo : PersistenciaModeloBase
 
     public string? SlotHorarioId { get; set; }
 
+    /// <summary>Snapshot para listagem sem reidratar o calendário do estabelecimento.</summary>
+    public string? ProcedimentoNome { get; set; }
+
+    /// <summary>Snapshot do início do slot reservado.</summary>
+    public DateTime? SlotInicio { get; set; }
+
     public string? ReagendamentoId { get; set; }
 
     public EstadoAgendamento Estado { get; set; }

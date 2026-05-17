@@ -8,12 +8,12 @@ import {
   listarProcedimentosUseCase,
 } from '@/procedimento/application';
 import type { ProcedimentoDto } from '@/procedimento/application/dtos/procedimento.dto';
-import { useAuthStore } from '@/auth/presentation/stores/auth.store';
+import { useProprietarioSessao } from '@/auth/presentation/hooks/use-proprietario-sessao';
 import { extractApiMessage } from '@/shared/infrastructure/http/api-error';
 import { formatarMoeda, labelEstado } from '@/shared/presentation/format';
 
 export default function ProcedimentosPage() {
-  const proprietarioId = useAuthStore((s) => s.proprietarioId);
+  const { proprietarioId, canAct } = useProprietarioSessao();
   const { message } = App.useApp();
   const [lista, setLista] = useState<ProcedimentoDto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +21,7 @@ export default function ProcedimentosPage() {
   const [salvando, setSalvando] = useState(false);
 
   const carregar = useCallback(async () => {
-    if (!proprietarioId) return;
+    if (!canAct || !proprietarioId) return;
     setLoading(true);
     try {
       const data = await listarProcedimentosUseCase.execute(proprietarioId);
@@ -31,7 +31,7 @@ export default function ProcedimentosPage() {
     } finally {
       setLoading(false);
     }
-  }, [proprietarioId, message]);
+  }, [canAct, proprietarioId, message]);
 
   useEffect(() => {
     carregar();
@@ -42,7 +42,7 @@ export default function ProcedimentosPage() {
     valor: number;
     tempoEstimadoMinutos: number;
   }) => {
-    if (!proprietarioId) return;
+    if (!canAct || !proprietarioId) return;
     setSalvando(true);
     try {
       await criarProcedimentoUseCase.execute(proprietarioId, values);
@@ -57,7 +57,7 @@ export default function ProcedimentosPage() {
   };
 
   const inativar = async (id: string) => {
-    if (!proprietarioId) return;
+    if (!canAct || !proprietarioId) return;
     try {
       await inativarProcedimentoUseCase.execute(proprietarioId, id);
       message.success('Procedimento inativado');

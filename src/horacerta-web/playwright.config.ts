@@ -31,16 +31,13 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: process.env.CI
-    ? {
-        command: 'npm run start',
-        url: 'http://localhost:3000',
-        reuseExistingServer: false,
-        timeout: 120_000,
-      }
-    : {
-        command: 'npm run dev',
-        url: 'http://localhost:3000',
-        reuseExistingServer: true,
-      },
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
+    env: {
+      API_URL: process.env.API_URL ?? 'http://localhost:5080',
+    },
+  },
 });

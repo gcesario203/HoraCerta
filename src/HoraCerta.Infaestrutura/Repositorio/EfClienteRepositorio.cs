@@ -113,8 +113,22 @@ public class EfClienteRepositorio : IClienteRepositorio
     public IReadOnlyList<ClienteEntidade> ListarComProprietario(ProprietarioEntidade proprietario)
         => _context.Clientes
             .AsEnumerable()
-            .Select(r => Deserializar(r, proprietario))
+            .Select(r => TryDeserializar(r, proprietario))
+            .Where(c => c is not null)
+            .Cast<ClienteEntidade>()
             .ToList();
+
+    private ClienteEntidade? TryDeserializar(ClienteRegistro registro, ProprietarioEntidade proprietario)
+    {
+        try
+        {
+            return Deserializar(registro, proprietario);
+        }
+        catch (OperacaoInvalidaExcessao)
+        {
+            return null;
+        }
+    }
 
     private ClienteEntidade DeserializarLegado(ClienteRegistro registro)
     {
