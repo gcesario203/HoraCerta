@@ -22,7 +22,7 @@ public class AtendimentoEntidade : EntidadeBase<AtendimentoEntidade>
         _validador!.Validar(this);
     }
 
-    private AtendimentoEntidade(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, AgendamentoEntidade origem, decimal valorNegociado, EstadoAtendimento estadoAtendimento)
+    internal AtendimentoEntidade(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, AgendamentoEntidade origem, decimal valorNegociado, EstadoAtendimento estadoAtendimento)
     :base(id, dataCriacao, dataAlteracao, estadoEntidade, new ValidadorAtendimento())
     {
         Origem = origem;
@@ -55,11 +55,4 @@ public class AtendimentoEntidade : EntidadeBase<AtendimentoEntidade>
 
     public EstadoAtendimento EstadoAtual()
         => Estado.EstadoAtual();
-
-    
-    public static AtendimentoDTO ParaDTO(AtendimentoEntidade atendimento)
-        => new AtendimentoDTO(atendimento.Id.Valor, atendimento.DataCriacao, atendimento.DataAlteracao, atendimento.EstadoEntidade, AgendamentoEntidade.ParaDTO(atendimento.Origem), atendimento.ValorNegociado, atendimento.EstadoAtual());
-
-    public static AtendimentoEntidade ParaEntidade(AtendimentoDTO atendimento)
-        => new AtendimentoEntidade(atendimento.Id, atendimento.DataCriacao, atendimento.DataAlteracao, atendimento.EstadoEntidade, AgendamentoEntidade.ParaEntidade(atendimento.Origem), atendimento.ValorNegociado, atendimento.Estado);
 }

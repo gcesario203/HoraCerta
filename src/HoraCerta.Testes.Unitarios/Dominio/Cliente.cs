@@ -1,8 +1,8 @@
-﻿using NUnit.Framework;
+﻿using HoraCerta.Dominio;
 using HoraCerta.Dominio.Cliente;
-using System.Linq;
-using HoraCerta.Dominio;
 using HoraCerta.Dominio.Procedimento;
+using HoraCerta.Infaestrutura.Mapeamento;
+using NUnit.Framework;
 
 namespace HoraCerta.Testes.Unitarios.Dominio;
 
@@ -174,7 +174,7 @@ public class Cliente
     }
 
     [Test]
-    public void Cliente_DeveConverter_ParaDTO()
+    public void Cliente_DeveConverter_ParaModelo()
     {
         var cliente = new ClienteEntidade("Carlos Mendes", "(31) 99876-5432");
 
@@ -182,17 +182,17 @@ public class Cliente
 
         cliente.GerenciadorAgendamentos.IniciarAgendamento(procedimento, slot);
 
-        var clienteDTO = ClienteEntidade.ParaDTO(cliente);
+        var modelo = ClienteMapper.ParaModelo(cliente);
 
-        Assert.That(clienteDTO.Id == cliente.Id.Valor);
-        Assert.That(clienteDTO.Nome == cliente.Nome);
-        Assert.That(clienteDTO.Telefone == cliente.Telefone);
-        Assert.That(clienteDTO.DataCriacao == cliente.DataCriacao);
-        Assert.That(clienteDTO.DataAlteracao == cliente.DataAlteracao);
+        Assert.That(modelo.Id == cliente.Id.Valor);
+        Assert.That(modelo.Nome == cliente.Nome);
+        Assert.That(modelo.Telefone == cliente.Telefone);
+        Assert.That(modelo.DataCriacao == cliente.DataCriacao);
+        Assert.That(modelo.DataAlteracao == cliente.DataAlteracao);
     }
 
     [Test]
-    public void ClientDTO_DeveConverter_ParaEntidade()
+    public void ClienteModelo_DeveConverter_ParaEntidade()
     {
         var cliente = new ClienteEntidade("Carlos Mendes", "(31) 99876-5432");
 
@@ -200,9 +200,9 @@ public class Cliente
 
         cliente.GerenciadorAgendamentos.IniciarAgendamento(procedimento, slot);
 
-        var clienteDTO = ClienteEntidade.ParaDTO(cliente);
+        var modelo = ClienteMapper.ParaModelo(cliente);
 
-        var clienteEntidade = ClienteEntidade.ParaEntidade(clienteDTO);
+        var clienteEntidade = ClienteMapper.ParaEntidade(modelo);
 
         Assert.That(clienteEntidade.Id.Valor == cliente.Id.Valor);
         Assert.That(clienteEntidade.Nome == cliente.Nome);

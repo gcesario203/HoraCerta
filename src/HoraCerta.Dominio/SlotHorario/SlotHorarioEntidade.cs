@@ -1,5 +1,4 @@
 ﻿using HoraCerta.Dominio._Shared.Enums;
-using HoraCerta.Dominio.SlotHorario;
 
 namespace HoraCerta.Dominio;
 
@@ -21,7 +20,7 @@ public class SlotHorarioEntidade : EntidadeBase<SlotHorarioEntidade>
             AlterarDuracao(duracao.Value);
     }
 
-    private SlotHorarioEntidade(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, DateTime inicio, DateTime? fim, StatusSlotAgendamento statusSlotAgendamento)
+    internal SlotHorarioEntidade(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, DateTime inicio, DateTime? fim, StatusSlotAgendamento statusSlotAgendamento)
     : base(id, dataCriacao, dataAlteracao, estadoEntidade)
     {
         Inicio = inicio;
@@ -59,9 +58,4 @@ public class SlotHorarioEntidade : EntidadeBase<SlotHorarioEntidade>
         Atualizar();
     }
 
-    public static SlotHorarioDTO ParaDTO(SlotHorarioEntidade entidade)
-    => new SlotHorarioDTO(entidade.Id.Valor, entidade.DataCriacao, entidade.DataAlteracao, entidade.EstadoEntidade, entidade.Inicio, entidade.Fim, entidade.Status);
-
-    public static SlotHorarioEntidade ParaEntidade(SlotHorarioDTO slotHorario)
-    => new SlotHorarioEntidade(slotHorario.Id, slotHorario.DataCriacao, slotHorario.DataAlteracao, slotHorario.EstadoEntidade, slotHorario.Inicio, slotHorario.Fim, slotHorario.Status);
 }

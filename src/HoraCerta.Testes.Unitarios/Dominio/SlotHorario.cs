@@ -1,4 +1,5 @@
 ﻿using HoraCerta.Dominio;
+using HoraCerta.Infaestrutura.Mapeamento;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -124,48 +125,47 @@ public class SlotHorario
     }
 
     [Test]
-    public void SlotHorario_DeveConverter_ParaDTO()
+    public void SlotHorario_DeveConverter_ParaModelo()
     {
         var slot = new SlotHorarioEntidade(new DateTime(2025, 2, 21, 10, 0, 0));
         slot.AlterarStatus(StatusSlotAgendamento.RESERVADO);
 
-        var slotDto = SlotHorarioEntidade.ParaDTO(slot);
+        var modelo = SlotHorarioMapper.ParaModelo(slot);
 
-        Assert.That(slotDto.Id == slot.Id.Valor);
-        Assert.That(slotDto.DataAlteracao == slot.DataAlteracao);
-        Assert.That(slotDto.DataCriacao == slot.DataCriacao);
-        Assert.That(slotDto.EstadoEntidade == slot.EstadoEntidade);
-        Assert.That(slotDto.Inicio == slot.Inicio);
-        Assert.That(slotDto.Fim == slot.Fim);
-        Assert.That(slotDto.Status == slot.Status);
-
+        Assert.That(modelo.Id == slot.Id.Valor);
+        Assert.That(modelo.DataAlteracao == slot.DataAlteracao);
+        Assert.That(modelo.DataCriacao == slot.DataCriacao);
+        Assert.That(modelo.EstadoEntidade == slot.EstadoEntidade);
+        Assert.That(modelo.Inicio == slot.Inicio);
+        Assert.That(modelo.Fim == slot.Fim);
+        Assert.That(modelo.Status == slot.Status);
     }
 
     [Test]
-    public void SlotHorarioDTO_DeveConverter_ParaEntidade()
+    public void SlotHorarioModelo_DeveConverter_ParaEntidade()
     {
         var slot = new SlotHorarioEntidade(new DateTime(2025, 2, 21, 10, 0, 0));
         slot.AlterarStatus(StatusSlotAgendamento.RESERVADO);
 
-        var slotDto = SlotHorarioEntidade.ParaDTO(slot);
+        var modelo = SlotHorarioMapper.ParaModelo(slot);
 
-        Assert.That(slotDto.Id == slot.Id.Valor);
-        Assert.That(slotDto.DataAlteracao == slot.DataAlteracao);
-        Assert.That(slotDto.DataCriacao == slot.DataCriacao);
-        Assert.That(slotDto.EstadoEntidade == slot.EstadoEntidade);
-        Assert.That(slotDto.Inicio == slot.Inicio);
-        Assert.That(slotDto.Fim == slot.Fim);
-        Assert.That(slotDto.Status == slot.Status);
+        Assert.That(modelo.Id == slot.Id.Valor);
+        Assert.That(modelo.DataAlteracao == slot.DataAlteracao);
+        Assert.That(modelo.DataCriacao == slot.DataCriacao);
+        Assert.That(modelo.EstadoEntidade == slot.EstadoEntidade);
+        Assert.That(modelo.Inicio == slot.Inicio);
+        Assert.That(modelo.Fim == slot.Fim);
+        Assert.That(modelo.Status == slot.Status);
 
-        var slotEntidade = SlotHorarioEntidade.ParaEntidade(slotDto);
+        var slotEntidade = SlotHorarioMapper.ParaEntidade(modelo);
 
-        Assert.That(slotDto.Id == slotEntidade.Id.Valor);
-        Assert.That(slotDto.DataAlteracao == slotEntidade.DataAlteracao);
-        Assert.That(slotDto.DataCriacao == slotEntidade.DataCriacao);
-        Assert.That(slotDto.EstadoEntidade == slotEntidade.EstadoEntidade);
-        Assert.That(slotDto.Inicio == slotEntidade.Inicio);
-        Assert.That(slotDto.Fim == slotEntidade.Fim);
-        Assert.That(slotDto.Status == slotEntidade.Status);
+        Assert.That(modelo.Id == slotEntidade.Id.Valor);
+        Assert.That(modelo.DataAlteracao == slotEntidade.DataAlteracao);
+        Assert.That(modelo.DataCriacao == slotEntidade.DataCriacao);
+        Assert.That(modelo.EstadoEntidade == slotEntidade.EstadoEntidade);
+        Assert.That(modelo.Inicio == slotEntidade.Inicio);
+        Assert.That(modelo.Fim == slotEntidade.Fim);
+        Assert.That(modelo.Status == slotEntidade.Status);
 
     }
 }

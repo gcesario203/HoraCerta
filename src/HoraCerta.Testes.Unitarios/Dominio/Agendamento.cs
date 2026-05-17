@@ -2,6 +2,7 @@
 using HoraCerta.Dominio.Agendamento;
 using HoraCerta.Dominio.Cliente;
 using HoraCerta.Dominio.Procedimento;
+using HoraCerta.Infaestrutura.Mapeamento;
 using NUnit.Framework;
 using System;
 
@@ -152,7 +153,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         }
 
         [Test]
-        public void Agendamento_DeveConverter_ParaDTO()
+        public void Agendamento_DeveConverter_ParaModelo()
         {
             var slot = new SlotHorarioEntidade(DateTime.Now);
             var agendamento = new AgendamentoEntidade(slot, procedimento1);
@@ -160,13 +161,13 @@ namespace HoraCerta.Testes.Unitarios.Dominio
             agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
             agendamento.AlterarEstado(EstadoAgendamento.FINALIZADO);
 
-            var agendamentoDTO = AgendamentoEntidade.ParaDTO(agendamento);
+            var modelo = AgendamentoMapper.ParaModelo(agendamento);
 
-            Assert.That(agendamentoDTO.Estado == agendamento.EstadoAtual());
-            Assert.That(agendamentoDTO.Id == agendamento.Id.Valor);
-            Assert.That(agendamentoDTO.DataAlteracao == agendamento.DataAlteracao);
-            Assert.That(agendamentoDTO.DataCriacao == agendamento.DataCriacao);
-            Assert.That(agendamentoDTO.EstadoEntidade == agendamento.EstadoEntidade);
+            Assert.That(modelo.Estado == agendamento.EstadoAtual());
+            Assert.That(modelo.Id == agendamento.Id.Valor);
+            Assert.That(modelo.DataAlteracao == agendamento.DataAlteracao);
+            Assert.That(modelo.DataCriacao == agendamento.DataCriacao);
+            Assert.That(modelo.EstadoEntidade == agendamento.EstadoEntidade);
         }
 
         [Test]
@@ -192,7 +193,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         }
 
         [Test]
-        public void AgendamentoDTO_DeveConverter_ParaEntidade()
+        public void AgendamentoModelo_DeveConverter_ParaEntidade()
         {
             var slot = new SlotHorarioEntidade(DateTime.Now);
             var agendamento = new AgendamentoEntidade(slot, procedimento1);
@@ -200,9 +201,9 @@ namespace HoraCerta.Testes.Unitarios.Dominio
             agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
             agendamento.AlterarEstado(EstadoAgendamento.FINALIZADO);
 
-            var agendamentoDTO = AgendamentoEntidade.ParaDTO(agendamento);
+            var modelo = AgendamentoMapper.ParaModelo(agendamento);
 
-            var agendamentoEntidade = AgendamentoEntidade.ParaEntidade(agendamentoDTO);
+            var agendamentoEntidade = AgendamentoMapper.ParaEntidade(modelo);
 
             Assert.That(agendamentoEntidade.EstadoAtual() == agendamento.EstadoAtual());
             Assert.That(agendamentoEntidade.Id.Valor == agendamento.Id.Valor);

@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HoraCerta.Dominio\HoraCerta.Dominio.csproj" />
+    <ProjectReference Include="..\HoraCerta.Infaestrutura\HoraCerta.Infaestrutura.csproj" />
   </ItemGroup>
 
 </Project>

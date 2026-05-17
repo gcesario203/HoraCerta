@@ -24,7 +24,7 @@ public class ClienteEntidade : AggregateRootBase<ClienteEntidade>
 
     }
 
-    private ClienteEntidade(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, string nome, string telefone, ICollection<AgendamentoEntidade>? agendamentos = null)
+    internal ClienteEntidade(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, string nome, string telefone, ICollection<AgendamentoEntidade>? agendamentos = null)
     : base(id, dataCriacao, dataAlteracao, estadoEntidade, new ValidadorCliente())
     {
         Nome = nome;
@@ -54,9 +54,4 @@ public class ClienteEntidade : AggregateRootBase<ClienteEntidade>
         Atualizar();
     }
 
-    public static ClienteDTO ParaDTO(ClienteEntidade cliente)
-    => new ClienteDTO(cliente.Id.Valor, cliente.DataCriacao, cliente.DataAlteracao, cliente.EstadoEntidade, cliente.Nome, cliente.Telefone, cliente.GerenciadorAgendamentos.BuscarAgendamentos().Select(x => AgendamentoEntidade.ParaDTO(x))?.ToList() ?? new List<AgendamentoDTO>());
-
-    public static ClienteEntidade ParaEntidade(ClienteDTO cliente)
-    => new ClienteEntidade(cliente.Id, cliente.DataCriacao, cliente.DataAlteracao, cliente.EstadoEntidade, cliente.Nome, cliente.Telefone, cliente.Agendamentos.Select(x => AgendamentoEntidade.ParaEntidade(x))?.ToList() ?? new List<AgendamentoEntidade>());
 }

@@ -1,5 +1,6 @@
 ﻿using HoraCerta.Dominio;
 using HoraCerta.Dominio.Procedimento;
+using HoraCerta.Infaestrutura.Mapeamento;
 using NUnit.Framework;
 
 namespace HoraCerta.Testes.Unitarios.Dominio
@@ -79,43 +80,42 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         }
 
         [Test]
-        public void Procedimento_DeveConverter_ParaDTO()
+        public void Procedimento_DeveConverter_ParaModelo()
         {
-            var procedimentoDTO = ProcedimentoEntidade.ParaDTO(_procedimento);
+            var modelo = ProcedimentoMapper.ParaModelo(_procedimento);
 
-            Assert.That(_procedimento.Id.Valor, Is.EqualTo(procedimentoDTO.Id));
-            Assert.That(_procedimento.DataAlteracao, Is.EqualTo(procedimentoDTO.DataAlteracao));
-            Assert.That(_procedimento.DataCriacao, Is.EqualTo(procedimentoDTO.DataCriacao));
-            Assert.That(_procedimento.EstadoEntidade, Is.EqualTo(procedimentoDTO.EstadoEntidade));
-            Assert.That(_procedimento.Nome, Is.EqualTo(procedimentoDTO.Nome));
-            Assert.That(_procedimento.Valor, Is.EqualTo(procedimentoDTO.Valor));
-            Assert.That(_procedimento.TempoEstimado, Is.EqualTo(procedimentoDTO.TempoEstimado));
+            Assert.That(_procedimento.Id.Valor, Is.EqualTo(modelo.Id));
+            Assert.That(_procedimento.DataAlteracao, Is.EqualTo(modelo.DataAlteracao));
+            Assert.That(_procedimento.DataCriacao, Is.EqualTo(modelo.DataCriacao));
+            Assert.That(_procedimento.EstadoEntidade, Is.EqualTo(modelo.EstadoEntidade));
+            Assert.That(_procedimento.Nome, Is.EqualTo(modelo.Nome));
+            Assert.That(_procedimento.Valor, Is.EqualTo(modelo.Valor));
+            Assert.That(_procedimento.TempoEstimado, Is.EqualTo(modelo.TempoEstimado));
         }
 
         [Test]
-        public void ProcedimentoDTO_DeveConverter_ParaEntidade()
+        public void ProcedimentoModelo_DeveConverter_ParaEntidade()
         {
             var novoProcedimento = new ProcedimentoEntidade("Novo procedimento", 200, TimeSpan.FromHours(5));
-            var procedimentoDTO = ProcedimentoEntidade.ParaDTO(novoProcedimento);
+            var modelo = ProcedimentoMapper.ParaModelo(novoProcedimento);
 
-            var procedimentoDaDTO = ProcedimentoEntidade.ParaEntidade(procedimentoDTO);
+            var procedimentoDaModelo = ProcedimentoMapper.ParaEntidade(modelo);
 
-            Assert.That(procedimentoDaDTO.Id.Valor, Is.EqualTo(procedimentoDTO.Id));
-            Assert.That(procedimentoDaDTO.DataAlteracao, Is.EqualTo(procedimentoDTO.DataAlteracao));
-            Assert.That(procedimentoDaDTO.DataCriacao, Is.EqualTo(procedimentoDTO.DataCriacao));
-            Assert.That(procedimentoDaDTO.EstadoEntidade, Is.EqualTo(procedimentoDTO.EstadoEntidade));
-            Assert.That(procedimentoDaDTO.Nome, Is.EqualTo(procedimentoDTO.Nome));
-            Assert.That(procedimentoDaDTO.Valor, Is.EqualTo(procedimentoDTO.Valor));
-            Assert.That(procedimentoDaDTO.TempoEstimado, Is.EqualTo(procedimentoDTO.TempoEstimado));
+            Assert.That(procedimentoDaModelo.Id.Valor, Is.EqualTo(modelo.Id));
+            Assert.That(procedimentoDaModelo.DataAlteracao, Is.EqualTo(modelo.DataAlteracao));
+            Assert.That(procedimentoDaModelo.DataCriacao, Is.EqualTo(modelo.DataCriacao));
+            Assert.That(procedimentoDaModelo.EstadoEntidade, Is.EqualTo(modelo.EstadoEntidade));
+            Assert.That(procedimentoDaModelo.Nome, Is.EqualTo(modelo.Nome));
+            Assert.That(procedimentoDaModelo.Valor, Is.EqualTo(modelo.Valor));
+            Assert.That(procedimentoDaModelo.TempoEstimado, Is.EqualTo(modelo.TempoEstimado));
 
-
-            Assert.That(procedimentoDaDTO.Id.Valor, Is.EqualTo(novoProcedimento.Id.Valor));
-            Assert.That(procedimentoDaDTO.DataAlteracao, Is.EqualTo(novoProcedimento.DataAlteracao));
-            Assert.That(procedimentoDaDTO.DataCriacao, Is.EqualTo(novoProcedimento.DataCriacao));
-            Assert.That(procedimentoDaDTO.EstadoEntidade, Is.EqualTo(novoProcedimento.EstadoEntidade));
-            Assert.That(procedimentoDaDTO.Nome, Is.EqualTo(novoProcedimento.Nome));
-            Assert.That(procedimentoDaDTO.Valor, Is.EqualTo(novoProcedimento.Valor));
-            Assert.That(procedimentoDaDTO.TempoEstimado, Is.EqualTo(novoProcedimento.TempoEstimado));
+            Assert.That(procedimentoDaModelo.Id.Valor, Is.EqualTo(novoProcedimento.Id.Valor));
+            Assert.That(procedimentoDaModelo.DataAlteracao, Is.EqualTo(novoProcedimento.DataAlteracao));
+            Assert.That(procedimentoDaModelo.DataCriacao, Is.EqualTo(novoProcedimento.DataCriacao));
+            Assert.That(procedimentoDaModelo.EstadoEntidade, Is.EqualTo(novoProcedimento.EstadoEntidade));
+            Assert.That(procedimentoDaModelo.Nome, Is.EqualTo(novoProcedimento.Nome));
+            Assert.That(procedimentoDaModelo.Valor, Is.EqualTo(novoProcedimento.Valor));
+            Assert.That(procedimentoDaModelo.TempoEstimado, Is.EqualTo(novoProcedimento.TempoEstimado));
         }
     }
 

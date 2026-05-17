@@ -34,7 +34,7 @@ public class AgendamentoEntidade : EntidadeBase<AgendamentoEntidade>
 
     }
 
-    private AgendamentoEntidade(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, EstadoAgendamento estadoAgendamento, SlotHorarioEntidade? slotHorario, ProcedimentoEntidade procedimento, AgendamentoEntidade? reagendamento = null)
+    internal AgendamentoEntidade(string id, DateTime dataCriacao, DateTime? dataAlteracao, EstadoEntidade estadoEntidade, EstadoAgendamento estadoAgendamento, SlotHorarioEntidade? slotHorario, ProcedimentoEntidade procedimento, AgendamentoEntidade? reagendamento = null)
     : base(id, dataCriacao, dataAlteracao, estadoEntidade)
     {
         Estado = UtilidadesDeEstado.MontaObjetoDeEstado(estadoAgendamento);
@@ -135,10 +135,4 @@ public class AgendamentoEntidade : EntidadeBase<AgendamentoEntidade>
 
     public bool AgendamentoFinalizado()
         => EstadoAtual() == EstadoAgendamento.REMARCADO || EstadoAtual() == EstadoAgendamento.FINALIZADO;
-
-    public static AgendamentoDTO ParaDTO(AgendamentoEntidade entidade)
-        => new AgendamentoDTO(entidade.Id.Valor, entidade.DataCriacao, entidade.DataAlteracao, entidade.EstadoEntidade, entidade.SlotHorario is null ? null : SlotHorarioEntidade.ParaDTO(entidade.SlotHorario), entidade.Estado.EstadoAtual(), entidade.Reagendamento is null ? null : ParaDTO(entidade.Reagendamento), ProcedimentoEntidade.ParaDTO(entidade.Procedimento));
-
-    public static AgendamentoEntidade ParaEntidade(AgendamentoDTO agendamento)
-    => new AgendamentoEntidade(agendamento.Id, agendamento.DataCriacao, agendamento.DataAlteracao, agendamento.EstadoEntidade, agendamento.Estado, agendamento.SlotHorario is null ? null : SlotHorarioEntidade.ParaEntidade(agendamento.SlotHorario), ProcedimentoEntidade.ParaEntidade(agendamento.Procedimento), agendamento.Reagendamento is null ? null : ParaEntidade(agendamento.Reagendamento));
 }

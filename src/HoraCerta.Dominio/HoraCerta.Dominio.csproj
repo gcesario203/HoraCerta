@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HoraCerta.Transversal\HoraCerta.Transversal.csproj" />
+    <InternalsVisibleTo Include="HoraCerta.Infaestrutura" />
   </ItemGroup>
+
 </Project>

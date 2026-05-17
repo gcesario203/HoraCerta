@@ -41,7 +41,7 @@ public class ProprietarioEntidade : AggregateRootBase<ProprietarioEntidade>
         _validador!.Validar(this);
     }
 
-    private ProprietarioEntidade(
+    internal ProprietarioEntidade(
         string id,
         DateTime dataCriacao,
         DateTime? dataAlteracao,
@@ -78,25 +78,4 @@ public class ProprietarioEntidade : AggregateRootBase<ProprietarioEntidade>
         Atualizar();
     }
 
-    public static ProprietarioDTO ParaDTO(ProprietarioEntidade proprietario)
-        => new ProprietarioDTO(
-            proprietario.Id.Valor,
-            proprietario.DataCriacao,
-            proprietario.DataAlteracao,
-            proprietario.EstadoEntidade,
-            proprietario.Nome,
-            proprietario.Horarios.Select(SlotHorarioEntidade.ParaDTO).ToList(),
-            proprietario.Atendimentos.Select(AtendimentoEntidade.ParaDTO).ToList(),
-            proprietario.GerenciadorProcedimentos.RecuperarProcedimentos()?.Select(ProcedimentoEntidade.ParaDTO).ToList());
-
-    public static ProprietarioEntidade ParaEntidade(ProprietarioDTO dto)
-        => new ProprietarioEntidade(
-            dto.Id,
-            dto.DataCriacao,
-            dto.DataAlteracao,
-            dto.EstadoEntidade,
-            dto.Nome,
-            dto.Horarios?.Select(SlotHorarioEntidade.ParaEntidade).ToList(),
-            dto.Atendimentos?.Select(AtendimentoEntidade.ParaEntidade).ToList(),
-            dto.Procedimentos?.Select(ProcedimentoEntidade.ParaEntidade).ToList());
 }
