@@ -287,6 +287,7 @@ Ver [`docker-compose.yml`](../../docker-compose.yml) na raiz do repositório.
 | Serviço | Imagem / build | Porta host |
 |---------|----------------|------------|
 | `postgres` | `postgres:16-alpine` | 5432 |
+| `pgadmin` | `dpage/pgadmin4:8` | 5050 → 80 |
 | `api` | `src/HoraCerta.Api/Dockerfile` | 5080 → 8080 |
 | `web` | `src/horacerta-web/Dockerfile` | 3000 |
 

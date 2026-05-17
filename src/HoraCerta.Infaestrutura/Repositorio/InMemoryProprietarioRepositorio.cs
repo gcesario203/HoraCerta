@@ -51,4 +51,7 @@ public class InMemoryProprietarioRepositorio : IProprietarioRepositorio
 
     public void Salvar(ProprietarioEntidade entidade)
         => _armazenamento[entidade.Id.Valor] = entidade;
+
+    public IReadOnlyList<ProprietarioEntidade> ListarTodos()
+        => _armazenamento.Values.OrderBy(p => p.Nome, StringComparer.OrdinalIgnoreCase).ToList();
 }

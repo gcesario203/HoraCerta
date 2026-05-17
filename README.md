@@ -35,6 +35,9 @@ docker compose up --build
 |-----|-----------|
 | http://localhost:3000 | Portal |
 | http://localhost:5080/swagger | API (ambiente Docker) |
+| http://localhost:5050 | pgAdmin (e-mail/senha em `.env`) |
+
+No pgAdmin, registre o servidor com: **Host** `postgres`, **Port** `5432`, **Database** / usuário / senha iguais às variáveis `POSTGRES_*` do `.env`.
 
 ## Desenvolvimento local
 

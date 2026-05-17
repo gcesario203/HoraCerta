@@ -24,9 +24,10 @@ When('escolho o procedimento cadastrado', async ({ page }) => {
 });
 
 When('escolho o primeiro horário disponível', async ({ page }) => {
-  const slot = page.locator('.ant-radio-wrapper').first();
+  const slot = page.locator('.hc-week-slot').first();
   await expect(slot).toBeVisible({ timeout: 15_000 });
   await slot.click();
+  await page.getByRole('button', { name: 'Continuar' }).click();
   const criar = page.waitForResponse(
     (r) =>
       r.url().includes('/agendamentos/iniciar') &&

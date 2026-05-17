@@ -62,7 +62,9 @@ When('disponibilizo um horário na agenda', async ({ page }) => {
 
   await page.reload();
   await aguardarSessaoProprietario(page);
-  await expect(page.locator('.ant-table-tbody tr').first()).toBeVisible({ timeout: 15_000 });
+  await expect(
+    page.locator('.hc-week-slot, .hc-slot-chip, .ant-table-tbody tr').first(),
+  ).toBeVisible({ timeout: 15_000 });
 });
 
 When('confirmo o agendamento pendente do cliente', async ({ page }) => {

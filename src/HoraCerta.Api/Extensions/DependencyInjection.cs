@@ -38,6 +38,7 @@ public static class DependencyInjection
         services.AddScoped<CriarProcedimentoHandler>();
         services.AddScoped<InativarProcedimentoHandler>();
         services.AddScoped<ListarProcedimentosAtivosHandler>();
+        services.AddScoped<ListarEstabelecimentosCatalogoHandler>();
         services.AddScoped<ListarSlotsDisponiveisHandler>();
         services.AddScoped<CriarSlotDisponivelHandler>();
         services.AddScoped<IniciarAgendamentoHandler>();

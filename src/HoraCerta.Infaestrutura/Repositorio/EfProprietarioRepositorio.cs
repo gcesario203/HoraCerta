@@ -70,6 +70,25 @@ public class EfProprietarioRepositorio : IProprietarioRepositorio
         return Task.CompletedTask;
     }
 
+    public IReadOnlyList<ProprietarioEntidade> ListarTodos()
+    {
+        var lista = new List<ProprietarioEntidade>();
+
+        foreach (var registro in _context.Proprietarios)
+        {
+            try
+            {
+                lista.Add(Deserializar(registro));
+            }
+            catch (InvalidOperationException)
+            {
+                // ignora registros corrompidos
+            }
+        }
+
+        return lista.OrderBy(p => p.Nome, StringComparer.OrdinalIgnoreCase).ToList();
+    }
+
     public void Salvar(ProprietarioEntidade entidade)
     {
         var modelo = ProprietarioMapper.ParaModelo(entidade);

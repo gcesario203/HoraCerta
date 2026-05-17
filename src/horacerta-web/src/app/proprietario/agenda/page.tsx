@@ -3,15 +3,21 @@
 import { useCallback, useEffect, useState } from 'react';
 import { App, Button, Card, DatePicker, Form, Modal, Segmented, Table, Tag } from 'antd';
 import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
 import { criarSlotUseCase, listarSlotsDisponiveisUseCase } from '@/slot-horario/application';
 import type { SlotHorarioDto } from '@/slot-horario/application/dtos/slot-horario.dto';
 import { useProprietarioSessao } from '@/auth/presentation/hooks/use-proprietario-sessao';
 import { extractApiMessage } from '@/shared/infrastructure/http/api-error';
 import { PageHeader } from '@/shared/presentation/components/page-header';
 import { SlotCalendarGrid } from '@/shared/presentation/components/slot-calendar-grid';
+import { WeekTimeGrid } from '@/shared/presentation/components/week-time-grid';
 import { formatarDataHora, labelEstado } from '@/shared/presentation/format';
 
-type ViewMode = 'calendario' | 'tabela';
+dayjs.extend(isoWeek);
+
+type ViewMode = 'semana' | 'lista' | 'tabela';
+
+const VIEW_STORAGE_KEY = 'horacerta-agenda-view';
 
 export default function AgendaPage() {
   const { proprietarioId, canAct } = useProprietarioSessao();
@@ -20,7 +26,13 @@ export default function AgendaPage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [salvando, setSalvando] = useState(false);
-  const [view, setView] = useState<ViewMode>('calendario');
+  const [view, setView] = useState<ViewMode>('semana');
+  const [weekStart, setWeekStart] = useState(() => dayjs().startOf('isoWeek'));
+
+  useEffect(() => {
+    const saved = localStorage.getItem(VIEW_STORAGE_KEY) as ViewMode | null;
+    if (saved === 'semana' || saved === 'lista' || saved === 'tabela') setView(saved);
+  }, []);
 
   const carregar = useCallback(async () => {
     if (!canAct || !proprietarioId) return;
@@ -28,6 +40,9 @@ export default function AgendaPage() {
     try {
       const data = await listarSlotsDisponiveisUseCase.execute(proprietarioId);
       setLista(data);
+      if (data.length > 0) {
+        setWeekStart(dayjs(data[0].inicio).startOf('isoWeek'));
+      }
     } catch (error) {
       message.error(extractApiMessage(error));
     } finally {
@@ -36,7 +51,7 @@ export default function AgendaPage() {
   }, [canAct, proprietarioId, message]);
 
   useEffect(() => {
-    carregar();
+    void carregar();
   }, [carregar]);
 
   const criar = async (values: { inicio: dayjs.Dayjs }) => {
@@ -46,6 +61,7 @@ export default function AgendaPage() {
       await criarSlotUseCase.execute(proprietarioId, values.inicio.toISOString());
       message.success('Horário disponibilizado');
       setModalOpen(false);
+      setWeekStart(values.inicio.startOf('isoWeek'));
       await carregar();
     } catch (error) {
       message.error(extractApiMessage(error));
@@ -54,11 +70,16 @@ export default function AgendaPage() {
     }
   };
 
+  const alterarView = (v: ViewMode) => {
+    setView(v);
+    localStorage.setItem(VIEW_STORAGE_KEY, v);
+  };
+
   return (
     <>
       <PageHeader
         title="Agenda"
-        description="Disponibilize horários para seus clientes agendarem online."
+        description="Visualize e disponibilize horários no estilo de um calendário semanal."
         extra={
           <Button type="primary" onClick={() => setModalOpen(true)}>
             Novo horário
@@ -69,18 +90,26 @@ export default function AgendaPage() {
       <Card className="hc-card-elevated" variant="borderless" style={{ marginBottom: 16 }}>
         <Segmented
           value={view}
-          onChange={(v) => setView(v as ViewMode)}
+          onChange={(v) => alterarView(v as ViewMode)}
           options={[
-            { label: 'Calendário', value: 'calendario' },
+            { label: 'Semana', value: 'semana' },
+            { label: 'Lista', value: 'lista' },
             { label: 'Tabela', value: 'tabela' },
           ]}
         />
       </Card>
 
-      <Card className="hc-card-elevated" variant="borderless" loading={loading}>
-        {view === 'calendario' ? (
-          <SlotCalendarGrid slots={lista} />
-        ) : (
+      <Card className="hc-card-elevated hc-card-elevated--wide" variant="borderless" loading={loading}>
+        {view === 'semana' ? (
+          <WeekTimeGrid
+            slots={lista}
+            weekStart={weekStart}
+            onWeekChange={setWeekStart}
+            emptyText="Nenhum horário disponível nesta semana"
+          />
+        ) : null}
+        {view === 'lista' ? <SlotCalendarGrid slots={lista} /> : null}
+        {view === 'tabela' ? (
           <Table
             rowKey="id"
             pagination={false}
@@ -102,7 +131,7 @@ export default function AgendaPage() {
               },
             ]}
           />
-        )}
+        ) : null}
       </Card>
 
       <Modal

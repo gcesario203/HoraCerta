@@ -65,6 +65,7 @@ app.MapProcedimentos();
 app.MapSlots();
 app.MapAgendamentos();
 app.MapConsultas();
+app.MapCatalogo();
 
 app.Run();
 

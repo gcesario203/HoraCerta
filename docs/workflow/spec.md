@@ -109,7 +109,7 @@ Um item está **pronto** quando:
 | Cenário | API | Portal | Banco |
 |---------|-----|--------|-------|
 | Dev local rápido | `dotnet run` → :5080 | `npm run dev` → :3000 | SQLite (`horacerta.db`) |
-| Stack Docker | `docker compose` → :5080 | :3000 | PostgreSQL (volume) |
+| Stack Docker | `docker compose` → :5080 | :3000 | PostgreSQL (volume); pgAdmin :5050 |
 | BDD `@integracao` | `docker compose up -d postgres api` | `npm run dev` (outro terminal) | PostgreSQL |
 
 ### Variáveis
