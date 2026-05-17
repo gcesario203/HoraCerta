@@ -38,8 +38,6 @@ public static class ServiceCollectionExtensions
     {
         using var scope = services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<HoraCertaDbContext>();
-        var provider = configuration["Database:Provider"] ?? ProviderSqlite;
-
-        context.Database.Migrate();
+        context.ApplyHoraCertaMigrations(configuration);
     }
 }

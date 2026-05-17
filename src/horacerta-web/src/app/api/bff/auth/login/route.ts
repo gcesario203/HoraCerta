@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { TOKEN_COOKIE } from '@/shared/infrastructure/cookies';
+import { cookieSecureFromRequest } from '@/shared/infrastructure/cookies-options';
 
 const apiUrl = () => process.env.API_URL ?? 'http://localhost:5080';
 
@@ -20,13 +21,19 @@ export async function POST(request: Request) {
     });
   }
 
-  const data = JSON.parse(text) as { token: string; proprietarioId: string };
-  const response = NextResponse.json({ proprietarioId: data.proprietarioId });
-  response.cookies.set(TOKEN_COOKIE, data.token, {
+  const data = JSON.parse(text) as Record<string, string>;
+  const token = data.token ?? data.Token;
+  const proprietarioId = data.proprietarioId ?? data.ProprietarioId;
+  if (!token || !proprietarioId) {
+    return NextResponse.json({ mensagem: 'Resposta de login inválida' }, { status: 502 });
+  }
+
+  const response = NextResponse.json({ proprietarioId });
+  response.cookies.set(TOKEN_COOKIE, token, {
     httpOnly: true,
     sameSite: 'lax',
     path: '/',
-    secure: process.env.NODE_ENV === 'production',
+    secure: cookieSecureFromRequest(request),
     maxAge: 60 * 60 * 8,
   });
   return response;

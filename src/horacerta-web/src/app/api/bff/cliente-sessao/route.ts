@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { CLIENTE_COOKIE, type ClienteSessaoCookie } from '@/shared/infrastructure/cookies';
+import { cookieSecureFromRequest } from '@/shared/infrastructure/cookies-options';
 
 export async function GET(request: NextRequest) {
   const raw = request.cookies.get(CLIENTE_COOKIE)?.value;
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
     httpOnly: true,
     sameSite: 'lax',
     path: '/',
-    secure: process.env.NODE_ENV === 'production',
+    secure: cookieSecureFromRequest(request),
     maxAge: 60 * 60 * 24 * 30,
   });
   return response;

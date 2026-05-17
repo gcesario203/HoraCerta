@@ -52,6 +52,13 @@ Component → hook → useCase.execute() → repository → axios
 
 Refetch explicitly after mutations.
 
+## Tests (BDD)
+
+- E2E: **Gherkin** (`.feature`) + `playwright-bdd` + Playwright — see spec §9.1.
+- Unit: Vitest in `**/*.test.ts`.
+- New UI flows: add `.feature` under `e2e/features/` + steps in `e2e/steps/`; run `npm run test:bdd`.
+- Do **not** add raw `e2e/*.spec.ts` for portal flows.
+
 ## Prohibited
 
 - `@tanstack/react-query`, `swr`

@@ -58,7 +58,8 @@ npm run dev
 ```bash
 cd src && dotnet test src.sln
 cd src/horacerta-web && npm run test
-cd src/horacerta-web && npm run test:e2e   # requer portal rodando
+cd src/horacerta-web && npm run test:bdd:smoke       # BDD UI (sem API)
+cd src/horacerta-web && npm run test:bdd:integracao # BDD MVP (com API)
 ```
 
 Checklist manual: [docs/smoke-test.md](docs/smoke-test.md).

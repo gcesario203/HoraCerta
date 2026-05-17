@@ -232,7 +232,104 @@ Referência de contratos C#: `src/HoraCerta.Api/Contratos/Requisicoes.cs`, `*Res
 | Estado global | Zustand |
 | Cache servidor | **Não** — sem TanStack Query |
 | Contratos API | TypeScript manual |
-| Testes | Vitest + Testing Library; Playwright (fase 2) |
+| Testes unitários | Vitest (funções puras, formatters, mappers) |
+| Testes E2E | **BDD com Gherkin** + Playwright (`playwright-bdd`) |
+
+---
+
+## 9.1 Testes E2E — BDD (Gherkin)
+
+Os fluxos do portal são especificados e executados em **BDD**: cenários legíveis para negócio, implementação automatizada com Playwright.
+
+### Stack de testes
+
+| Camada | Ferramenta | Escopo |
+|--------|------------|--------|
+| Unitário | Vitest | `shared/`, mappers, helpers |
+| E2E (BDD) | Gherkin + `playwright-bdd` + Playwright | Fluxos completos no browser |
+
+**Proibido** para E2E do portal: testes Playwright “crus” (`.spec.ts`) sem cenário Gherkin — novos fluxos entram como `.feature`.
+
+### Estrutura de pastas
+
+```
+src/horacerta-web/
+├── e2e/
+│   ├── features/              # Cenários Gherkin (.feature)
+│   │   ├── publico/           # Landing, login, registrar
+│   │   ├── proprietario/      # Painel, procedimentos, agenda, agendamentos
+│   │   └── cliente/           # Agendar, meus agendamentos, avaliar
+│   ├── steps/                 # Step definitions (TypeScript)
+│   │   ├── common.steps.ts
+│   │   ├── auth.steps.ts
+│   │   └── ...
+│   └── .features-gen/       # Gerado por bddgen (não editar; gitignore)
+├── playwright.config.ts
+└── vitest.config.ts
+```
+
+### Convenções Gherkin
+
+- Idioma dos cenários: **português** (`# language: pt` no topo de cada `.feature`).
+- Palavras-chave: `Funcionalidade`, `Cenário`, `Dado`, `Quando`, `Então`, `E`.
+- Um arquivo `.feature` por fluxo de negócio (ex.: `login-proprietario.feature`, `agendar-cliente.feature`).
+- Cenários espelham os **critérios de aceite** (§10) e casos de uso da spec.
+- **Tags** para filtrar execução:
+  - `@mvp` — obrigatório no CI
+  - `@proprietario`, `@cliente`, `@publico`
+  - `@smoke` — subconjunto rápido
+
+### Exemplo de cenário
+
+```gherkin
+# language: pt
+@mvp @publico
+Funcionalidade: Página inicial
+  Para que eu acesse o portal
+  Como visitante
+  Quero ver o atalho para a área do proprietário
+
+  @smoke
+  Cenário: Exibir acesso à área do proprietário
+    Dado que estou na página inicial
+    Então devo ver o botão "Área do proprietário"
+```
+
+### Step definitions
+
+- Ficam em `e2e/steps/**/*.ts`.
+- Usam `createBdd()` de `playwright-bdd` (acesso a `page`, `context`, etc.).
+- Steps **reutilizáveis** e parametrizados (`{string}`, `{int}`).
+- **Proibido:** lógica de negócio ou chamadas Axios nos steps — apenas interação UI e asserções.
+
+### Comandos
+
+```bash
+cd src/horacerta-web
+npm run test:bdd          # bddgen + Playwright (todos @mvp)
+npm run test:bdd:smoke    # apenas @smoke
+npm run test              # Vitest (unitário)
+```
+
+Pré-requisito local: portal em `http://localhost:3000` (ou `PLAYWRIGHT_BASE_URL`). O `playwright.config.ts` sobe `npm run dev` automaticamente quando não estiver em CI.
+
+### CI
+
+- Job `frontend`: `npm run test` (Vitest) + build.
+- Job `frontend-e2e` (ou etapa dedicada): `npx playwright install chromium` + `npm run test:bdd` com app em `npm run start` após build.
+
+### Rastreabilidade
+
+| Critério aceite (§10) | Feature sugerida |
+|----------------------|------------------|
+| Login / registrar proprietário | `features/publico/login.feature`, `registrar.feature` |
+| CRUD procedimentos, slots | `features/proprietario/procedimentos.feature`, `agenda.feature` |
+| Agendamentos (confirmar, etc.) | `features/proprietario/agendamentos.feature` |
+| Fluxo agendar cliente | `features/cliente/agendar.feature` |
+| Meus agendamentos | `features/cliente/meus-agendamentos.feature` |
+| Avaliar | `features/cliente/avaliar.feature` |
+
+Checklist manual complementar: [`docs/smoke-test.md`](../smoke-test.md).
 
 ---
 
@@ -265,6 +362,7 @@ Referência de contratos C#: `src/HoraCerta.Api/Contratos/Requisicoes.cs`, `*Res
 
 ## 12. Evolução planejada (pós-MVP)
 
+- Cenários BDD com API/backend em Docker (`@integracao`) no CI
 - API ou token para cliente cancelar/remarcar
 - OpenAPI opcional
 - Área de configuração de mensagens (UC 11)

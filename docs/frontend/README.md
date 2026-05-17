@@ -28,4 +28,14 @@ npm run dev
 
 API backend: `http://localhost:5080` (variável `API_URL` no `.env.local`).
 
+### Testes
+
+```bash
+npm run test                  # Vitest (unitário)
+npm run test:bdd:smoke          # BDD @smoke (sem API)
+npm run test:bdd:integracao     # BDD @integracao (requer API :5080)
+```
+
+Cenários em `e2e/features/` (ver [spec.md §9.1](./spec.md#91-testes-e2e--bdd-gherkin)).
+
 Stack Docker (API + Web + PostgreSQL): ver [`docker-compose.yml`](../../docker-compose.yml) e [`docs/backend/README.md`](../backend/README.md).

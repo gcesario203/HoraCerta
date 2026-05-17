@@ -9,7 +9,11 @@
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:bdd": "bddgen && playwright test --project=integracao",
+    "test:bdd:all": "bddgen && playwright test",
+    "test:bdd:smoke": "bddgen && playwright test --project=smoke",
+    "test:bdd:integracao": "bddgen && playwright test --project=integracao",
+    "bddgen": "bddgen"
   },
   "dependencies": {
     "@ant-design/icons": "^6.2.3",
@@ -24,6 +28,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.52.0",
+    "playwright-bdd": "^8.2.1",
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",
