@@ -27,6 +27,11 @@ nupkg/
 *.userosscache
 *.sln.docstates
 
+# SQLite
+*.db
+*.db-shm
+*.db-wal
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

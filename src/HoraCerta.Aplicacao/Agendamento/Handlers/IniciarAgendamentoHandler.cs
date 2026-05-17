@@ -1,5 +1,6 @@
 using HoraCerta.Aplicacao._Shared.Interfaces;
 using HoraCerta.Aplicacao._Shared.Persistencia;
+using HoraCerta.Aplicacao._Shared.Sincronizacao;
 using HoraCerta.Aplicacao.Agendamento.Commands;
 using HoraCerta.Dominio;
 using HoraCerta.Dominio._Shared.Enums;
@@ -45,6 +46,8 @@ public class IniciarAgendamentoHandler : ICommandHandler<IniciarAgendamentoComma
             throw new OperacaoInvalidaExcessao("Slot de horário indisponível");
 
         var agendamento = cliente.GerenciadorAgendamentos.IniciarAgendamento(procedimento, slot);
+
+        SincronizadorSlotsProprietario.AplicarStatusDoAgendamento(proprietario, agendamento);
 
         UnidadeTrabalhoDominio.SalvarEDispararEventos(
             () =>

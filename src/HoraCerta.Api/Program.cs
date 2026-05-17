@@ -1,15 +1,22 @@
 using HoraCerta.Api.Endpoints;
 using HoraCerta.Api.Excecoes;
 using HoraCerta.Api.Extensions;
+using HoraCerta.Infaestrutura.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHoraCerta();
+var connectionString = builder.Configuration.GetConnectionString("HoraCerta")
+    ?? "Data Source=horacerta.db";
+
+builder.Services.AddHoraCerta(connectionString);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<TratamentoExcecoesDominio>();
 
 var app = builder.Build();
+
+if (!app.Environment.IsEnvironment("Testing"))
+    app.Services.AplicarMigrationsHoraCerta();
 
 app.UseMiddleware<TratamentoExcecoesDominio>();
 

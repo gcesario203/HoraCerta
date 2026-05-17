@@ -1,5 +1,7 @@
 using System.Net.Http.Json;
 using HoraCerta.Api.Contratos;
+using HoraCerta.Infaestrutura.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace HoraCerta.Testes.E2e.Infraestrutura;
@@ -15,6 +17,8 @@ public abstract class E2ETestBase
         _factory?.Dispose();
         _factory = new HoraCertaApiFactory();
         Client = _factory.CreateClient();
+
+        _factory.Services.AplicarMigrationsHoraCerta();
     }
 
     [TearDown]
