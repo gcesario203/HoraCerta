@@ -2,6 +2,7 @@ using HoraCerta.Aplicacao._Shared.Interfaces;
 using HoraCerta.Aplicacao._Shared.Persistencia;
 using HoraCerta.Aplicacao.Agendamento.Commands;
 using HoraCerta.Dominio;
+using HoraCerta.Dominio._Shared.Enums;
 using HoraCerta.Dominio.Agendamento;
 using HoraCerta.Dominio.Cliente.Servicos.Repositorio;
 using HoraCerta.Dominio.Proprietario.Servicos.Repositorio;
@@ -33,6 +34,9 @@ public class IniciarAgendamentoHandler : ICommandHandler<IniciarAgendamentoComma
             ?? throw new OperacaoInvalidaExcessao("Cliente não encontrado");
 
         var procedimento = proprietario.GerenciadorProcedimentos.BuscarProcedimentoPorId(command.ProcedimentoId);
+
+        if (procedimento.EstadoEntidade != EstadoEntidade.ATIVO)
+            throw new OperacaoInvalidaExcessao("Procedimento inativo não pode ser agendado");
 
         var slot = proprietario.Horarios.FirstOrDefault(s => s.Id.Valor == command.SlotHorarioId.Valor)
             ?? throw new OperacaoInvalidaExcessao("Slot de horário não encontrado no estabelecimento");
