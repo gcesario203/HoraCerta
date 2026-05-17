@@ -10,8 +10,8 @@ public class ExceptionBase : Exception
 {
     protected string Mensagem { get; private set; }
 
-    public ExceptionBase(string mensagem)
+    public ExceptionBase(string mensagem) : base(mensagem)
     {
-        this.Mensagem = mensagem;
+        Mensagem = mensagem;
     }
 }
