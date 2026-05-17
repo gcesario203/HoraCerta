@@ -43,7 +43,7 @@ builder.Services.AddTransient<TratamentoExcecoesDominio>();
 var app = builder.Build();
 
 if (!app.Environment.IsEnvironment("Testing"))
-    app.Services.AplicarMigrationsHoraCerta();
+    app.Services.AplicarMigrationsHoraCerta(builder.Configuration);
 
 app.UseMiddleware<TratamentoExcecoesDominio>();
 

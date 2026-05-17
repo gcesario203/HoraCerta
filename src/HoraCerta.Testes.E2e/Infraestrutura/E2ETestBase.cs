@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using HoraCerta.Api.Contratos;
 using HoraCerta.Infaestrutura.Extensions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
@@ -19,7 +20,8 @@ public abstract class E2ETestBase
         Factory = new HoraCertaApiFactory();
         Client = Factory.CreateClient();
 
-        Factory.Services.AplicarMigrationsHoraCerta();
+        var configuration = Factory.Services.GetRequiredService<IConfiguration>();
+        Factory.Services.AplicarMigrationsHoraCerta(configuration);
     }
 
     [TearDown]

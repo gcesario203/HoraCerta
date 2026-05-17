@@ -15,4 +15,17 @@ Documentação spec-driven do portal web.
 
 Arquivos de apoio: `horacerta-frontend/reference.md`, `horacerta-frontend/examples.md`.
 
-O código do portal (`src/HoraCerta.Web` ou equivalente) será criado **após** aprovação desta spec, seguindo a skill do projeto.
+## Projeto
+
+Código em [`src/horacerta-web`](../../src/horacerta-web).
+
+```bash
+cd src/horacerta-web
+cp .env.local.example .env.local
+npm install
+npm run dev
+```
+
+API backend: `http://localhost:5080` (variável `API_URL` no `.env.local`).
+
+Stack Docker (API + Web + PostgreSQL): ver [`docker-compose.yml`](../../docker-compose.yml) e [`docs/backend/README.md`](../backend/README.md).

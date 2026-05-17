@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: horacerta
+      POSTGRES_PASSWORD: horacerta
+      POSTGRES_DB: horacerta
+    ports:
+      - "5432:5432"
+    volumes:
+      - horacerta_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U horacerta -d horacerta"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  api:
+    build:
+      context: .
+      dockerfile: src/HoraCerta.Api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__HoraCerta: Host=postgres;Port=5432;Database=horacerta;Username=horacerta;Password=horacerta
+      Database__Provider: PostgreSQL
+      Jwt__Key: HoraCerta-Docker-Secret-Key-Min-32-Chars!!
+    ports:
+      - "5080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build:
+      context: src/horacerta-web
+      dockerfile: Dockerfile
+      args:
+        API_URL: http://api:8080
+    environment:
+      API_URL: http://api:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  horacerta_pgdata:

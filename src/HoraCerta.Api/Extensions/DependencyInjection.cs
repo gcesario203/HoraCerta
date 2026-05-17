@@ -18,7 +18,7 @@ public static class DependencyInjection
         string connectionString,
         bool incluirBackgroundLembretes = true)
     {
-        services.AddHoraCertaPersistencia(connectionString);
+        services.AddHoraCertaPersistencia(connectionString, configuration);
         services.AddHoraCertaAplicacao();
 
         services.Configure<LembreteOptions>(configuration.GetSection(LembreteOptions.Secao));

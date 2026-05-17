@@ -1,0 +1,15 @@
+**/.git
+**/.vs
+**/.vscode
+**/.cursor
+**/bin
+**/obj
+**/.next
+**/node_modules
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/TestResults
+**/.env
+**/.env.local
+**/agent-transcripts
