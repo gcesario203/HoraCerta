@@ -17,7 +17,11 @@ public static class ConsultasEndpoints
             ListarAgendamentosClienteHandler handler) =>
         {
             var agendamentos = handler.Executar(new ListarAgendamentosClienteQuery(RespostaMapeamento.Id(clienteId)));
-            return Results.Ok(agendamentos.Select(a => RespostaMapeamento.ParaResposta(a, clienteId)));
+            return Results.Ok(agendamentos.Select(a => new AgendamentoClienteListagemResposta(
+                a.AgendamentoId,
+                a.ProcedimentoNome,
+                a.SlotInicio,
+                a.Estado)));
         }).WithTags("Consultas");
 
         var proprietarioGroup = app.MapGroup("/api/proprietarios/{proprietarioId}")

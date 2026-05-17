@@ -7,6 +7,13 @@ export type AgendamentoDto = {
   reagendamentoId: string | null;
 };
 
+export type AgendamentoClienteListagemDto = {
+  agendamentoId: string;
+  procedimentoNome: string;
+  slotInicio: string | null;
+  estado: string;
+};
+
 export type AgendamentoListagemDto = {
   agendamentoId: string;
   clienteId: string;

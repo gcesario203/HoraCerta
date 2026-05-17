@@ -40,9 +40,6 @@ public static class ServiceCollectionExtensions
         var context = scope.ServiceProvider.GetRequiredService<HoraCertaDbContext>();
         var provider = configuration["Database:Provider"] ?? ProviderSqlite;
 
-        if (string.Equals(provider, ProviderPostgreSql, StringComparison.OrdinalIgnoreCase))
-            context.Database.EnsureCreated();
-        else
-            context.Database.Migrate();
+        context.Database.Migrate();
     }
 }

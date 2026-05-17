@@ -47,7 +47,7 @@ if (!app.Environment.IsEnvironment("Testing"))
 
 app.UseMiddleware<TratamentoExcecoesDominio>();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();

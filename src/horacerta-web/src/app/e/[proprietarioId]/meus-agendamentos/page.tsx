@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { App, Button, Card, List, Tag, Typography } from 'antd';
 import { listarAgendamentosClienteUseCase } from '@/agendamento/application';
-import type { AgendamentoDto } from '@/agendamento/application/dtos/agendamento.dto';
+import type { AgendamentoClienteListagemDto } from '@/agendamento/application/dtos/agendamento.dto';
 import { obterSessaoCliente } from '@/cliente/application/sessao-cliente';
 import { useClienteSessaoStore } from '@/cliente/presentation/stores/cliente-sessao.store';
 import { extractApiMessage } from '@/shared/infrastructure/http/api-error';
-import { labelEstado } from '@/shared/presentation/format';
+import { formatarDataHora, labelEstado } from '@/shared/presentation/format';
 
 export default function MeusAgendamentosPage() {
   const params = useParams<{ proprietarioId: string }>();
@@ -18,7 +18,7 @@ export default function MeusAgendamentosPage() {
   const { message } = App.useApp();
   const clienteId = useClienteSessaoStore((s) => s.clienteId);
   const setSessao = useClienteSessaoStore((s) => s.setSessao);
-  const [lista, setLista] = useState<AgendamentoDto[]>([]);
+  const [lista, setLista] = useState<AgendamentoClienteListagemDto[]>([]);
   const [loading, setLoading] = useState(true);
 
   const carregar = useCallback(async () => {
@@ -60,14 +60,18 @@ export default function MeusAgendamentosPage() {
         locale={{ emptyText: 'Nenhum agendamento' }}
         renderItem={(item) => (
           <Card style={{ marginBottom: 12 }} size="small">
-            <Typography.Text>
-              Procedimento: {item.procedimentoId.slice(0, 8)}…
-            </Typography.Text>
+            <Typography.Text strong>{item.procedimentoNome}</Typography.Text>
             <br />
-            <Tag>{labelEstado(item.estado)}</Tag>
+            {item.slotInicio && (
+              <Typography.Text type="secondary">
+                {formatarDataHora(item.slotInicio)}
+              </Typography.Text>
+            )}
+            <br />
+            <Tag style={{ marginTop: 8 }}>{labelEstado(item.estado)}</Tag>
             {['CONFIRMADO', 'FINALIZADO', 'REALIZADO'].includes(item.estado) && (
               <div style={{ marginTop: 8 }}>
-                <Link href={`/e/${proprietarioId}/avaliar/${item.id}`}>
+                <Link href={`/e/${proprietarioId}/avaliar/${item.agendamentoId}`}>
                   <Button size="small">Avaliar atendimento</Button>
                 </Link>
               </div>

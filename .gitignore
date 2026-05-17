@@ -27,6 +27,10 @@ nupkg/
 *.userosscache
 *.sln.docstates
 
+# Environment
+.env
+.env.local
+
 # SQLite
 *.db
 *.db-shm

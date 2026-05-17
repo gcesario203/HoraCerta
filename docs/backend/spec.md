@@ -36,7 +36,7 @@ API **ASP.NET Core 8** (Minimal APIs) que expõe casos de uso de agendamento, au
 | 7 | Lembretes | Tabela `lembretes` + `LembreteBackgroundService` + `ConsoleEnviadorLembrete` |
 | 8 | Banco local dev | SQLite (`horacerta.db`) |
 | 9 | Banco Docker | PostgreSQL 16 (`Database:Provider=PostgreSQL`) |
-| 10 | Migrations | EF migrations (SQLite); PostgreSQL usa `EnsureCreated` no bootstrap Docker |
+| 10 | Migrations | EF Core `Migrate()` (SQLite e PostgreSQL) |
 
 ---
 
@@ -179,7 +179,7 @@ Estados atendimento: `REALIZADO`, `CANCELADO`, `FALHA` (enum case-insensitive).
 
 | Método | Rota | Auth | Response |
 |--------|------|------|----------|
-| GET | `/api/clientes/{clienteId}/agendamentos` | Não | `AgendamentoResposta[]` |
+| GET | `/api/clientes/{clienteId}/agendamentos` | Não | `AgendamentoClienteListagemResposta[]` |
 | GET | `/api/proprietarios/{proprietarioId}/agendamentos` | JWT + filter | `AgendamentoListagemResposta[]` |
 | GET | `/api/proprietarios/{proprietarioId}/atendimentos` | JWT + filter | `AtendimentoResposta[]` |
 | GET | `/api/proprietarios/{proprietarioId}/agendamentos/{agendamentoId}/avaliacao` | JWT + filter | `AvaliacaoResposta` / `404` |
@@ -194,6 +194,7 @@ Arquivos em `HoraCerta.Api/Contratos/`:
 |---------|-------------------|
 | `Requisicoes.cs` | Todas as requisições POST/PATCH |
 | `AuthRespostas.cs` | `LoginResposta`, `AgendamentoListagemResposta`, `AvaliacaoResposta` |
+| `AgendamentoClienteListagemResposta.cs` | `AgendamentoId`, `ProcedimentoNome`, `SlotInicio`, `Estado` |
 | `AgendamentoResposta.cs` | `Id`, `ClienteId`, `ProcedimentoId`, `SlotHorarioId`, `Estado`, `ReagendamentoId` |
 | `ProcedimentoResposta.cs` | `Id`, `Nome`, `Valor`, `TempoEstimadoMinutos`, `Estado` |
 | `SlotHorarioResposta.cs` | `Id`, `Inicio`, `Fim`, `Status` |
@@ -313,7 +314,7 @@ docker compose up --build
 
 ## 14. Evolução planejada
 
-- Migrations EF dedicadas ao PostgreSQL (substituir `EnsureCreated` no Docker)
+- Migrations EF provider-specific se o schema divergir entre SQLite e PostgreSQL
 - Provider de envio real de lembretes (WhatsApp / SMS / e-mail)
 - Endpoints cliente para cancelar/remarcar com token
 - OpenAPI exportável para codegen opcional do front

@@ -47,7 +47,7 @@ Portal único em **Next.js + React + TypeScript** onde **Proprietário** e **Cli
 | 7 | Lembrete | Texto informativo na UI | Backend apenas |
 | 8 | Avaliar | `/e/[id]/avaliar/[agendamentoId]` | `POST .../avaliar` |
 
-Consulta adicional: `GET /api/clientes/{clienteId}/agendamentos`.
+Consulta adicional: `GET /api/clientes/{clienteId}/agendamentos` → `AgendamentoClienteListagemResposta` (nome do procedimento, horário, estado).
 
 ### Proprietário
 

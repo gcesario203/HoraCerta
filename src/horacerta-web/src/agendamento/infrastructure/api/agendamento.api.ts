@@ -1,6 +1,7 @@
 import type { AxiosInstance } from 'axios';
 import type {
   AcaoAgendamentoRequest,
+  AgendamentoClienteListagemDto,
   AgendamentoDto,
   AgendamentoListagemDto,
   IniciarAgendamentoRequest,
@@ -12,7 +13,7 @@ export function iniciarAgendamentoApi(client: AxiosInstance, data: IniciarAgenda
 }
 
 export function listarAgendamentosClienteApi(client: AxiosInstance, clienteId: string) {
-  return client.get<AgendamentoDto[]>(`/clientes/${clienteId}/agendamentos`);
+  return client.get<AgendamentoClienteListagemDto[]>(`/clientes/${clienteId}/agendamentos`);
 }
 
 export function listarAgendamentosProprietarioApi(
