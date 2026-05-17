@@ -1,14 +1,10 @@
-﻿using HoraCerta.Dominio._Shared.Enums;
+﻿using HoraCerta.Dominio._Shared.Abstracoes;
+using HoraCerta.Dominio._Shared.Enums;
 using HoraCerta.Dominio.Agendamento;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HoraCerta.Dominio.Cliente;
 
-public class ClienteEntidade : EntidadeBase<ClienteEntidade>
+public class ClienteEntidade : AggregateRootBase<ClienteEntidade>
 {
     public string Nome { get; private set; }
 

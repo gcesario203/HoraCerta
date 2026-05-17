@@ -1,32 +1,36 @@
 ﻿using HoraCerta.Dominio.Cliente;
+using HoraCerta.Dominio.Cliente.Eventos;
 using HoraCerta.Dominio.Procedimento;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HoraCerta.Dominio.Agendamento;
 
 public class GerenciadorAgendamentos : IGerenciadorAgendamentos
 {
     private readonly ClienteEntidade _cliente;
+
     public ICollection<AgendamentoEntidade> Agendamentos { get; private set; }
 
     public GerenciadorAgendamentos(ClienteEntidade cliente, ICollection<AgendamentoEntidade>? agendamentos)
     {
-        if (agendamentos is null || !agendamentos.Any())
-            Agendamentos = new List<AgendamentoEntidade>();
-        else
-            Agendamentos = agendamentos;
+        Agendamentos = agendamentos is null || !agendamentos.Any()
+            ? new List<AgendamentoEntidade>()
+            : agendamentos;
 
         _cliente = cliente;
     }
+
     public AgendamentoEntidade IniciarAgendamento(ProcedimentoEntidade procedimento, SlotHorarioEntidade slot)
-    { 
+    {
         var agendamento = new AgendamentoEntidade(slot, procedimento);
 
         Agendamentos.Add(agendamento);
+
+        _cliente.AdicionarEventoDominio(new AgendamentoIniciadoEvent(
+            agendamento.Id.Valor,
+            _cliente.Id.Valor,
+            procedimento.Id.Valor,
+            slot.Id.Valor,
+            DateTime.UtcNow));
 
         return agendamento;
     }
@@ -36,6 +40,12 @@ public class GerenciadorAgendamentos : IGerenciadorAgendamentos
         var agendamento = BuscarAgendamentoPorId(id);
 
         agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
+
+        _cliente.AdicionarEventoDominio(new AgendamentoConfirmadoEvent(
+            agendamento.Id.Valor,
+            _cliente.Id.Valor,
+            _cliente.Telefone,
+            DateTime.UtcNow));
     }
 
     public void CancelarAgendamento(IdEntidade id)
@@ -43,6 +53,12 @@ public class GerenciadorAgendamentos : IGerenciadorAgendamentos
         var agendamento = BuscarAgendamentoPorId(id);
 
         agendamento.AlterarEstado(EstadoAgendamento.CANCELADO);
+
+        _cliente.AdicionarEventoDominio(new AgendamentoCanceladoEvent(
+            agendamento.Id.Valor,
+            _cliente.Id.Valor,
+            _cliente.Telefone,
+            DateTime.UtcNow));
     }
 
     public AgendamentoEntidade RemarcarAgendamento(IdEntidade id, SlotHorarioEntidade slot)
@@ -52,6 +68,13 @@ public class GerenciadorAgendamentos : IGerenciadorAgendamentos
         var remarcacao = agendamento.AlterarEstado(EstadoAgendamento.REMARCADO, slot);
 
         Agendamentos.Add(remarcacao);
+
+        _cliente.AdicionarEventoDominio(new AgendamentoRemarcadoEvent(
+            agendamento.Id.Valor,
+            remarcacao.Id.Valor,
+            _cliente.Id.Valor,
+            _cliente.Telefone,
+            DateTime.UtcNow));
 
         return remarcacao;
     }
@@ -67,5 +90,5 @@ public class GerenciadorAgendamentos : IGerenciadorAgendamentos
     }
 
     public ICollection<AgendamentoEntidade> BuscarAgendamentos()
-    => Agendamentos;
+        => Agendamentos;
 }

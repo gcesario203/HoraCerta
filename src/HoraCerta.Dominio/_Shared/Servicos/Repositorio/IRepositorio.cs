@@ -1,10 +1,13 @@
-﻿namespace HoraCerta.Dominio._Shared;
+﻿using HoraCerta.Dominio._Shared.Interfaces;
 
-public interface IRepositorio<TEntidade> where TEntidade : EntidadeBase<TEntidade>
+namespace HoraCerta.Dominio._Shared;
+
+public interface IRepositorio<TEntidade>
+    where TEntidade : EntidadeBase<TEntidade>, IAggregateRoot
 {
-    TEntidade BuscarPorId(IdEntidade id);
+    TEntidade? BuscarPorId(IdEntidade id);
 
-    Task<TEntidade> BuscarPorIdAsync(IdEntidade id);
+    Task<TEntidade?> BuscarPorIdAsync(IdEntidade id);
 
     Task<int> CriarAsync(TEntidade entidade);
 
@@ -17,4 +20,6 @@ public interface IRepositorio<TEntidade> where TEntidade : EntidadeBase<TEntidad
     bool Deletar(IdEntidade id);
 
     Task DeletarAsync(IdEntidade id);
+
+    void Salvar(TEntidade entidade);
 }

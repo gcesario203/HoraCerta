@@ -1,7 +1,6 @@
 ﻿using HoraCerta.Dominio._Shared;
-using HoraCerta.Dominio.Cliente;
 
-namespace HoraCerta.Dominio;
+namespace HoraCerta.Dominio.Cliente.Servicos.Repositorio;
 
 public interface IClienteRepositorio : IRepositorio<ClienteEntidade>
 {

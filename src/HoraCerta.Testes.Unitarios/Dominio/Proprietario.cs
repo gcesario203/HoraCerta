@@ -4,7 +4,6 @@ using HoraCerta.Dominio.Procedimento;
 using HoraCerta.Dominio;
 using HoraCerta.Dominio._Shared.Enums;
 using HoraCerta.Dominio.Agendamento;
-using HoraCerta.Dominio.Agenda;
 using HoraCerta.Dominio.Atendimento;
 
 namespace HoraCerta.Testes.Unitarios.Dominio
@@ -13,6 +12,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
     public class Proprietario
     {
         private ProprietarioEntidade? _proprietario;
+        private readonly IdEntidade _clienteId = new();
 
         [SetUp]
         public void SetUp()
@@ -160,7 +160,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
             var horario = DateTime.Now;
             _proprietario!.GerenciadorAgenda!.CriarHorarioDisponivel(horario);
 
-            Assert.That(_proprietario.GerenciadorAgenda.RecuperarAgenda().Horarios, Has.Exactly(1).Matches<SlotHorarioEntidade>(h => h.Inicio == horario));
+            Assert.That(_proprietario.Horarios, Has.Exactly(1).Matches<SlotHorarioEntidade>(h => h.Inicio == horario));
         }
 
         [Test]
@@ -176,7 +176,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         public void CriarAtendimento_DeveCriarAtendimentoSeAgendamentoForValido()
         {
             var agendamento = CriarAgendamentoValido();
-            _proprietario!.GerenciadorAgenda!.CriarAtendimento(agendamento);
+            _proprietario!.GerenciadorAgenda!.CriarAtendimento(agendamento, _clienteId);
 
             Assert.That(agendamento.EstadoAtual(), Is.EqualTo(EstadoAgendamento.FINALIZADO));
         }
@@ -185,7 +185,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         public void AlterarStatusAtendimento_DeveAlterarEstadoDoAtendimento()
         {
             var agendamento = CriarAgendamentoValido();
-            _proprietario!.GerenciadorAgenda!.CriarAtendimento(agendamento);
+            _proprietario!.GerenciadorAgenda!.CriarAtendimento(agendamento, _clienteId);
             var atendimento = _proprietario.GerenciadorAgenda.BuscarAtendimentoPorHorario(agendamento!.SlotHorario!.Id!);
 
             _proprietario.GerenciadorAgenda.AlterarStatusAtendimento(EstadoAtendimento.CANCELADO, atendimento.Id);
@@ -194,27 +194,29 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         }
 
         [Test]
-        public void DeveCriarAgendaComValoresPreenchidos()
+        public void DeveCriarProprietarioComHorariosEAtendimentosPreenchidos()
         {
             var agendamentoValido = CriarAgendamentoValido();
 
             agendamentoValido.AlterarEstado(EstadoAgendamento.FINALIZADO);
 
             var novoAtendimento = new AtendimentoEntidade(agendamentoValido, agendamentoValido.Procedimento.Valor);
-
             var novoSlot = new SlotHorarioEntidade(DateTime.Now);
 
-            var novaAgenda = new GerenciadorAgenda(new List<SlotHorarioEntidade> { novoSlot }, new List<AtendimentoEntidade> { novoAtendimento });
+            var proprietario = new ProprietarioEntidade(
+                "Teste",
+                horarios: new List<SlotHorarioEntidade> { novoSlot },
+                atendimentos: new List<AtendimentoEntidade> { novoAtendimento });
 
-            Assert.That(novaAgenda.Agenda.Horarios, Has.Exactly(1).Matches<SlotHorarioEntidade>(h => h.Inicio == novoSlot.Inicio));
-            Assert.That(novaAgenda.Agenda.Atendimentos, Has.Exactly(1).Matches<AtendimentoEntidade>(h => h.Id.Valor == novoAtendimento.Id.Valor));
+            Assert.That(proprietario.Horarios, Has.Exactly(1).Matches<SlotHorarioEntidade>(h => h.Inicio == novoSlot.Inicio));
+            Assert.That(proprietario.Atendimentos, Has.Exactly(1).Matches<AtendimentoEntidade>(h => h.Id.Valor == novoAtendimento.Id.Valor));
         }
 
         [Test]
         public void DeveRetornarExcessãoNasBuscarComIdInexistente()
         {
             var agendamento = CriarAgendamentoValido();
-            _proprietario!.GerenciadorAgenda!.CriarAtendimento(agendamento);
+            _proprietario!.GerenciadorAgenda!.CriarAtendimento(agendamento, _clienteId);
             var atendimento = _proprietario.GerenciadorAgenda.BuscarAtendimentoPorHorario(agendamento!.SlotHorario!.Id!);
 
             Assert.Catch<OperacaoInvalidaExcessao>(() => _proprietario.GerenciadorAgenda.BuscarAtendimentoPorHorario(new IdEntidade(new Guid().ToString())));
@@ -225,11 +227,11 @@ namespace HoraCerta.Testes.Unitarios.Dominio
         public void NaoDeveCriarAtendimentoComAtendimentosQueCoincidem()
         {
             var agendamento = CriarAgendamentoValido();
-            _proprietario!.GerenciadorAgenda!.CriarAtendimento(agendamento);
+            _proprietario!.GerenciadorAgenda!.CriarAtendimento(agendamento, _clienteId);
 
             var agendamento2 = CriarAgendamentoValido2();
 
-            Assert.Catch<OperacaoInvalidaExcessao>(() => _proprietario.GerenciadorAgenda!.CriarAtendimento(agendamento2));
+            Assert.Catch<OperacaoInvalidaExcessao>(() => _proprietario.GerenciadorAgenda!.CriarAtendimento(agendamento2, _clienteId));
         }
 
         [Test]
@@ -240,7 +242,7 @@ namespace HoraCerta.Testes.Unitarios.Dominio
             _proprietario!.GerenciadorAgenda!.CriarHorarioDisponivel(now);
 
             var agendamento = CriarAgendamentoValido3(now);
-            var novoAgendamento = _proprietario.GerenciadorAgenda!.CriarAtendimento(agendamento);
+            var novoAgendamento = _proprietario.GerenciadorAgenda!.CriarAtendimento(agendamento, _clienteId);
 
             Assert.That(novoAgendamento.EstadoAtual() == EstadoAgendamento.PENDENTE && novoAgendamento.Reagendamento != null);
         }
@@ -251,15 +253,15 @@ namespace HoraCerta.Testes.Unitarios.Dominio
             var now = DateTime.Now;
 
             var agendamento = CriarAgendamentoValido2();
-            var novoAgendamento = _proprietario!.GerenciadorAgenda!.CriarAtendimento(agendamento);
+            var novoAgendamento = _proprietario!.GerenciadorAgenda!.CriarAtendimento(agendamento, _clienteId);
 
             Assert.That(novoAgendamento.SlotHorario!.Status == StatusSlotAgendamento.CONFIRMADO);
 
-            Assert.That(_proprietario.GerenciadorAgenda!.RecuperarAgenda().Horarios, Has.Exactly(1).Matches<SlotHorarioEntidade>(h => h.Inicio == novoAgendamento.SlotHorario.Inicio && h.Fim == novoAgendamento.SlotHorario.Fim && h.Status == novoAgendamento.SlotHorario.Status));
+            Assert.That(_proprietario.Horarios, Has.Exactly(1).Matches<SlotHorarioEntidade>(h => h.Inicio == novoAgendamento.SlotHorario.Inicio && h.Fim == novoAgendamento.SlotHorario.Fim && h.Status == novoAgendamento.SlotHorario.Status));
 
             var agendamentoComMesmoHorario = CriarAgendamentoValido2();
 
-            Assert.Catch<OperacaoInvalidaExcessao>(() => _proprietario.GerenciadorAgenda.CriarAtendimento(agendamentoComMesmoHorario));
+            Assert.Catch<OperacaoInvalidaExcessao>(() => _proprietario.GerenciadorAgenda.CriarAtendimento(agendamentoComMesmoHorario, _clienteId));
 
             var atendimento = _proprietario.GerenciadorAgenda.BuscarAtendimentoPorAgendamento(novoAgendamento.Id);
 
