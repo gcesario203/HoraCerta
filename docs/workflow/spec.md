@@ -249,6 +249,7 @@ cd src/horacerta-web && npm run test:bdd:smoke
 | Regra de negócio | `docs/docs.md`, `docs/agregados.md`, testes domínio |
 | Endpoint / auth API | `docs/backend/spec.md`, `HoraCerta.Testes.E2e` |
 | Tela / fluxo portal | `docs/frontend/spec.md`, `.feature` BDD |
+| UI / tema / dark mode | `docs/frontend/spec.md` §4.1, `shared/presentation/theme/` |
 | Cookie / BFF / sessão | frontend spec §6, skill auth |
 | Docker / env / compose | README, backend spec §12, `.env.example` |
 | Critério MVP | frontend §10, backend §13, `smoke-test.md` |

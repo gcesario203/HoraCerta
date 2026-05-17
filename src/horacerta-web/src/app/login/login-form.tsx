@@ -30,7 +30,7 @@ export function LoginForm() {
   };
 
   return (
-    <Card title="Login do proprietário" style={{ maxWidth: 400, width: '100%' }}>
+    <Card title="Login do proprietário" className="hc-card-elevated" style={{ maxWidth: 400, width: '100%' }}>
       <Form layout="vertical" onFinish={onFinish}>
         <Form.Item
           label="E-mail"
@@ -46,7 +46,7 @@ export function LoginForm() {
         >
           <Input.Password />
         </Form.Item>
-        <Button type="primary" htmlType="submit" block loading={loading}>
+        <Button type="primary" htmlType="submit" block size="large" loading={loading}>
           Entrar
         </Button>
       </Form>

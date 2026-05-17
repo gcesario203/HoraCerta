@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { App, Button, Card, Form, Input, Rate, Typography } from 'antd';
+import { App, Button, Card, Form, Input, Rate } from 'antd';
 import { avaliarAgendamentoUseCase } from '@/avaliacao/application';
 import { obterSessaoCliente } from '@/cliente/application/sessao-cliente';
 import { useClienteSessaoStore } from '@/cliente/presentation/stores/cliente-sessao.store';
 import { extractApiMessage } from '@/shared/infrastructure/http/api-error';
+import { ClienteShell } from '@/shared/presentation/layouts/cliente-shell';
 
 export default function AvaliarPage() {
   const params = useParams<{ proprietarioId: string; agendamentoId: string }>();
@@ -47,9 +47,13 @@ export default function AvaliarPage() {
   };
 
   return (
-    <main style={{ padding: 24, maxWidth: 480, margin: '0 auto' }}>
-      <Typography.Title level={3}>Avaliar atendimento</Typography.Title>
-      <Card>
+    <ClienteShell
+      proprietarioId={params.proprietarioId}
+      title="Avaliar atendimento"
+      subtitle="Sua opinião ajuda o estabelecimento a melhorar."
+      backHref={`/e/${params.proprietarioId}/meus-agendamentos`}
+    >
+      <Card className="hc-card-elevated" variant="borderless">
         <Form layout="vertical" onFinish={onFinish} initialValues={{ nota: 5 }}>
           <Form.Item label="Nota" name="nota" rules={[{ required: true }]}>
             <Rate />
@@ -57,14 +61,11 @@ export default function AvaliarPage() {
           <Form.Item label="Comentário (opcional)" name="comentario">
             <Input.TextArea rows={3} />
           </Form.Item>
-          <Button type="primary" htmlType="submit" block loading={loading}>
+          <Button type="primary" htmlType="submit" block size="large" loading={loading}>
             Enviar avaliação
           </Button>
         </Form>
       </Card>
-      <Typography.Paragraph style={{ marginTop: 16 }}>
-        <Link href={`/e/${params.proprietarioId}/meus-agendamentos`}>Voltar</Link>
-      </Typography.Paragraph>
-    </main>
+    </ClienteShell>
   );
 }

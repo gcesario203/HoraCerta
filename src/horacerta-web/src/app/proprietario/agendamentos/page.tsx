@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   App,
   Button,
+  Card,
   Descriptions,
   Drawer,
   InputNumber,
@@ -27,6 +28,7 @@ import { listarSlotsDisponiveisUseCase } from '@/slot-horario/application';
 import type { SlotHorarioDto } from '@/slot-horario/application/dtos/slot-horario.dto';
 import { useProprietarioSessao } from '@/auth/presentation/hooks/use-proprietario-sessao';
 import { extractApiMessage } from '@/shared/infrastructure/http/api-error';
+import { PageHeader } from '@/shared/presentation/components/page-header';
 import { formatarDataHora, labelEstado } from '@/shared/presentation/format';
 
 export default function AgendamentosPage() {
@@ -135,10 +137,15 @@ export default function AgendamentosPage() {
 
   return (
     <>
-      <Table
-        rowKey="agendamentoId"
-        loading={loading}
-        dataSource={lista}
+      <PageHeader
+        title="Agendamentos"
+        description="Confirme, cancele ou remarque pedidos dos seus clientes."
+      />
+      <Card className="hc-card-elevated" variant="borderless">
+        <Table
+          rowKey="agendamentoId"
+          loading={loading}
+          dataSource={lista}
         columns={[
           { title: 'Cliente', dataIndex: 'clienteNome' },
           { title: 'Procedimento', dataIndex: 'procedimentoNome' },
@@ -182,7 +189,8 @@ export default function AgendamentosPage() {
             ),
           },
         ]}
-      />
+        />
+      </Card>
 
       <Modal
         title="Remarcar agendamento"

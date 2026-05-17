@@ -74,6 +74,41 @@ Consulta adicional: `GET /api/clientes/{clienteId}/agendamentos` → `Agendament
 - **Estado global:** Zustand (slices por bounded context)
 - **HTTP:** Axios apenas na camada `infrastructure/api`
 
+### 4.1 Design system e tema (UI/UX)
+
+Identidade visual **HoraCerta**: minimalista, profissional, cantos arredondados, tipografia **Inter**, foco em fluxo de agendamento mobile.
+
+| Token | Claro | Escuro |
+|-------|-------|--------|
+| Primária (ações) | `#10B981` (emerald) | `#10B981` / destaque `#34D399` |
+| Fundo | `#F8FAFC` | `#0F172A` (navy) |
+| Superfície (cards) | `#FFFFFF` | `#111827` |
+| Texto | `#0F172A` / muted `#64748B` | `#F8FAFC` / muted `#94A3B8` |
+
+**Modo escuro:** alternância global via `ThemeToggle`; preferência em `localStorage` (`horacerta-theme`); atributo `data-theme` no `<html>`; script inline no layout evita flash na carga.
+
+**Implementação (código):**
+
+| Artefato | Caminho |
+|----------|---------|
+| Tokens | `src/shared/presentation/theme/tokens.ts` |
+| Tema Ant Design | `src/shared/presentation/theme/antd-config.ts` |
+| Provider | `src/shared/presentation/theme/theme-provider.tsx` |
+| Store tema | `src/shared/presentation/stores/theme.store.ts` |
+| Variáveis CSS | `src/app/globals.css` |
+| Shell auth | `src/shared/presentation/layouts/auth-shell.tsx` |
+| Shell cliente | `src/shared/presentation/layouts/cliente-shell.tsx` |
+| Agenda (visão calendário) | `src/shared/presentation/components/slot-calendar-grid.tsx` |
+
+**Padrões de UX:**
+
+- Fluxo cliente: wizard em cards elevados (`hc-card-elevated`); opções de procedimento/horário como `hc-service-option` (radio estilizado).
+- Área proprietário: sidebar escura com marca; conteúdo em cards; `PageHeader` em cada tela.
+- Agenda: alternância **Calendário** / **Tabela** (`Segmented`).
+- CTAs primários: `Button type="primary"` (cor emerald via tema).
+
+Alterações visuais devem atualizar **este §4.1** e tokens, não hardcodar cores fora do tema salvo exceção documentada.
+
 ---
 
 ## 5. Arquitetura (DDD + Clean Architecture)

@@ -3,12 +3,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { App, Button, Card, List, Tag, Typography } from 'antd';
+import { App, Button, Card, List, Tag } from 'antd';
 import { listarAgendamentosClienteUseCase } from '@/agendamento/application';
 import type { AgendamentoClienteListagemDto } from '@/agendamento/application/dtos/agendamento.dto';
 import { obterSessaoCliente } from '@/cliente/application/sessao-cliente';
 import { useClienteSessaoStore } from '@/cliente/presentation/stores/cliente-sessao.store';
 import { extractApiMessage } from '@/shared/infrastructure/http/api-error';
+import { ClienteShell } from '@/shared/presentation/layouts/cliente-shell';
 import { formatarDataHora, labelEstado } from '@/shared/presentation/format';
 
 export default function MeusAgendamentosPage() {
@@ -49,39 +50,41 @@ export default function MeusAgendamentosPage() {
   }, [carregar]);
 
   return (
-    <main style={{ padding: 24, maxWidth: 520, margin: '0 auto' }}>
-      <Typography.Title level={3}>Meus agendamentos</Typography.Title>
-      <Typography.Paragraph type="secondary">
-        Cancelamento e remarcação devem ser feitos pelo estabelecimento.
-      </Typography.Paragraph>
+    <ClienteShell
+      proprietarioId={proprietarioId}
+      title="Meus agendamentos"
+      subtitle="Cancelamento e remarcação devem ser feitos pelo estabelecimento."
+      backHref={`/e/${proprietarioId}`}
+    >
       <List
         loading={loading}
         dataSource={lista}
         locale={{ emptyText: 'Nenhum agendamento' }}
         renderItem={(item) => (
-          <Card style={{ marginBottom: 12 }} size="small">
-            <Typography.Text strong>{item.procedimentoNome}</Typography.Text>
+          <Card className="hc-card-elevated" style={{ marginBottom: 12 }} size="small">
+            <strong>{item.procedimentoNome}</strong>
             <br />
             {item.slotInicio && (
-              <Typography.Text type="secondary">
+              <span style={{ color: 'var(--hc-text-muted)', fontSize: '0.9rem' }}>
                 {formatarDataHora(item.slotInicio)}
-              </Typography.Text>
+              </span>
             )}
             <br />
-            <Tag style={{ marginTop: 8 }}>{labelEstado(item.estado)}</Tag>
+            <Tag color="processing" style={{ marginTop: 8 }}>
+              {labelEstado(item.estado)}
+            </Tag>
             {['CONFIRMADO', 'FINALIZADO', 'REALIZADO'].includes(item.estado) && (
-              <div style={{ marginTop: 8 }}>
+              <div style={{ marginTop: 12 }}>
                 <Link href={`/e/${proprietarioId}/avaliar/${item.agendamentoId}`}>
-                  <Button size="small">Avaliar atendimento</Button>
+                  <Button type="primary" size="small" ghost>
+                    Avaliar atendimento
+                  </Button>
                 </Link>
               </div>
             )}
           </Card>
         )}
       />
-      <Link href={`/e/${proprietarioId}`}>
-        <Button>Voltar</Button>
-      </Link>
-    </main>
+    </ClienteShell>
   );
 }

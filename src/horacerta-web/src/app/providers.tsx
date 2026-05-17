@@ -1,19 +1,19 @@
 'use client';
 
 import { AntdRegistry } from '@ant-design/nextjs-registry';
-import { App, ConfigProvider } from 'antd';
-import ptBR from 'antd/locale/pt_BR';
+import { App } from 'antd';
 import { SessaoHydrator } from '@/shared/presentation/sessao-hydrator';
+import { ThemeProvider } from '@/shared/presentation/theme/theme-provider';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <AntdRegistry>
-      <ConfigProvider locale={ptBR} theme={{ token: { colorPrimary: '#1677ff' } }}>
+      <ThemeProvider>
         <App>
           <SessaoHydrator />
           {children}
         </App>
-      </ConfigProvider>
+      </ThemeProvider>
     </AntdRegistry>
   );
 }

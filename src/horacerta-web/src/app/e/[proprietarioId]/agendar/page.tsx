@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { App, Button, Card, Form, Input, Radio, Result, Steps, Typography } from 'antd';
+import { App, Button, Card, Form, Input, Radio, Result, Steps } from 'antd';
 import { iniciarAgendamentoUseCase } from '@/agendamento/application';
 import { criarClienteUseCase } from '@/cliente/application';
 import { salvarSessaoCliente } from '@/cliente/application/sessao-cliente';
@@ -13,6 +13,7 @@ import type { ProcedimentoDto } from '@/procedimento/application/dtos/procedimen
 import { listarSlotsDisponiveisUseCase } from '@/slot-horario/application';
 import type { SlotHorarioDto } from '@/slot-horario/application/dtos/slot-horario.dto';
 import { extractApiMessage } from '@/shared/infrastructure/http/api-error';
+import { ClienteShell } from '@/shared/presentation/layouts/cliente-shell';
 import { formatarDataHora, formatarMoeda } from '@/shared/presentation/format';
 
 export default function AgendarPage() {
@@ -79,30 +80,38 @@ export default function AgendarPage() {
 
   if (concluido) {
     return (
-      <main style={{ padding: 24, maxWidth: 480, margin: '0 auto' }}>
-        <Result
-          status="success"
-          title="Agendamento enviado!"
-          subTitle="Seu pedido está pendente de confirmação pelo estabelecimento. Você receberá um lembrete antes do horário."
-          extra={[
-            <Link key="meus" href={`/e/${proprietarioId}/meus-agendamentos`}>
-              <Button type="primary">Meus agendamentos</Button>
-            </Link>,
-            <Link key="home" href={`/e/${proprietarioId}`}>
-              <Button>Voltar</Button>
-            </Link>,
-          ]}
-        />
-      </main>
+      <ClienteShell proprietarioId={proprietarioId} title="Agendamento enviado">
+        <Card className="hc-card-elevated" variant="borderless">
+          <Result
+            status="success"
+            title="Agendamento enviado!"
+            subTitle="Seu pedido está pendente de confirmação pelo estabelecimento. Você receberá um lembrete antes do horário."
+            extra={[
+              <Link key="meus" href={`/e/${proprietarioId}/meus-agendamentos`}>
+                <Button type="primary" size="large" block>
+                  Meus agendamentos
+                </Button>
+              </Link>,
+              <Link key="home" href={`/e/${proprietarioId}`}>
+                <Button block>Voltar ao início</Button>
+              </Link>,
+            ]}
+          />
+        </Card>
+      </ClienteShell>
     );
   }
 
   return (
-    <main style={{ padding: 24, maxWidth: 520, margin: '0 auto' }}>
-      <Typography.Title level={3}>Agendar</Typography.Title>
+    <ClienteShell
+      proprietarioId={proprietarioId}
+      title="Agendar"
+      subtitle="Preencha seus dados, escolha o serviço e o melhor horário."
+      backHref={`/e/${proprietarioId}`}
+    >
       <Steps
+        className="hc-wizard-steps"
         current={step}
-        style={{ marginBottom: 24 }}
         items={[
           { title: 'Seus dados' },
           { title: 'Procedimento' },
@@ -111,15 +120,15 @@ export default function AgendarPage() {
       />
 
       {step === 0 && (
-        <Card>
+        <Card className="hc-card-elevated" variant="borderless">
           <Form layout="vertical" onFinish={cadastrarCliente}>
             <Form.Item label="Nome" name="nome" rules={[{ required: true }]}>
-              <Input />
+              <Input size="large" />
             </Form.Item>
             <Form.Item label="Telefone" name="telefone" rules={[{ required: true }]}>
-              <Input />
+              <Input size="large" />
             </Form.Item>
-            <Button type="primary" htmlType="submit" block loading={loading}>
+            <Button type="primary" htmlType="submit" block size="large" loading={loading}>
               Continuar
             </Button>
           </Form>
@@ -127,21 +136,26 @@ export default function AgendarPage() {
       )}
 
       {step === 1 && (
-        <Card>
+        <Card className="hc-card-elevated" variant="borderless">
           <Radio.Group
             style={{ width: '100%' }}
             value={procedimentoId}
             onChange={(e) => setProcedimentoId(e.target.value)}
           >
             {procedimentos.map((p) => (
-              <Radio key={p.id} value={p.id} style={{ display: 'block', marginBottom: 12 }}>
-                {p.nome} — {formatarMoeda(p.valor)} ({p.tempoEstimadoMinutos} min)
+              <Radio key={p.id} value={p.id} className="hc-service-option">
+                <strong>{p.nome}</strong>
+                <br />
+                <span style={{ color: 'var(--hc-text-muted)', fontSize: '0.9rem' }}>
+                  {formatarMoeda(p.valor)} · {p.tempoEstimadoMinutos} min
+                </span>
               </Radio>
             ))}
           </Radio.Group>
           <Button
             type="primary"
             block
+            size="large"
             style={{ marginTop: 16 }}
             disabled={!procedimentoId}
             onClick={() => setStep(2)}
@@ -152,14 +166,14 @@ export default function AgendarPage() {
       )}
 
       {step === 2 && (
-        <Card>
+        <Card className="hc-card-elevated" variant="borderless">
           <Radio.Group
             style={{ width: '100%' }}
             value={slotId}
             onChange={(e) => setSlotId(e.target.value)}
           >
             {slots.map((s) => (
-              <Radio key={s.id} value={s.id} style={{ display: 'block', marginBottom: 12 }}>
+              <Radio key={s.id} value={s.id} className="hc-service-option">
                 {formatarDataHora(s.inicio)}
               </Radio>
             ))}
@@ -167,6 +181,7 @@ export default function AgendarPage() {
           <Button
             type="primary"
             block
+            size="large"
             style={{ marginTop: 16 }}
             disabled={!slotId}
             loading={loading}
@@ -176,10 +191,6 @@ export default function AgendarPage() {
           </Button>
         </Card>
       )}
-
-      <Typography.Paragraph style={{ marginTop: 16 }}>
-        <Link href={`/e/${proprietarioId}`}>Voltar</Link>
-      </Typography.Paragraph>
-    </main>
+    </ClienteShell>
   );
 }

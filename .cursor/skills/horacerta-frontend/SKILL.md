@@ -21,6 +21,13 @@ description: Builds the HoraCerta web portal with Next.js, React, TypeScript, DD
 | Zustand (`presentation/stores/`) | TanStack Query, SWR, Redux |
 | Axios in `infrastructure/api` only | Axios/fetch in components |
 | Manual DTO types vs `HoraCerta.Api/Contratos` | OpenAPI codegen |
+| Tema HoraCerta (`shared/presentation/theme/`, `globals.css`) | Cores hardcoded fora dos tokens |
+
+## UI / tema
+
+- Ler [docs/frontend/spec.md §4.1](../../../docs/frontend/spec.md) (paleta emerald + dark mode).
+- Novas telas: usar `AuthShell`, `ClienteShell` ou layout proprietário; `PageHeader` na área logada.
+- Toggle de tema: `ThemeToggle`; não duplicar lógica de `localStorage`.
 
 ## Entity folder layout
 

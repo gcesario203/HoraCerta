@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { App, Button, Card, Form, Input, Typography } from 'antd';
 import { registrarUseCase } from '@/auth/application';
+import { AuthShell } from '@/shared/presentation/layouts/auth-shell';
 import { extractApiMessage } from '@/shared/infrastructure/http/api-error';
 
 export default function RegistrarPage() {
@@ -34,16 +35,12 @@ export default function RegistrarPage() {
   };
 
   return (
-    <main
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 24,
-      }}
-    >
-      <Card title="Registrar estabelecimento" style={{ maxWidth: 440, width: '100%' }}>
+    <AuthShell>
+      <Card
+        title="Registrar estabelecimento"
+        className="hc-card-elevated"
+        style={{ maxWidth: 440, width: '100%' }}
+      >
         <Form layout="vertical" onFinish={onFinish}>
           <Form.Item
             label="Nome do estabelecimento"
@@ -66,7 +63,7 @@ export default function RegistrarPage() {
           >
             <Input.Password />
           </Form.Item>
-          <Button type="primary" htmlType="submit" block loading={loading}>
+          <Button type="primary" htmlType="submit" block loading={loading} size="large">
             Registrar
           </Button>
         </Form>
@@ -74,6 +71,6 @@ export default function RegistrarPage() {
           <Link href="/login">Já tenho conta</Link>
         </Typography.Paragraph>
       </Card>
-    </main>
+    </AuthShell>
   );
 }

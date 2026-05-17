@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { App, Button, Form, Input, InputNumber, Modal, Space, Table, Tag } from 'antd';
+import { App, Button, Card, Form, Input, InputNumber, Modal, Table, Tag } from 'antd';
 import {
   criarProcedimentoUseCase,
   inativarProcedimentoUseCase,
@@ -10,6 +10,7 @@ import {
 import type { ProcedimentoDto } from '@/procedimento/application/dtos/procedimento.dto';
 import { useProprietarioSessao } from '@/auth/presentation/hooks/use-proprietario-sessao';
 import { extractApiMessage } from '@/shared/infrastructure/http/api-error';
+import { PageHeader } from '@/shared/presentation/components/page-header';
 import { formatarMoeda, labelEstado } from '@/shared/presentation/format';
 
 export default function ProcedimentosPage() {
@@ -69,15 +70,20 @@ export default function ProcedimentosPage() {
 
   return (
     <>
-      <Space style={{ marginBottom: 16 }}>
-        <Button type="primary" onClick={() => setModalOpen(true)}>
-          Novo procedimento
-        </Button>
-      </Space>
-      <Table
-        rowKey="id"
-        loading={loading}
-        dataSource={lista}
+      <PageHeader
+        title="Procedimentos"
+        description="Cadastre os serviços que os clientes podem agendar."
+        extra={
+          <Button type="primary" onClick={() => setModalOpen(true)}>
+            Novo procedimento
+          </Button>
+        }
+      />
+      <Card className="hc-card-elevated" variant="borderless">
+        <Table
+          rowKey="id"
+          loading={loading}
+          dataSource={lista}
         columns={[
           { title: 'Nome', dataIndex: 'nome' },
           { title: 'Valor', render: (_, r) => formatarMoeda(r.valor) },
@@ -97,7 +103,8 @@ export default function ProcedimentosPage() {
               ) : null,
           },
         ]}
-      />
+        />
+      </Card>
       <Modal
         title="Novo procedimento"
         open={modalOpen}

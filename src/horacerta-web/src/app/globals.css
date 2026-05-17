@@ -1,3 +1,41 @@
+:root {
+  --hc-font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  --hc-primary: #10b981;
+  --hc-primary-hover: #059669;
+  --hc-accent: #34d399;
+  --hc-bg: #f8fafc;
+  --hc-surface: #ffffff;
+  --hc-surface-muted: #f1f5f9;
+  --hc-border: #e2e8f0;
+  --hc-text: #0f172a;
+  --hc-text-muted: #64748b;
+  --hc-header: #0f172a;
+  --hc-gradient: linear-gradient(160deg, #ecfdf5 0%, #f8fafc 45%, #f1f5f9 100%);
+  --hc-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+  --hc-shadow-lg: 0 12px 40px rgba(15, 23, 42, 0.1);
+}
+
+[data-theme='dark'] {
+  --hc-bg: #0f172a;
+  --hc-surface: #111827;
+  --hc-surface-muted: #1f2937;
+  --hc-border: #334155;
+  --hc-text: #f8fafc;
+  --hc-text-muted: #94a3b8;
+  --hc-header: #111827;
+  --hc-gradient: linear-gradient(160deg, #0f172a 0%, #111827 50%, #1e293b 100%);
+  --hc-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  --hc-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -7,17 +45,269 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100%;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
-  background: #f5f5f5;
+  font-family: var(--hc-font-family);
+  background: var(--hc-bg);
+  color: var(--hc-text);
 }
 
 a {
   color: inherit;
+  text-decoration: none;
+}
+
+.hc-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hc-brand__icon {
+  color: var(--hc-primary);
+  font-size: 1.35rem;
+}
+
+.hc-brand__text {
+  color: var(--hc-text) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em;
+}
+
+.hc-brand-link--light .hc-brand__text,
+.hc-brand-link--light .hc-brand__icon {
+  color: #fff !important;
+}
+
+.hc-auth-shell {
+  min-height: 100vh;
+  background: var(--hc-gradient);
+}
+
+.hc-auth-shell__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.hc-auth-shell__body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px 48px;
+}
+
+.hc-cliente-shell {
+  min-height: 100vh;
+  background: var(--hc-bg);
+}
+
+.hc-cliente-shell__header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--hc-surface);
+  border-bottom: 1px solid var(--hc-border);
+  box-shadow: var(--hc-shadow);
+}
+
+.hc-cliente-shell__header-inner {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hc-cliente-shell__main {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+}
+
+.hc-page-intro {
+  margin-bottom: 20px;
+}
+
+.hc-page-title {
+  margin: 8px 0 4px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.hc-page-subtitle {
+  margin: 0;
+  color: var(--hc-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.hc-back-btn {
+  padding-left: 0 !important;
+  color: var(--hc-text-muted) !important;
+}
+
+.hc-landing {
+  min-height: 100vh;
+  background: var(--hc-gradient);
+}
+
+.hc-landing__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.hc-landing__hero {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  display: grid;
+  gap: 32px;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .hc-landing__hero {
+    grid-template-columns: 1.1fr 0.9fr;
+    padding-top: 48px;
+  }
+}
+
+.hc-landing__badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--hc-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+[data-theme='dark'] .hc-landing__badge {
+  background: rgba(52, 211, 153, 0.15);
+  color: var(--hc-accent);
+}
+
+.hc-landing__title {
+  margin: 0 0 12px;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.hc-landing__lead {
+  margin: 0 0 24px;
+  color: var(--hc-text-muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  max-width: 36ch;
+}
+
+.hc-card-elevated {
+  border-radius: 16px !important;
+  border: 1px solid var(--hc-border) !important;
+  box-shadow: var(--hc-shadow) !important;
+}
+
+.hc-sider-brand {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hc-proprietario-topbar {
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 24px !important;
+  background: var(--hc-surface) !important;
+  border-bottom: 1px solid var(--hc-border);
+}
+
+.hc-proprietario-content {
+  margin: 24px;
+  padding: 0;
+}
+
+.hc-proprietario-page-header {
+  margin-bottom: 24px;
+}
+
+.hc-proprietario-page-header h1 {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.hc-proprietario-page-header p {
+  margin: 0;
+  color: var(--hc-text-muted);
+}
+
+.hc-calendar-day {
+  margin-bottom: 20px;
+}
+
+.hc-calendar-day__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--hc-text-muted);
+  margin-bottom: 10px;
+}
+
+.hc-slot-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--hc-surface-muted);
+  border: 1px solid var(--hc-border);
+  margin-bottom: 8px;
+}
+
+.hc-slot-chip__time {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.hc-wizard-steps {
+  margin-bottom: 28px !important;
+}
+
+.hc-service-option.ant-radio-wrapper {
+  width: 100%;
+  padding: 14px 16px;
+  margin: 0 0 10px;
+  border-radius: 12px;
+  border: 1px solid var(--hc-border);
+  background: var(--hc-surface);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.hc-service-option.ant-radio-wrapper-checked {
+  border-color: var(--hc-primary);
+  box-shadow: 0 0 0 1px var(--hc-primary);
+  background: rgba(16, 185, 129, 0.06);
+}
+
+[data-theme='dark'] .hc-service-option.ant-radio-wrapper-checked {
+  background: rgba(52, 211, 153, 0.1);
 }

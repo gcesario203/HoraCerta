@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { App, Select, Table, Tag } from 'antd';
+import { App, Card, Select, Table, Tag } from 'antd';
 import {
   alterarEstadoAtendimentoUseCase,
   listarAtendimentosUseCase,
@@ -9,6 +9,7 @@ import {
 import type { AtendimentoDto } from '@/atendimento/application/dtos/atendimento.dto';
 import { useProprietarioSessao } from '@/auth/presentation/hooks/use-proprietario-sessao';
 import { extractApiMessage } from '@/shared/infrastructure/http/api-error';
+import { PageHeader } from '@/shared/presentation/components/page-header';
 import { labelEstado } from '@/shared/presentation/format';
 
 const estados = ['REALIZADO', 'CANCELADO', 'FALHA'];
@@ -50,10 +51,16 @@ export default function AtendimentosPage() {
   };
 
   return (
-    <Table
-      rowKey="id"
-      loading={loading}
-      dataSource={lista}
+    <>
+      <PageHeader
+        title="Atendimentos"
+        description="Registre atendimentos e atualize o estado após o serviço."
+      />
+      <Card className="hc-card-elevated" variant="borderless">
+        <Table
+          rowKey="id"
+          loading={loading}
+          dataSource={lista}
       columns={[
         { title: 'Agendamento', dataIndex: 'agendamentoId' },
         { title: 'Valor', dataIndex: 'valorNegociado' },
@@ -74,6 +81,8 @@ export default function AtendimentosPage() {
           ),
         },
       ]}
-    />
+        />
+      </Card>
+    </>
   );
 }

@@ -12,6 +12,8 @@ import {
 } from '@ant-design/icons';
 import { logoutUseCase } from '@/auth/application';
 import { useAuthStore } from '@/auth/presentation/stores/auth.store';
+import { AppBrand } from '@/shared/presentation/components/app-brand';
+import { ThemeToggle } from '@/shared/presentation/components/theme-toggle';
 
 const { Header, Sider, Content } = Layout;
 
@@ -35,11 +37,9 @@ export default function ProprietarioLayout({ children }: { children: React.React
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider breakpoint="lg" collapsedWidth={0}>
-        <div style={{ height: 64, display: 'flex', alignItems: 'center', padding: '0 16px' }}>
-          <Link href="/proprietario/agendamentos" style={{ color: '#fff', fontWeight: 600 }}>
-            HoraCerta
-          </Link>
+      <Sider breakpoint="lg" collapsedWidth={0} width={240}>
+        <div className="hc-sider-brand">
+          <AppBrand href="/proprietario/agendamentos" light size="sm" />
         </div>
         <Menu
           theme="dark"
@@ -52,21 +52,15 @@ export default function ProprietarioLayout({ children }: { children: React.React
         />
       </Sider>
       <Layout>
-        <Header
-          style={{
-            background: '#fff',
-            padding: '0 24px',
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-        >
+        <Header className="hc-proprietario-topbar">
           <Space>
+            <ThemeToggle />
             <Button icon={<LogoutOutlined />} onClick={sair}>
               Sair
             </Button>
           </Space>
         </Header>
-        <Content style={{ margin: 24 }}>{children}</Content>
+        <Content className="hc-proprietario-content">{children}</Content>
       </Layout>
     </Layout>
   );
