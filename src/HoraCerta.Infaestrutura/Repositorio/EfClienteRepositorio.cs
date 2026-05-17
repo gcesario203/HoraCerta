@@ -2,6 +2,7 @@ using System.Text.Json;
 using HoraCerta.Dominio;
 using HoraCerta.Dominio.Cliente;
 using HoraCerta.Dominio.Cliente.Servicos.Repositorio;
+using HoraCerta.Dominio.Proprietario;
 using HoraCerta.Infaestrutura.Mapeamento;
 using HoraCerta.Infaestrutura.Persistencia;
 using HoraCerta.Infaestrutura.Persistencia.Modelos;
@@ -23,11 +24,20 @@ public class EfClienteRepositorio : IClienteRepositorio
     public ClienteEntidade? BuscarPorId(IdEntidade id)
     {
         var registro = _context.Clientes.Find(id.Valor);
-        return registro is null ? null : Deserializar(registro);
+        return registro is null ? null : DeserializarLegado(registro);
+    }
+
+    public ClienteEntidade? BuscarPorId(IdEntidade clienteId, ProprietarioEntidade proprietario)
+    {
+        var registro = _context.Clientes.Find(clienteId.Valor);
+        return registro is null ? null : Deserializar(registro, proprietario);
     }
 
     public Task<ClienteEntidade?> BuscarPorIdAsync(IdEntidade id)
         => Task.FromResult(BuscarPorId(id));
+
+    public Task<ClienteEntidade?> BuscarPorIdAsync(IdEntidade clienteId, ProprietarioEntidade proprietario)
+        => Task.FromResult(BuscarPorId(clienteId, proprietario));
 
     public int Criar(ClienteEntidade entidade)
     {
@@ -92,11 +102,25 @@ public class EfClienteRepositorio : IClienteRepositorio
         _context.SaveChanges();
     }
 
-    private ClienteEntidade Deserializar(ClienteRegistro registro)
+    private ClienteEntidade Deserializar(ClienteRegistro registro, ProprietarioEntidade proprietario)
     {
         var modelo = JsonSerializer.Deserialize<ClienteModelo>(registro.Conteudo, _jsonOptions)
             ?? throw new InvalidOperationException("Conteúdo do cliente inválido");
 
-        return ClienteMapper.ParaEntidade(modelo);
+        return ClienteMapper.ParaEntidade(modelo, proprietario);
+    }
+
+    public IReadOnlyList<ClienteEntidade> ListarComProprietario(ProprietarioEntidade proprietario)
+        => _context.Clientes
+            .AsEnumerable()
+            .Select(r => Deserializar(r, proprietario))
+            .ToList();
+
+    private ClienteEntidade DeserializarLegado(ClienteRegistro registro)
+    {
+        var modelo = JsonSerializer.Deserialize<ClienteModelo>(registro.Conteudo, _jsonOptions)
+            ?? throw new InvalidOperationException("Conteúdo do cliente inválido");
+
+        return ClienteMapper.ParaEntidadeLegado(modelo);
     }
 }

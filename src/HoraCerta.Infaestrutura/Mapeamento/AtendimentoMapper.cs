@@ -1,4 +1,5 @@
 using HoraCerta.Dominio.Atendimento;
+using HoraCerta.Dominio.Proprietario;
 using HoraCerta.Infaestrutura.Persistencia.Modelos;
 
 namespace HoraCerta.Infaestrutura.Mapeamento;
@@ -17,13 +18,13 @@ public static class AtendimentoMapper
             Estado = entidade.EstadoAtual()
         };
 
-    public static AtendimentoEntidade ParaEntidade(AtendimentoModelo modelo)
+    public static AtendimentoEntidade ParaEntidade(AtendimentoModelo modelo, ProprietarioEntidade proprietario)
         => new(
             modelo.Id,
             modelo.DataCriacao,
             modelo.DataAlteracao,
             modelo.EstadoEntidade,
-            AgendamentoMapper.ParaEntidade(modelo.Origem),
+            AgendamentoMapper.ParaEntidade(modelo.Origem, proprietario),
             modelo.ValorNegociado,
             modelo.Estado);
 }

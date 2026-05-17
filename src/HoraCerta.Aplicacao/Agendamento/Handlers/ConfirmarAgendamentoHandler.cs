@@ -4,34 +4,45 @@ using HoraCerta.Aplicacao.Agendamento.Commands;
 using HoraCerta.Dominio;
 using HoraCerta.Dominio.Agendamento;
 using HoraCerta.Dominio.Cliente.Servicos.Repositorio;
+using HoraCerta.Dominio.Proprietario.Servicos.Repositorio;
 
 namespace HoraCerta.Aplicacao.Agendamento.Handlers;
 
 public class ConfirmarAgendamentoHandler : ICommandHandler<ConfirmarAgendamentoCommand, AgendamentoEntidade>
 {
+    private readonly IProprietarioRepositorio _proprietarioRepositorio;
     private readonly IClienteRepositorio _clienteRepositorio;
     private readonly IDomainEventDispatcher _dispatcher;
 
     public ConfirmarAgendamentoHandler(
+        IProprietarioRepositorio proprietarioRepositorio,
         IClienteRepositorio clienteRepositorio,
         IDomainEventDispatcher dispatcher)
     {
+        _proprietarioRepositorio = proprietarioRepositorio;
         _clienteRepositorio = clienteRepositorio;
         _dispatcher = dispatcher;
     }
 
     public AgendamentoEntidade Executar(ConfirmarAgendamentoCommand command)
     {
-        var cliente = _clienteRepositorio.BuscarPorId(command.ClienteId)
+        var proprietario = _proprietarioRepositorio.BuscarPorId(command.ProprietarioId)
+            ?? throw new OperacaoInvalidaExcessao("Proprietário não encontrado");
+
+        var cliente = _clienteRepositorio.BuscarPorId(command.ClienteId, proprietario)
             ?? throw new OperacaoInvalidaExcessao("Cliente não encontrado");
 
-        cliente.GerenciadorAgendamentos.ConfirmarAgendamento(command.AgendamentoId);
+        cliente.GerenciadorAgendamentos.ConfirmarAgendamento(command.AgendamentoId, command.ProprietarioId);
 
         var agendamento = cliente.GerenciadorAgendamentos.BuscarAgendamentoPorId(command.AgendamentoId);
 
         UnidadeTrabalhoDominio.SalvarEDispararEventos(
-            cliente => _clienteRepositorio.Salvar(cliente),
-            cliente,
+            () =>
+            {
+                _clienteRepositorio.Salvar(cliente);
+                _proprietarioRepositorio.Salvar(proprietario);
+            },
+            [cliente, proprietario],
             _dispatcher);
 
         return agendamento;

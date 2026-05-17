@@ -1,6 +1,7 @@
 using HoraCerta.Dominio;
 using HoraCerta.Dominio.Cliente;
 using HoraCerta.Dominio.Cliente.Servicos.Repositorio;
+using HoraCerta.Dominio.Proprietario;
 
 namespace HoraCerta.Infaestrutura.Repositorio;
 
@@ -11,8 +12,14 @@ public class InMemoryClienteRepositorio : IClienteRepositorio
     public ClienteEntidade? BuscarPorId(IdEntidade id)
         => _armazenamento.GetValueOrDefault(id.Valor);
 
+    public ClienteEntidade? BuscarPorId(IdEntidade clienteId, ProprietarioEntidade proprietario)
+        => BuscarPorId(clienteId);
+
     public Task<ClienteEntidade?> BuscarPorIdAsync(IdEntidade id)
         => Task.FromResult(BuscarPorId(id));
+
+    public Task<ClienteEntidade?> BuscarPorIdAsync(IdEntidade clienteId, ProprietarioEntidade proprietario)
+        => Task.FromResult(BuscarPorId(clienteId, proprietario));
 
     public int Criar(ClienteEntidade entidade)
     {
@@ -51,4 +58,7 @@ public class InMemoryClienteRepositorio : IClienteRepositorio
 
     public void Salvar(ClienteEntidade entidade)
         => _armazenamento[entidade.Id.Valor] = entidade;
+
+    public IReadOnlyList<ClienteEntidade> ListarComProprietario(ProprietarioEntidade proprietario)
+        => _armazenamento.Values.ToList();
 }

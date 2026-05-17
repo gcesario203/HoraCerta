@@ -81,7 +81,7 @@ public class AgendamentoE2ETests : E2ETestBase
             "/api/proprietarios/inexistente/procedimentos",
             new CriarProcedimentoRequisicao("Corte", 50m, 30));
 
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
     }
 
     private async Task<AgendamentoResposta> IniciarEConfirmarAsync(
@@ -100,7 +100,7 @@ public class AgendamentoE2ETests : E2ETestBase
 
         var confirmarResponse = await Client.PostAsJsonAsync(
             $"/api/agendamentos/{agendamento.Id}/confirmar",
-            new ConfirmarAgendamentoRequisicao(clienteId));
+            new ConfirmarAgendamentoRequisicao(proprietarioId, clienteId));
 
         confirmarResponse.EnsureSuccessStatusCode();
         return await confirmarResponse.Content.ReadFromJsonAsync<AgendamentoResposta>()

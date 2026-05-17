@@ -1,3 +1,4 @@
+using HoraCerta.Api.Autenticacao;
 using HoraCerta.Api.Contratos;
 using HoraCerta.Api.Mapeamento;
 using HoraCerta.Aplicacao.Estabelecimento.Commands;
@@ -19,19 +20,20 @@ public static class SlotsEndpoints
             return Results.Ok(slots.Select(RespostaMapeamento.ParaResposta));
         });
 
-        group.MapPost("/", (
-            string proprietarioId,
-            CriarSlotRequisicao req,
-            CriarSlotDisponivelHandler handler) =>
-        {
-            var slot = handler.Executar(new CriarSlotDisponivelCommand(
-                RespostaMapeamento.Id(proprietarioId),
-                req.Inicio));
+        group.RequireAuthorization().AddEndpointFilter<ProprietarioAuthorizationFilter>()
+            .MapPost("/", (
+                string proprietarioId,
+                CriarSlotRequisicao req,
+                CriarSlotDisponivelHandler handler) =>
+            {
+                var slot = handler.Executar(new CriarSlotDisponivelCommand(
+                    RespostaMapeamento.Id(proprietarioId),
+                    req.Inicio));
 
-            return Results.Created(
-                $"/api/proprietarios/{proprietarioId}/slots/{slot.Id.Valor}",
-                RespostaMapeamento.ParaResposta(slot));
-        });
+                return Results.Created(
+                    $"/api/proprietarios/{proprietarioId}/slots/{slot.Id.Valor}",
+                    RespostaMapeamento.ParaResposta(slot));
+            });
 
         return group;
     }

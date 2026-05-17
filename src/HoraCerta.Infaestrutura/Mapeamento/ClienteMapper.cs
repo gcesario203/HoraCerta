@@ -1,4 +1,5 @@
 using HoraCerta.Dominio.Cliente;
+using HoraCerta.Dominio.Proprietario;
 using HoraCerta.Infaestrutura.Persistencia.Modelos;
 
 namespace HoraCerta.Infaestrutura.Mapeamento;
@@ -16,10 +17,13 @@ public static class ClienteMapper
             Telefone = entidade.Telefone,
             Agendamentos = entidade.GerenciadorAgendamentos.BuscarAgendamentos()
                 .Select(AgendamentoMapper.ParaModelo)
+                .ToList(),
+            Avaliacoes = entidade.GerenciadorAgendamentos.Avaliacoes
+                .Select(AvaliacaoMapper.ParaModelo)
                 .ToList()
         };
 
-    public static ClienteEntidade ParaEntidade(ClienteModelo modelo)
+    public static ClienteEntidade ParaEntidade(ClienteModelo modelo, ProprietarioEntidade proprietario)
         => new(
             modelo.Id,
             modelo.DataCriacao,
@@ -27,5 +31,20 @@ public static class ClienteMapper
             modelo.EstadoEntidade,
             modelo.Nome,
             modelo.Telefone,
-            modelo.Agendamentos.Select(AgendamentoMapper.ParaEntidade).ToList());
+            AgendamentoMapper.ParaEntidades(modelo.Agendamentos, proprietario),
+            modelo.Avaliacoes.Select(AvaliacaoMapper.ParaEntidade).ToList());
+
+    /// <summary>
+    /// Reidratação legada (cópias embutidas no JSON). Usar apenas quando o estabelecimento não é necessário.
+    /// </summary>
+    public static ClienteEntidade ParaEntidadeLegado(ClienteModelo modelo)
+        => new(
+            modelo.Id,
+            modelo.DataCriacao,
+            modelo.DataAlteracao,
+            modelo.EstadoEntidade,
+            modelo.Nome,
+            modelo.Telefone,
+            modelo.Agendamentos.Select(AgendamentoMapper.ParaEntidadeLegado).ToList(),
+            modelo.Avaliacoes.Select(AvaliacaoMapper.ParaEntidade).ToList());
 }

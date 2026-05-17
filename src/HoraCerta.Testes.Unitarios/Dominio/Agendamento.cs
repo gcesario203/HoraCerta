@@ -2,6 +2,7 @@
 using HoraCerta.Dominio.Agendamento;
 using HoraCerta.Dominio.Cliente;
 using HoraCerta.Dominio.Procedimento;
+using HoraCerta.Dominio.Proprietario;
 using HoraCerta.Infaestrutura.Mapeamento;
 using NUnit.Framework;
 using System;
@@ -203,7 +204,12 @@ namespace HoraCerta.Testes.Unitarios.Dominio
 
             var modelo = AgendamentoMapper.ParaModelo(agendamento);
 
-            var agendamentoEntidade = AgendamentoMapper.ParaEntidade(modelo);
+            var proprietario = new ProprietarioEntidade(
+                "Estabelecimento",
+                [procedimento1],
+                [slot]);
+
+            var agendamentoEntidade = AgendamentoMapper.ParaEntidade(modelo, proprietario);
 
             Assert.That(agendamentoEntidade.EstadoAtual() == agendamento.EstadoAtual());
             Assert.That(agendamentoEntidade.Id.Valor == agendamento.Id.Valor);

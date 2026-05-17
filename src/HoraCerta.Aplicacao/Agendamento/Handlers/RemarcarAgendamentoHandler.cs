@@ -29,7 +29,7 @@ public class RemarcarAgendamentoHandler : ICommandHandler<RemarcarAgendamentoCom
         var proprietario = _proprietarioRepositorio.BuscarPorId(command.ProprietarioId)
             ?? throw new OperacaoInvalidaExcessao("Proprietário não encontrado");
 
-        var cliente = _clienteRepositorio.BuscarPorId(command.ClienteId)
+        var cliente = _clienteRepositorio.BuscarPorId(command.ClienteId, proprietario)
             ?? throw new OperacaoInvalidaExcessao("Cliente não encontrado");
 
         var novoSlot = proprietario.Horarios.FirstOrDefault(s => s.Id.Valor == command.NovoSlotHorarioId.Valor)
@@ -38,7 +38,10 @@ public class RemarcarAgendamentoHandler : ICommandHandler<RemarcarAgendamentoCom
         if (!novoSlot.VerificarDisponibilidade())
             throw new OperacaoInvalidaExcessao("Slot de horário indisponível");
 
-        var remarcado = cliente.GerenciadorAgendamentos.RemarcarAgendamento(command.AgendamentoId, novoSlot);
+        var remarcado = cliente.GerenciadorAgendamentos.RemarcarAgendamento(
+            command.AgendamentoId,
+            novoSlot,
+            command.ProprietarioId);
 
         UnidadeTrabalhoDominio.SalvarEDispararEventos(
             () =>

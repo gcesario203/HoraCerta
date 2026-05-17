@@ -1,6 +1,5 @@
 using HoraCerta.Aplicacao._Shared.Interfaces;
 using HoraCerta.Aplicacao._Shared.Persistencia;
-using HoraCerta.Aplicacao._Shared.Sincronizacao;
 using HoraCerta.Aplicacao.Agendamento.Commands;
 using HoraCerta.Dominio;
 using HoraCerta.Dominio._Shared.Enums;
@@ -31,7 +30,7 @@ public class IniciarAgendamentoHandler : ICommandHandler<IniciarAgendamentoComma
         var proprietario = _proprietarioRepositorio.BuscarPorId(command.ProprietarioId)
             ?? throw new OperacaoInvalidaExcessao("Proprietário não encontrado");
 
-        var cliente = _clienteRepositorio.BuscarPorId(command.ClienteId)
+        var cliente = _clienteRepositorio.BuscarPorId(command.ClienteId, proprietario)
             ?? throw new OperacaoInvalidaExcessao("Cliente não encontrado");
 
         var procedimento = proprietario.GerenciadorProcedimentos.BuscarProcedimentoPorId(command.ProcedimentoId);
@@ -46,8 +45,6 @@ public class IniciarAgendamentoHandler : ICommandHandler<IniciarAgendamentoComma
             throw new OperacaoInvalidaExcessao("Slot de horário indisponível");
 
         var agendamento = cliente.GerenciadorAgendamentos.IniciarAgendamento(procedimento, slot);
-
-        SincronizadorSlotsProprietario.AplicarStatusDoAgendamento(proprietario, agendamento);
 
         UnidadeTrabalhoDominio.SalvarEDispararEventos(
             () =>

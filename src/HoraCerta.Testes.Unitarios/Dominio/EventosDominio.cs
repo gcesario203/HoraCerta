@@ -20,7 +20,9 @@ public class EventosDominio
         var agendamento = cliente.GerenciadorAgendamentos.IniciarAgendamento(procedimento, slot);
         cliente.LimparEventosDominio();
 
-        cliente.GerenciadorAgendamentos.ConfirmarAgendamento(agendamento.Id);
+        cliente.GerenciadorAgendamentos.ConfirmarAgendamento(
+            agendamento.Id,
+            new IdEntidade("proprietario-test"));
 
         Assert.That(cliente.EventosDominio, Has.Exactly(1).InstanceOf<AgendamentoConfirmadoEvent>());
         var evento = (AgendamentoConfirmadoEvent)cliente.EventosDominio.Single();

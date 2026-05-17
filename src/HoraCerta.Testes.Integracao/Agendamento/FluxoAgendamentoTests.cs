@@ -63,8 +63,8 @@ public class FluxoAgendamentoTests
 
         _dispatcher.Limpar();
 
-        var confirmado = new ConfirmarAgendamentoHandler(_clienteRepositorio, _dispatcher)
-            .Executar(new ConfirmarAgendamentoCommand(_cliente.Id, agendamento.Id));
+        var confirmado = new ConfirmarAgendamentoHandler(_proprietarioRepositorio, _clienteRepositorio, _dispatcher)
+            .Executar(new ConfirmarAgendamentoCommand(_proprietario.Id, _cliente.Id, agendamento.Id));
 
         Assert.That(confirmado.EstadoAtual(), Is.EqualTo(EstadoAgendamento.CONFIRMADO));
         Assert.That(_dispatcher.EventosDisparados.OfType<AgendamentoConfirmadoEvent>(), Is.Not.Empty);
@@ -96,8 +96,8 @@ public class FluxoAgendamentoTests
                 procedimento.Id,
                 slot.Id));
 
-        new ConfirmarAgendamentoHandler(_clienteRepositorio, _dispatcher)
-            .Executar(new ConfirmarAgendamentoCommand(_cliente.Id, agendamento.Id));
+        new ConfirmarAgendamentoHandler(_proprietarioRepositorio, _clienteRepositorio, _dispatcher)
+            .Executar(new ConfirmarAgendamentoCommand(_proprietario.Id, _cliente.Id, agendamento.Id));
 
         _dispatcher.Limpar();
 
@@ -132,8 +132,8 @@ public class FluxoAgendamentoTests
                 procedimento.Id,
                 slot1.Id));
 
-        new ConfirmarAgendamentoHandler(_clienteRepositorio, _dispatcher)
-            .Executar(new ConfirmarAgendamentoCommand(_cliente.Id, agendamento.Id));
+        new ConfirmarAgendamentoHandler(_proprietarioRepositorio, _clienteRepositorio, _dispatcher)
+            .Executar(new ConfirmarAgendamentoCommand(_proprietario.Id, _cliente.Id, agendamento.Id));
 
         _dispatcher.Limpar();
 

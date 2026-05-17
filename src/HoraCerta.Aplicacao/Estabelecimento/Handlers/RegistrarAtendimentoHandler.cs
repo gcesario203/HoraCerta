@@ -30,7 +30,7 @@ public class RegistrarAtendimentoHandler : ICommandHandler<RegistrarAtendimentoC
         var proprietario = _proprietarioRepositorio.BuscarPorId(command.ProprietarioId)
             ?? throw new OperacaoInvalidaExcessao("Proprietário não encontrado");
 
-        var cliente = _clienteRepositorio.BuscarPorId(command.ClienteId)
+        var cliente = _clienteRepositorio.BuscarPorId(command.ClienteId, proprietario)
             ?? throw new OperacaoInvalidaExcessao("Cliente não encontrado");
 
         var agendamento = cliente.GerenciadorAgendamentos.BuscarAgendamentoPorId(command.AgendamentoId);

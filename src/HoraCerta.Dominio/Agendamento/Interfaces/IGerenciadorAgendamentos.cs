@@ -1,20 +1,21 @@
-﻿using HoraCerta.Dominio.Procedimento;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using HoraCerta.Dominio.Cliente;
+using HoraCerta.Dominio.Procedimento;
 
 namespace HoraCerta.Dominio.Agendamento;
 
 public interface IGerenciadorAgendamentos
 {
+    ICollection<AvaliacaoEntidade> Avaliacoes { get; }
+
     AgendamentoEntidade IniciarAgendamento(ProcedimentoEntidade procedimento, SlotHorarioEntidade slot);
-    void ConfirmarAgendamento(IdEntidade id);
 
-    void CancelarAgendamento(IdEntidade id);
+    void ConfirmarAgendamento(IdEntidade id, IdEntidade proprietarioId);
 
-    AgendamentoEntidade RemarcarAgendamento(IdEntidade id, SlotHorarioEntidade slot);
+    void CancelarAgendamento(IdEntidade id, IdEntidade proprietarioId);
+
+    AgendamentoEntidade RemarcarAgendamento(IdEntidade id, SlotHorarioEntidade slot, IdEntidade proprietarioId);
+
+    void AvaliarAgendamento(IdEntidade agendamentoId, int nota, string? comentario, IdEntidade proprietarioId);
 
     AgendamentoEntidade BuscarAgendamentoPorId(IdEntidade id);
 

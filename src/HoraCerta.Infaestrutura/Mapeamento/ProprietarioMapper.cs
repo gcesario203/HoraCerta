@@ -21,13 +21,32 @@ public static class ProprietarioMapper
         };
 
     public static ProprietarioEntidade ParaEntidade(ProprietarioModelo modelo)
-        => new(
+    {
+        var horarios = modelo.Horarios.Select(SlotHorarioMapper.ParaEntidade).ToList();
+        var procedimentos = modelo.Procedimentos.Select(ProcedimentoMapper.ParaEntidade).ToList();
+
+        var proprietarioBase = new ProprietarioEntidade(
             modelo.Id,
             modelo.DataCriacao,
             modelo.DataAlteracao,
             modelo.EstadoEntidade,
             modelo.Nome,
-            modelo.Horarios.Select(SlotHorarioMapper.ParaEntidade).ToList(),
-            modelo.Atendimentos.Select(AtendimentoMapper.ParaEntidade).ToList(),
-            modelo.Procedimentos.Select(ProcedimentoMapper.ParaEntidade).ToList());
+            horarios,
+            [],
+            procedimentos);
+
+        var atendimentos = modelo.Atendimentos
+            .Select(atendimento => AtendimentoMapper.ParaEntidade(atendimento, proprietarioBase))
+            .ToList();
+
+        return new ProprietarioEntidade(
+            modelo.Id,
+            modelo.DataCriacao,
+            modelo.DataAlteracao,
+            modelo.EstadoEntidade,
+            modelo.Nome,
+            horarios,
+            atendimentos,
+            procedimentos);
+    }
 }

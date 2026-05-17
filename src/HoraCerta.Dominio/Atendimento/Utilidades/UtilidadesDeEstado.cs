@@ -16,6 +16,9 @@ public static class UtilidadesDeEstado
             case EstadoAtendimento.CANCELADO:
                 return new AtendimentoCancelado();
 
+            case EstadoAtendimento.FALHA:
+                return new AtendimentoFalha();
+
             default:
                 throw new OperacaoInvalidaExcessao("Estado de objeto inválido");
         }

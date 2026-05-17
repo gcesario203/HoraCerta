@@ -41,7 +41,7 @@ public class FluxoOnda1E2ETests : E2ETestBase
 
         var confirmarResponse = await Client.PostAsJsonAsync(
             $"/api/agendamentos/{agendamento.Id}/confirmar",
-            new ConfirmarAgendamentoRequisicao(cliente.Id));
+            new ConfirmarAgendamentoRequisicao(proprietario.Id, cliente.Id));
 
         confirmarResponse.EnsureSuccessStatusCode();
         var confirmado = await confirmarResponse.Content.ReadFromJsonAsync<AgendamentoResposta>();

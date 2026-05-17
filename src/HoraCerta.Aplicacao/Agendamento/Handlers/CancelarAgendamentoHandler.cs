@@ -1,6 +1,5 @@
 using HoraCerta.Aplicacao._Shared.Interfaces;
 using HoraCerta.Aplicacao._Shared.Persistencia;
-using HoraCerta.Aplicacao._Shared.Sincronizacao;
 using HoraCerta.Aplicacao.Agendamento.Commands;
 using HoraCerta.Dominio;
 using HoraCerta.Dominio.Agendamento;
@@ -30,16 +29,12 @@ public class CancelarAgendamentoHandler : ICommandHandler<CancelarAgendamentoCom
         var proprietario = _proprietarioRepositorio.BuscarPorId(command.ProprietarioId)
             ?? throw new OperacaoInvalidaExcessao("Proprietário não encontrado");
 
-        var cliente = _clienteRepositorio.BuscarPorId(command.ClienteId)
+        var cliente = _clienteRepositorio.BuscarPorId(command.ClienteId, proprietario)
             ?? throw new OperacaoInvalidaExcessao("Cliente não encontrado");
 
+        cliente.GerenciadorAgendamentos.CancelarAgendamento(command.AgendamentoId, command.ProprietarioId);
+
         var agendamento = cliente.GerenciadorAgendamentos.BuscarAgendamentoPorId(command.AgendamentoId);
-        var slotId = agendamento.SlotHorario?.Id;
-
-        cliente.GerenciadorAgendamentos.CancelarAgendamento(command.AgendamentoId);
-
-        if (slotId is not null)
-            SincronizadorSlotsProprietario.LiberarSlot(proprietario, slotId);
 
         UnidadeTrabalhoDominio.SalvarEDispararEventos(
             () =>

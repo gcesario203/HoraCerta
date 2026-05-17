@@ -1,3 +1,4 @@
+using HoraCerta.Api.Autenticacao;
 using HoraCerta.Api.Contratos;
 using HoraCerta.Api.Mapeamento;
 using HoraCerta.Aplicacao.Estabelecimento.Commands;
@@ -19,7 +20,9 @@ public static class ProcedimentosEndpoints
             return Results.Ok(procedimentos.Select(RespostaMapeamento.ParaResposta));
         });
 
-        group.MapPost("/", (
+        var protegido = group.RequireAuthorization().AddEndpointFilter<ProprietarioAuthorizationFilter>();
+
+        protegido.MapPost("/", (
             string proprietarioId,
             CriarProcedimentoRequisicao req,
             CriarProcedimentoHandler handler) =>
@@ -35,7 +38,7 @@ public static class ProcedimentosEndpoints
                 RespostaMapeamento.ParaResposta(procedimento));
         });
 
-        group.MapPost("/{procedimentoId}/inativar", (
+        protegido.MapPost("/{procedimentoId}/inativar", (
             string proprietarioId,
             string procedimentoId,
             InativarProcedimentoHandler handler) =>

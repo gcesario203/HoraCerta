@@ -10,11 +10,20 @@ public class GerenciadorAgendamentos : IGerenciadorAgendamentos
 
     public ICollection<AgendamentoEntidade> Agendamentos { get; private set; }
 
-    public GerenciadorAgendamentos(ClienteEntidade cliente, ICollection<AgendamentoEntidade>? agendamentos)
+    public ICollection<AvaliacaoEntidade> Avaliacoes { get; private set; }
+
+    public GerenciadorAgendamentos(
+        ClienteEntidade cliente,
+        ICollection<AgendamentoEntidade>? agendamentos,
+        ICollection<AvaliacaoEntidade>? avaliacoes = null)
     {
         Agendamentos = agendamentos is null || !agendamentos.Any()
             ? new List<AgendamentoEntidade>()
             : agendamentos;
+
+        Avaliacoes = avaliacoes is null || !avaliacoes.Any()
+            ? new List<AvaliacaoEntidade>()
+            : avaliacoes;
 
         _cliente = cliente;
     }
@@ -35,33 +44,42 @@ public class GerenciadorAgendamentos : IGerenciadorAgendamentos
         return agendamento;
     }
 
-    public void ConfirmarAgendamento(IdEntidade id)
+    public void ConfirmarAgendamento(IdEntidade id, IdEntidade proprietarioId)
     {
         var agendamento = BuscarAgendamentoPorId(id);
 
         agendamento.AlterarEstado(EstadoAgendamento.CONFIRMADO);
 
+        var slotInicio = agendamento.SlotHorario?.Inicio
+            ?? throw new OperacaoInvalidaExcessao("Agendamento sem slot associado");
+
         _cliente.AdicionarEventoDominio(new AgendamentoConfirmadoEvent(
             agendamento.Id.Valor,
             _cliente.Id.Valor,
+            proprietarioId.Valor,
             _cliente.Telefone,
+            slotInicio,
             DateTime.UtcNow));
     }
 
-    public void CancelarAgendamento(IdEntidade id)
+    public void CancelarAgendamento(IdEntidade id, IdEntidade proprietarioId)
     {
         var agendamento = BuscarAgendamentoPorId(id);
+
+        var slotInicio = agendamento.SlotHorario?.Inicio ?? DateTime.UtcNow;
 
         agendamento.AlterarEstado(EstadoAgendamento.CANCELADO);
 
         _cliente.AdicionarEventoDominio(new AgendamentoCanceladoEvent(
             agendamento.Id.Valor,
             _cliente.Id.Valor,
+            proprietarioId.Valor,
             _cliente.Telefone,
+            slotInicio,
             DateTime.UtcNow));
     }
 
-    public AgendamentoEntidade RemarcarAgendamento(IdEntidade id, SlotHorarioEntidade slot)
+    public AgendamentoEntidade RemarcarAgendamento(IdEntidade id, SlotHorarioEntidade slot, IdEntidade proprietarioId)
     {
         var agendamento = BuscarAgendamentoPorId(id);
 
@@ -73,10 +91,33 @@ public class GerenciadorAgendamentos : IGerenciadorAgendamentos
             agendamento.Id.Valor,
             remarcacao.Id.Valor,
             _cliente.Id.Valor,
+            proprietarioId.Valor,
             _cliente.Telefone,
+            slot.Inicio,
             DateTime.UtcNow));
 
         return remarcacao;
+    }
+
+    public void AvaliarAgendamento(IdEntidade agendamentoId, int nota, string? comentario, IdEntidade proprietarioId)
+    {
+        var agendamento = BuscarAgendamentoPorId(agendamentoId);
+
+        if (agendamento.EstadoAtual() is not EstadoAgendamento.CONFIRMADO and not EstadoAgendamento.FINALIZADO)
+            throw new OperacaoInvalidaExcessao("Somente agendamentos confirmados ou finalizados podem ser avaliados");
+
+        if (Avaliacoes.Any(x => x.AgendamentoId.Valor == agendamentoId.Valor))
+            throw new OperacaoInvalidaExcessao("Agendamento já foi avaliado");
+
+        var avaliacao = new AvaliacaoEntidade(agendamentoId, proprietarioId, nota, comentario);
+        Avaliacoes.Add(avaliacao);
+
+        _cliente.AdicionarEventoDominio(new AgendamentoAvaliadoEvent(
+            agendamentoId.Valor,
+            _cliente.Id.Valor,
+            proprietarioId.Valor,
+            nota,
+            DateTime.UtcNow));
     }
 
     public AgendamentoEntidade BuscarAgendamentoPorId(IdEntidade id)

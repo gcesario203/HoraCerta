@@ -6,5 +6,7 @@ public record AgendamentoRemarcadoEvent(
     string AgendamentoAnteriorId,
     string NovoAgendamentoId,
     string ClienteId,
+    string ProprietarioId,
     string TelefoneCliente,
+    DateTime NovoSlotInicio,
     DateTime OcorreuEm) : IDomainEvent;

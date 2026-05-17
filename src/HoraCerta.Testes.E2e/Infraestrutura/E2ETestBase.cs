@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using HoraCerta.Api.Contratos;
 using HoraCerta.Infaestrutura.Extensions;
@@ -8,35 +9,50 @@ namespace HoraCerta.Testes.E2e.Infraestrutura;
 
 public abstract class E2ETestBase
 {
-    private HoraCertaApiFactory _factory = null!;
+    protected HoraCertaApiFactory Factory = null!;
     protected HttpClient Client = null!;
 
     [SetUp]
     public void ConfigurarClienteHttp()
     {
-        _factory?.Dispose();
-        _factory = new HoraCertaApiFactory();
-        Client = _factory.CreateClient();
+        Factory?.Dispose();
+        Factory = new HoraCertaApiFactory();
+        Client = Factory.CreateClient();
 
-        _factory.Services.AplicarMigrationsHoraCerta();
+        Factory.Services.AplicarMigrationsHoraCerta();
     }
 
     [TearDown]
     public void EncerrarClienteHttp()
     {
         Client?.Dispose();
-        _factory?.Dispose();
+        Factory?.Dispose();
     }
 
-    protected async Task<(ProprietarioResposta Proprietario, ClienteResposta Cliente)> CriarProprietarioEClienteAsync()
+    protected async Task<(ProprietarioResposta Proprietario, ClienteResposta Cliente, string Token)> CriarProprietarioClienteEAutenticarAsync(
+        string nomeEstabelecimento = "Barbearia E2E",
+        string email = "barbearia@e2e.test",
+        string senha = "Senha123!")
     {
         var proprietarioResponse = await Client.PostAsJsonAsync(
-            "/api/proprietarios",
-            new CriarProprietarioRequisicao("Barbearia E2E"));
+            "/api/auth/registrar",
+            new RegistrarCredencialRequisicao(null, nomeEstabelecimento, email, senha));
 
         proprietarioResponse.EnsureSuccessStatusCode();
-        var proprietario = await proprietarioResponse.Content.ReadFromJsonAsync<ProprietarioResposta>()
-            ?? throw new InvalidOperationException("Resposta de proprietário inválida");
+
+        var loginResponse = await Client.PostAsJsonAsync(
+            "/api/auth/login",
+            new LoginRequisicao(email, senha));
+
+        loginResponse.EnsureSuccessStatusCode();
+        var login = await loginResponse.Content.ReadFromJsonAsync<LoginResposta>()
+            ?? throw new InvalidOperationException("Resposta de login inválida");
+
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", login.Token);
+
+        var proprietario = await Client.GetFromJsonAsync<ProprietarioResposta>(
+            $"/api/proprietarios/{login.ProprietarioId}")
+            ?? throw new InvalidOperationException("Proprietário não encontrado");
 
         var clienteResponse = await Client.PostAsJsonAsync(
             "/api/clientes",
@@ -46,6 +62,12 @@ public abstract class E2ETestBase
         var cliente = await clienteResponse.Content.ReadFromJsonAsync<ClienteResposta>()
             ?? throw new InvalidOperationException("Resposta de cliente inválida");
 
+        return (proprietario, cliente, login.Token);
+    }
+
+    protected async Task<(ProprietarioResposta Proprietario, ClienteResposta Cliente)> CriarProprietarioEClienteAsync()
+    {
+        var (proprietario, cliente, _) = await CriarProprietarioClienteEAutenticarAsync();
         return (proprietario, cliente);
     }
 

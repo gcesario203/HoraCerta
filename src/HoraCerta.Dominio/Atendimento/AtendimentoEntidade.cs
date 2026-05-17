@@ -43,7 +43,7 @@ public class AtendimentoEntidade : EntidadeBase<AtendimentoEntidade>
 
     public void AlterarValorNegociado(decimal valorNegociado)
     {
-        if (EstadoAtual() == EstadoAtendimento.REALIZADO || EstadoAtual() == EstadoAtendimento.CANCELADO)
+        if (EstadoAtual() != EstadoAtendimento.PENDENTE)
             throw new OperacaoInvalidaExcessao("Não é possível alterar o valor negociado de um atendimento finalizado");
 
         ValorNegociado = valorNegociado;

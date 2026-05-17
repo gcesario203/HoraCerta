@@ -1,6 +1,7 @@
 ﻿using HoraCerta.Dominio;
 using HoraCerta.Dominio.Cliente;
 using HoraCerta.Dominio.Procedimento;
+using HoraCerta.Dominio.Proprietario;
 using HoraCerta.Infaestrutura.Mapeamento;
 using NUnit.Framework;
 
@@ -128,7 +129,7 @@ public class Cliente
 
         Assert.That(agendamento.EstadoAtual() == HoraCerta.Dominio.Agendamento.EstadoAgendamento.PENDENTE && slot.Status == StatusSlotAgendamento.RESERVADO);
 
-        cliente.GerenciadorAgendamentos.CancelarAgendamento(agendamento.Id);
+        cliente.GerenciadorAgendamentos.CancelarAgendamento(agendamento.Id, new IdEntidade("proprietario-test"));
 
         Assert.That(agendamento.EstadoAtual() == HoraCerta.Dominio.Agendamento.EstadoAgendamento.CANCELADO && slot.Status == StatusSlotAgendamento.DISPONIVEL);
     }
@@ -144,7 +145,7 @@ public class Cliente
 
         Assert.That(agendamento.EstadoAtual() == HoraCerta.Dominio.Agendamento.EstadoAgendamento.PENDENTE && slot.Status == StatusSlotAgendamento.RESERVADO);
 
-        cliente.GerenciadorAgendamentos.ConfirmarAgendamento(agendamento.Id);
+        cliente.GerenciadorAgendamentos.ConfirmarAgendamento(agendamento.Id, new IdEntidade("proprietario-test"));
 
         Assert.That(agendamento.EstadoAtual() == HoraCerta.Dominio.Agendamento.EstadoAgendamento.CONFIRMADO && slot.Status == StatusSlotAgendamento.RESERVADO);
     }
@@ -162,9 +163,12 @@ public class Cliente
 
         Assert.That(agendamento.EstadoAtual() == HoraCerta.Dominio.Agendamento.EstadoAgendamento.PENDENTE && slot.Status == StatusSlotAgendamento.RESERVADO);
 
-        cliente.GerenciadorAgendamentos.ConfirmarAgendamento(agendamento.Id);
+        cliente.GerenciadorAgendamentos.ConfirmarAgendamento(agendamento.Id, new IdEntidade("proprietario-test"));
 
-        var remarcado = cliente.GerenciadorAgendamentos.RemarcarAgendamento(agendamento.Id, slo2);
+        var remarcado = cliente.GerenciadorAgendamentos.RemarcarAgendamento(
+            agendamento.Id,
+            slo2,
+            new IdEntidade("proprietario-test"));
 
         Assert.That(agendamento.EstadoAtual() == HoraCerta.Dominio.Agendamento.EstadoAgendamento.REMARCADO && slot.Status == StatusSlotAgendamento.DISPONIVEL);
 
@@ -202,7 +206,12 @@ public class Cliente
 
         var modelo = ClienteMapper.ParaModelo(cliente);
 
-        var clienteEntidade = ClienteMapper.ParaEntidade(modelo);
+        var proprietario = new ProprietarioEntidade(
+            "Estabelecimento",
+            [procedimento],
+            [slot]);
+
+        var clienteEntidade = ClienteMapper.ParaEntidade(modelo, proprietario);
 
         Assert.That(clienteEntidade.Id.Valor == cliente.Id.Valor);
         Assert.That(clienteEntidade.Nome == cliente.Nome);

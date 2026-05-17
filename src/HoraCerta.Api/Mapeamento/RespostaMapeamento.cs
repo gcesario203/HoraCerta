@@ -47,5 +47,13 @@ public static class RespostaMapeamento
             entidade.ValorNegociado,
             entidade.EstadoAtual().ToString());
 
+    public static AvaliacaoResposta ParaResposta(AvaliacaoEntidade entidade)
+        => new(
+            entidade.AgendamentoId.Valor,
+            entidade.ProprietarioId.Valor,
+            entidade.Nota,
+            entidade.Comentario,
+            entidade.DataAvaliacao);
+
     public static IdEntidade Id(string valor) => new(valor);
 }

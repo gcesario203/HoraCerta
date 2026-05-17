@@ -19,9 +19,10 @@ public class AtendimentoPendente : EstadoAtendimentoAbstracao
             return new AtendimentoFinalizado();
 
         if (estado == EstadoAtendimento.CANCELADO)
-        {
             return new AtendimentoCancelado();
-        }
+
+        if (estado == EstadoAtendimento.FALHA)
+            return new AtendimentoFalha();
 
         throw new OperacaoInvalidaExcessao("Estado de alteração inválido");
     }
