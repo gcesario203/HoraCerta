@@ -3,7 +3,8 @@
 Versão: 1.0 (MVP — espelho da implementação)  
 Código: `src/HoraCerta.Api` e projetos referenciados  
 Domínio legado: [`docs/docs.md`](../docs.md), [`docs/agregados.md`](../agregados.md)  
-Portal: [`docs/frontend/spec.md`](../frontend/spec.md)
+Portal: [`docs/frontend/spec.md`](../frontend/spec.md)  
+Fluxo de desenvolvimento: [`docs/workflow/spec.md`](../workflow/spec.md)
 
 ---
 

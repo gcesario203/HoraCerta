@@ -7,9 +7,10 @@ description: Builds the HoraCerta web portal with Next.js, React, TypeScript, DD
 
 ## Before coding
 
-1. Read [docs/frontend/spec.md](../../../docs/frontend/spec.md) (source of truth).
-2. For auth/cookies/BFF, also apply skill **horacerta-frontend-auth**.
-3. For file templates, see [reference.md](reference.md) and [examples.md](examples.md).
+1. Read [docs/workflow/spec.md](../../../docs/workflow/spec.md) (processo e DoD).
+2. Read [docs/frontend/spec.md](../../../docs/frontend/spec.md) (source of truth).
+3. For auth/cookies/BFF, also apply skill **horacerta-frontend-auth**.
+4. For file templates, see [reference.md](reference.md) and [examples.md](examples.md).
 
 ## Stack (non-negotiable)
 

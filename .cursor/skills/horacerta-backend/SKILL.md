@@ -7,9 +7,10 @@ description: Builds the HoraCerta API with .NET 8, DDD, Minimal APIs, EF Core, J
 
 ## Before coding
 
-1. Read [docs/backend/spec.md](../../../docs/backend/spec.md) (source of truth).
-2. Domain rules: [docs/docs.md](../../../docs/docs.md), [docs/agregados.md](../../../docs/agregados.md).
-3. Front contracts: mirror changes in `docs/frontend/spec.md` / `horacerta-web` DTOs.
+1. Read [docs/workflow/spec.md](../../../docs/workflow/spec.md) (processo e DoD).
+2. Read [docs/backend/spec.md](../../../docs/backend/spec.md) (source of truth).
+3. Domain rules: [docs/docs.md](../../../docs/docs.md), [docs/agregados.md](../../../docs/agregados.md).
+4. Front contracts: mirror changes in `docs/frontend/spec.md` / `horacerta-web` DTOs.
 
 ## Stack (non-negotiable)
 

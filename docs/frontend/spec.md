@@ -2,7 +2,8 @@
 
 Versão: 1.0 (MVP)  
 Backend de referência: `src/HoraCerta.Api`  
-Documentação de domínio: [`docs/docs.md`](../docs.md), [`docs/agregados.md`](../agregados.md)
+Documentação de domínio: [`docs/docs.md`](../docs.md), [`docs/agregados.md`](../agregados.md)  
+Fluxo de desenvolvimento: [`docs/workflow/spec.md`](../workflow/spec.md)
 
 ---
 

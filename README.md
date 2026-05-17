@@ -19,6 +19,7 @@ flowchart LR
 
 | Componente | Pasta | Documentação |
 |------------|-------|----------------|
+| Fluxo de desenvolvimento | — | [docs/workflow/spec.md](docs/workflow/spec.md) |
 | API | `src/HoraCerta.Api` | [docs/backend/spec.md](docs/backend/spec.md) |
 | Portal | `src/horacerta-web` | [docs/frontend/spec.md](docs/frontend/spec.md) |
 | Domínio | `docs/docs.md`, `docs/agregados.md` | |
@@ -66,6 +67,7 @@ Checklist manual: [docs/smoke-test.md](docs/smoke-test.md).
 
 ## Skills Cursor
 
+- [horacerta-workflow](.cursor/skills/horacerta-workflow/SKILL.md)
 - [horacerta-backend](.cursor/skills/horacerta-backend/SKILL.md)
 - [horacerta-frontend](.cursor/skills/horacerta-frontend/SKILL.md)
 - [horacerta-frontend-auth](.cursor/skills/horacerta-frontend-auth/SKILL.md)
