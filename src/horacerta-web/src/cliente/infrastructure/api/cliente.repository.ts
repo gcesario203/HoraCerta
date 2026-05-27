@@ -1,6 +1,6 @@
 import { publicApiClient } from '@/shared/infrastructure/http/axios-client';
 import type { CriarClienteRequest } from '../../application/dtos/cliente.dto';
-import { criarClienteApi, obterClienteApi } from './cliente.api';
+import { criarClienteApi, obterClienteApi, obterProprietarioPublicoApi } from './cliente.api';
 
 export class ClienteRepository {
   criar(data: CriarClienteRequest) {
@@ -9,6 +9,10 @@ export class ClienteRepository {
 
   obter(clienteId: string) {
     return obterClienteApi(publicApiClient, clienteId).then((r) => r.data);
+  }
+
+  obterProprietarioPublico(proprietarioId: string) {
+    return obterProprietarioPublicoApi(publicApiClient, proprietarioId).then((r) => r.data);
   }
 }
 

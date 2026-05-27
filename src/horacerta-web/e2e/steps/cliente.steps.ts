@@ -9,7 +9,19 @@ When('acesso a página do estabelecimento', async ({ page }) => {
 });
 
 When('inicio o agendamento com meus dados', async ({ page }) => {
+  await page.request.delete('/api/bff/cliente-sessao');
   await page.goto(`/e/${ctx.proprietarioId}/agendar`);
+  const continuarSessao = page.getByRole('button', { name: 'Continuar', exact: true });
+  if (await continuarSessao.isVisible({ timeout: 2_000 }).catch(() => false)) {
+    const trocar = page.getByRole('button', { name: /Não sou eu/i });
+    if (await trocar.isVisible()) {
+      await trocar.click();
+    } else {
+      await continuarSessao.click();
+      await expect(page.locator('.ant-radio-wrapper').first()).toBeVisible({ timeout: 15_000 });
+      return;
+    }
+  }
   await page.getByLabel('Nome').fill(ctx.nomeCliente);
   await page.getByLabel('Telefone').fill(ctx.telefoneCliente);
   await page.getByRole('button', { name: 'Continuar' }).click();
@@ -64,17 +76,16 @@ Then('não devo ver opção de cancelar ou remarcar', async ({ page }) => {
 
 When('avalio o atendimento com nota {int}', async ({ page }, nota: number) => {
   await page.goto(`/e/${ctx.proprietarioId}/meus-agendamentos`);
-  await expect(page.getByRole('link', { name: 'Avaliar atendimento' })).toBeVisible({
-    timeout: 15_000,
-  });
-  await page.getByRole('link', { name: 'Avaliar atendimento' }).click();
+  const avaliar = page
+    .getByRole('link', { name: 'Avaliar atendimento' })
+    .or(page.getByRole('button', { name: 'Avaliar atendimento' }));
+  await expect(avaliar).toBeVisible({ timeout: 15_000 });
+  await avaliar.click();
   await expect(page).toHaveURL(/\/avaliar\//, { timeout: 15_000 });
   await expect(page.getByRole('button', { name: 'Enviar avaliação' })).toBeVisible({
     timeout: 15_000,
   });
-  if (nota !== 5) {
-    await page.getByRole('radio').nth(nota - 1).click();
-  }
+  await page.locator('.ant-rate li').nth(nota - 1).click();
   const enviar = page.waitForResponse(
     (r) =>
       r.url().includes('/avaliar') &&

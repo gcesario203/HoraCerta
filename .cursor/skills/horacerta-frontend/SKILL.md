@@ -41,7 +41,9 @@ Every bounded context lives under `src/[nome-entidade]/`:
 
 - **Cliente:** agendar (PENDENTE), meus agendamentos, avaliar, lembrete = texto informativo only.
 - **Cliente:** no cancel/remarcar UI.
-- **Proprietário:** login, procedimentos, slots, agendamentos (confirm/cancel/remarcar), atendimento, ver avaliações.
+- **Proprietário:** login, procedimentos, slots, agendamentos (confirm/cancel/remarcar), atendimento, ver avaliações; agenda com `WeekTimeGrid` (semana/lista/tabela).
+- **Público:** home com módulo `catalogo` (`GET /api/catalogo/estabelecimentos`).
+- **Cliente:** `BookingWizard` (4 passos + revisão), `ClienteNav`, horários em `WeekTimeGrid`.
 - No WhatsApp, no UC 11.
 
 ## Implementation flow

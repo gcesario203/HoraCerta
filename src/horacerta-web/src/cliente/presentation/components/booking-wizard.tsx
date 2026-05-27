@@ -1,15 +1,15 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
-import { App, Button, Card, Empty, Form, Input, Radio, Result, Skeleton, Space, Steps } from 'antd';
+import { App, Button, Card, Empty, Form, Input, Radio, Result, Skeleton, Space, Steps, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { iniciarAgendamentoUseCase } from '@/agendamento/application';
 import { criarClienteUseCase } from '@/cliente/application';
 import { obterClienteUseCase } from '@/cliente/application/obter-cliente';
-import { salvarSessaoCliente, obterSessaoCliente } from '@/cliente/application/sessao-cliente';
+import { salvarSessaoCliente } from '@/cliente/application/sessao-cliente';
+import { useClienteEstabelecimento } from '@/cliente/presentation/hooks/use-cliente-estabelecimento';
 import { useClienteSessaoStore } from '@/cliente/presentation/stores/cliente-sessao.store';
 import { listarProcedimentosPublicoUseCase } from '@/procedimento/application';
 import type { ProcedimentoDto } from '@/procedimento/application/dtos/procedimento.dto';
@@ -28,14 +28,14 @@ type BookingWizardProps = {
 
 export function BookingWizard({ proprietarioId }: BookingWizardProps) {
   const { message } = App.useApp();
-  const sessaoClienteId = useClienteSessaoStore((s) => s.clienteId);
-  const sessaoProprietarioId = useClienteSessaoStore((s) => s.proprietarioId);
-  const setSessao = useClienteSessaoStore((s) => s.setSessao);
+  const { ready, clienteId: sessaoClienteId, semSessao, sair } =
+    useClienteEstabelecimento(proprietarioId);
+  const setSessaoStore = useClienteSessaoStore((s) => s.setSessao);
 
-  const [inicializado, setInicializado] = useState(false);
   const [step, setStep] = useState(0);
   const [clienteId, setClienteId] = useState<string | null>(null);
   const [clienteNome, setClienteNome] = useState<string>();
+  const [mostrarFormIdentificacao, setMostrarFormIdentificacao] = useState(false);
   const [procedimentos, setProcedimentos] = useState<ProcedimentoDto[]>([]);
   const [slots, setSlots] = useState<SlotHorarioDto[]>([]);
   const [procedimentoId, setProcedimentoId] = useState<string>();
@@ -45,6 +45,7 @@ export function BookingWizard({ proprietarioId }: BookingWizardProps) {
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [loading, setLoading] = useState(false);
   const [concluido, setConcluido] = useState(false);
+  const sessaoAutoAvancada = useRef(false);
 
   const procedimento = useMemo(
     () => procedimentos.find((p) => p.id === procedimentoId),
@@ -61,44 +62,31 @@ export function BookingWizard({ proprietarioId }: BookingWizardProps) {
   }, [proprietarioId, message]);
 
   useEffect(() => {
-    let cancelled = false;
-    const init = async () => {
-      let cid = sessaoClienteId;
-      let pid = sessaoProprietarioId;
-      if (!cid) {
-        const sessao = await obterSessaoCliente();
-        if (sessao) {
-          setSessao(sessao.clienteId, sessao.proprietarioId);
-          cid = sessao.clienteId;
-          pid = sessao.proprietarioId;
-        }
-      }
-      if (!cancelled && cid && pid === proprietarioId) {
-        setClienteId(cid);
-        try {
-          const cliente = await obterClienteUseCase.execute(cid);
-          setClienteNome(cliente.nome);
-        } catch {
-          /* nome opcional */
-        }
-        setStep(1);
-      }
-      if (!cancelled) setInicializado(true);
-    };
-    void init();
-    return () => {
-      cancelled = true;
-    };
-  }, [proprietarioId, sessaoClienteId, sessaoProprietarioId, setSessao]);
+    if (ready && semSessao) {
+      setStep(0);
+      setClienteId(null);
+      setClienteNome(undefined);
+      setMostrarFormIdentificacao(true);
+    }
+  }, [ready, semSessao]);
+
+  useEffect(() => {
+    if (!ready || semSessao || !sessaoClienteId || sessaoAutoAvancada.current) return;
+    sessaoAutoAvancada.current = true;
+    setClienteId(sessaoClienteId);
+    void obterClienteUseCase
+      .execute(sessaoClienteId)
+      .then((c) => setClienteNome(c.nome))
+      .catch(() => undefined);
+    setStep(1);
+    setMostrarFormIdentificacao(false);
+  }, [ready, semSessao, sessaoClienteId]);
 
   const carregarSlots = useCallback(async () => {
     setLoadingSlots(true);
     try {
       const data = await listarSlotsDisponiveisUseCase.execute(proprietarioId);
       setSlots(data);
-      if (data.length > 0) {
-        setWeekStart(dayjs(data[0].inicio).startOf('isoWeek'));
-      }
     } catch {
       message.error('Não foi possível carregar horários');
     } finally {
@@ -115,15 +103,29 @@ export function BookingWizard({ proprietarioId }: BookingWizardProps) {
     try {
       const cliente = await criarClienteUseCase.execute(values);
       await salvarSessaoCliente({ clienteId: cliente.id, proprietarioId });
-      setSessao(cliente.id, proprietarioId);
+      setSessaoStore(cliente.id, proprietarioId);
       setClienteId(cliente.id);
       setClienteNome(cliente.nome);
+      setMostrarFormIdentificacao(false);
       setStep(1);
     } catch (error) {
       message.error(extractApiMessage(error));
     } finally {
       setLoading(false);
     }
+  };
+
+  const continuarComSessao = () => {
+    if (clienteId) setStep(1);
+  };
+
+  const trocarIdentidade = async () => {
+    sessaoAutoAvancada.current = false;
+    await sair();
+    setClienteId(null);
+    setClienteNome(undefined);
+    setMostrarFormIdentificacao(true);
+    setStep(0);
   };
 
   const confirmarAgendamento = async () => {
@@ -144,7 +146,15 @@ export function BookingWizard({ proprietarioId }: BookingWizardProps) {
     }
   };
 
-  const voltar = () => setStep((s) => Math.max(0, s - 1));
+  const voltar = () => {
+    setStep((s) => {
+      const prev = Math.max(0, s - 1);
+      if (prev === 0 && clienteId && !mostrarFormIdentificacao) {
+        setMostrarFormIdentificacao(false);
+      }
+      return prev;
+    });
+  };
 
   if (concluido) {
     return (
@@ -154,23 +164,71 @@ export function BookingWizard({ proprietarioId }: BookingWizardProps) {
           title="Agendamento enviado!"
           subTitle="Seu pedido está pendente de confirmação pelo estabelecimento. Você receberá um lembrete antes do horário."
           extra={[
-            <Link key="meus" href={`/e/${proprietarioId}/meus-agendamentos`}>
-              <Button type="primary" size="large" block>
-                Meus agendamentos
-              </Button>
-            </Link>,
-            <Link key="home" href={`/e/${proprietarioId}`}>
-              <Button block>Voltar ao início</Button>
-            </Link>,
+            <Button
+              key="meus"
+              type="primary"
+              size="large"
+              block
+              href={`/e/${proprietarioId}/meus-agendamentos`}
+            >
+              Meus agendamentos
+            </Button>,
+            <Button key="home" block href={`/e/${proprietarioId}`}>
+              Voltar ao início
+            </Button>,
           ]}
         />
       </Card>
     );
   }
 
-  if (!inicializado) {
+  if (!ready) {
     return <Skeleton active paragraph={{ rows: 8 }} />;
   }
+
+  const passoIdentificacao =
+    clienteId && !mostrarFormIdentificacao ? (
+      <Card className="hc-card-elevated" variant="borderless">
+        <Typography.Title level={5} style={{ marginTop: 0 }}>
+          Olá, {clienteNome ?? 'visitante'}!
+        </Typography.Title>
+        <Typography.Paragraph type="secondary">
+          Você já está identificado neste estabelecimento. Continue para escolher o serviço.
+        </Typography.Paragraph>
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Button type="primary" block size="large" onClick={continuarComSessao}>
+            Continuar
+          </Button>
+          <Button block size="large" onClick={trocarIdentidade}>
+            Não sou eu — trocar dados
+          </Button>
+        </Space>
+      </Card>
+    ) : (
+      <Card className="hc-card-elevated" variant="borderless">
+        <Form layout="vertical" onFinish={cadastrarCliente}>
+          <Form.Item label="Nome" name="nome" rules={[{ required: true, message: 'Informe seu nome' }]}>
+            <Input size="large" prefix={<UserOutlined />} />
+          </Form.Item>
+          <Form.Item
+            label="Telefone"
+            name="telefone"
+            rules={[
+              { required: true, message: 'Informe seu telefone' },
+              {
+                pattern: /^[\d\s()+-]{10,}$/,
+                message: 'Telefone inválido (mínimo 10 dígitos)',
+              },
+            ]}
+          >
+            <Input size="large" inputMode="tel" placeholder="(11) 99999-9999" />
+          </Form.Item>
+          <Button type="primary" htmlType="submit" block size="large" loading={loading}>
+            Continuar
+          </Button>
+        </Form>
+      </Card>
+    );
 
   return (
     <>
@@ -185,24 +243,15 @@ export function BookingWizard({ proprietarioId }: BookingWizardProps) {
         ]}
       />
 
-      {step === 0 && (
-        <Card className="hc-card-elevated" variant="borderless">
-          <Form layout="vertical" onFinish={cadastrarCliente}>
-            <Form.Item label="Nome" name="nome" rules={[{ required: true }]}>
-              <Input size="large" prefix={<UserOutlined />} />
-            </Form.Item>
-            <Form.Item label="Telefone" name="telefone" rules={[{ required: true }]}>
-              <Input size="large" inputMode="tel" />
-            </Form.Item>
-            <Button type="primary" htmlType="submit" block size="large" loading={loading}>
-              Continuar
-            </Button>
-          </Form>
-        </Card>
-      )}
+      {step === 0 && passoIdentificacao}
 
       {step === 1 && (
         <Card className="hc-card-elevated" variant="borderless">
+          {clienteNome ? (
+            <Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
+              Agendando como <strong>{clienteNome}</strong>
+            </Typography.Paragraph>
+          ) : null}
           {loadingProc ? (
             <Skeleton active />
           ) : procedimentos.length === 0 ? (
@@ -234,11 +283,9 @@ export function BookingWizard({ proprietarioId }: BookingWizardProps) {
             >
               Continuar
             </Button>
-            {clienteId ? (
-              <Button block size="large" onClick={voltar}>
-                Voltar
-              </Button>
-            ) : null}
+            <Button block size="large" onClick={voltar}>
+              Voltar
+            </Button>
           </Space>
         </Card>
       )}

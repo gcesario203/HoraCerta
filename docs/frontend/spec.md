@@ -42,13 +42,13 @@ Portal único em **Next.js + React + TypeScript** onde **Proprietário** e **Cli
 
 | UC | Nome | Portal MVP | API |
 |----|------|------------|-----|
-| 1–3 | Iniciar / escolher procedimento e horário | Wizard em `/e/[id]/agendar` | `GET .../procedimentos`, `GET .../slots/disponiveis`, `POST /api/clientes`, `POST /api/agendamentos/iniciar` |
+| 1–3 | Iniciar / escolher procedimento e horário | Wizard 4 passos (`BookingWizard`: identificação com reutilização de sessão por estabelecimento → serviço → `WeekTimeGrid` → revisão) | `GET .../procedimentos`, `GET .../slots/disponiveis`, `POST /api/clientes`, `POST /api/agendamentos/iniciar` |
 | 4 | Confirmar | **Não** — proprietário confirma; cliente vê status pendente | `POST .../confirmar` (JWT) |
 | 5–6 | Cancelar / remarcar | **Fora do MVP cliente** | JWT proprietário |
 | 7 | Lembrete | Texto informativo na UI | Backend apenas |
 | 8 | Avaliar | `/e/[id]/avaliar/[agendamentoId]` | `POST .../avaliar` |
 
-Consulta adicional: `GET /api/clientes/{clienteId}/agendamentos` → `AgendamentoClienteListagemResposta` (nome do procedimento, horário, estado).
+Consulta adicional: `GET /api/clientes/{clienteId}/agendamentos?proprietarioId=` → filtra por estabelecimento (slots do proprietário).
 
 ### Proprietário
 
@@ -56,7 +56,7 @@ Consulta adicional: `GET /api/clientes/{clienteId}/agendamentos` → `Agendament
 |----|------|------------|-----|
 | — | Auth | `/login`, `/registrar` | `POST /api/auth/login`, `POST /api/auth/registrar` |
 | 9 | Procedimentos | `/proprietario/procedimentos` | `GET/POST .../procedimentos`, `POST .../inativar` |
-| 10 | Agenda (slots) | `/proprietario/agenda` | `GET .../slots/disponiveis`, `POST .../slots` |
+| 10 | Agenda (slots) | `/proprietario/agenda` — visão **Semana** estilo calendário/Gantt (`WeekTimeGrid`: horários livres + agendamentos por cor/altura); **Lista** / **Tabela**; mobile: seletor de dia; preferência em `localStorage` | `GET .../slots/disponiveis`, `GET .../agendamentos`, `POST .../slots` |
 | 4–6 | Agendamentos | `/proprietario/agendamentos` | `GET .../agendamentos`, confirmar/cancelar/remarcar |
 | — | Atendimento | Integrado em agendamentos ou `/proprietario/atendimentos` | `POST .../atendimento`, `PATCH .../atendimentos/{id}/estado` |
 | 8 | Avaliações | Detalhe na lista de agendamentos | `GET .../agendamentos/{id}/avaliacao` |
@@ -98,13 +98,19 @@ Identidade visual **HoraCerta**: minimalista, profissional, cantos arredondados,
 | Variáveis CSS | `src/app/globals.css` |
 | Shell auth | `src/shared/presentation/layouts/auth-shell.tsx` |
 | Shell cliente | `src/shared/presentation/layouts/cliente-shell.tsx` |
-| Agenda (visão calendário) | `src/shared/presentation/components/slot-calendar-grid.tsx` |
+| Nav cliente | `src/shared/presentation/components/cliente-nav.tsx` |
+| Grade semanal (agenda/slots) | `src/shared/presentation/components/week-time-grid.tsx` |
+| Agenda (lista por dia) | `src/shared/presentation/components/slot-calendar-grid.tsx` |
+| Wizard agendamento | `src/cliente/presentation/components/booking-wizard.tsx` |
+| Resumo checkout | `src/cliente/presentation/components/booking-summary.tsx` |
+| Catálogo (cards home) | `src/catalogo/presentation/estabelecimento-card.tsx` |
 
 **Padrões de UX:**
 
-- Fluxo cliente: wizard em cards elevados (`hc-card-elevated`); opções de procedimento/horário como `hc-service-option` (radio estilizado).
-- Área proprietário: sidebar escura com marca; conteúdo em cards; `PageHeader` em cada tela.
-- Agenda: alternância **Calendário** / **Tabela** (`Segmented`).
+- **Home pública (`/`):** catálogo de estabelecimentos com busca; cards com CTA agendar.
+- **Fluxo cliente:** `ClienteShell` com nav (Início / Agendar / Meus horários) e nome do estabelecimento; wizard em cards (`hc-card-elevated`); procedimentos como `hc-service-option`; horários na grade `.hc-week-slot` (selecionável); passo de revisão antes de confirmar.
+- **Área proprietário:** sidebar escura com marca; conteúdo em cards; `PageHeader` em cada tela.
+- **Agenda proprietário:** `Segmented` Semana / Lista / Tabela; semana com navegação anterior/próxima/Hoje e linha do horário atual.
 - CTAs primários: `Button type="primary"` (cor emerald via tema).
 
 Alterações visuais devem atualizar **este §4.1** e tokens, não hardcodar cores fora do tema salvo exceção documentada.
@@ -168,7 +174,8 @@ src/
 ├── slot-horario/
 ├── agendamento/
 ├── atendimento/
-└── avaliacao/
+├── avaliacao/
+└── catalogo/                   # Catálogo público (home)
 ```
 
 ### 5.4 HTTP desacoplado
@@ -225,7 +232,7 @@ sequenceDiagram
 
 | Rota | Auth | Descrição |
 |------|------|-----------|
-| `/` | Pública | Landing ou redirect |
+| `/` | Pública | Catálogo de estabelecimentos (busca + cards); atalho área do proprietário |
 | `/login` | Pública | Login proprietário |
 | `/registrar` | Pública | Registro estabelecimento + credenciais |
 | `/proprietario` | JWT cookie | Layout painel |
@@ -234,7 +241,7 @@ sequenceDiagram
 | `/proprietario/agendamentos` | JWT | Listagem + confirmar/cancelar/remarcar |
 | `/proprietario/atendimentos` | JWT | Opcional: gestão de atendimentos |
 | `/e/[proprietarioId]` | Pública | Home do estabelecimento |
-| `/e/[proprietarioId]/agendar` | Pública | Wizard agendamento |
+| `/e/[proprietarioId]/agendar` | Pública | Wizard agendamento (4 passos, layout wide) |
 | `/e/[proprietarioId]/meus-agendamentos` | Cookie cliente | Lista agendamentos |
 | `/e/[proprietarioId]/avaliar/[agendamentoId]` | Pública | UC 8 |
 
@@ -252,8 +259,10 @@ sequenceDiagram
 | `agendamento` | `/api/agendamentos/*` |
 | `atendimento` | `.../atendimento`, `PATCH .../atendimentos/{id}/estado` |
 | `avaliacao` | `POST .../avaliar`, `GET .../avaliacao` |
+| `catalogo` | `GET /api/catalogo/estabelecimentos` |
+| `cliente` (público) | `GET /api/proprietarios/{id}` (nome do estabelecimento no shell) |
 
-Referência de contratos C#: `src/HoraCerta.Api/Contratos/Requisicoes.cs`, `*Resposta.cs`.
+Referência de contratos C#: `src/HoraCerta.Api/Contratos/Requisicoes.cs`, `*Resposta.cs`, `CatalogoRespostas.cs`.
 
 ---
 
@@ -356,14 +365,14 @@ Pré-requisito local: portal em `http://localhost:3000` (ou `PLAYWRIGHT_BASE_URL
 
 ### Rastreabilidade
 
-| Critério aceite (§10) | Feature sugerida |
-|----------------------|------------------|
-| Login / registrar proprietário | `features/publico/login.feature`, `registrar.feature` |
+| Critério aceite (§10) | Feature BDD |
+|----------------------|-------------|
+| Login / registrar proprietário | `features/publico/login.feature`, `registrar.feature`, `login-autenticado.feature` |
+| Landing / catálogo | `features/publico/landing.feature` |
 | CRUD procedimentos, slots | `features/proprietario/procedimentos.feature`, `agenda.feature` |
-| Agendamentos (confirmar, etc.) | `features/proprietario/agendamentos.feature` |
+| Agendamentos (confirmar, cancelar, remarcar, atendimento, avaliação) | `features/mvp/fluxo-completo.feature` (ciclo ponta a ponta) |
 | Fluxo agendar cliente | `features/cliente/agendar.feature` |
 | Meus agendamentos | `features/cliente/meus-agendamentos.feature` |
-| Avaliar | `features/cliente/avaliar.feature` |
 
 Checklist manual complementar: [`docs/smoke-test.md`](../smoke-test.md).
 
@@ -371,18 +380,20 @@ Checklist manual complementar: [`docs/smoke-test.md`](../smoke-test.md).
 
 ## 10. Critérios de aceite (MVP)
 
-- [ ] Proprietário: registrar, login (cookie httpOnly), CRUD procedimentos, criar slots
-- [ ] Proprietário: listar agendamentos, confirmar pendentes, cancelar, remarcar
-- [ ] Proprietário: registrar atendimento, marcar REALIZADO / CANCELADO / FALHA
-- [ ] Proprietário: visualizar avaliação de um agendamento
-- [ ] Cliente: fluxo agendar completo (PENDENTE + mensagem de espera)
-- [ ] Cliente: meus agendamentos via cookie de sessão
-- [ ] Cliente: avaliar após REALIZADO
-- [ ] Cliente: **sem** cancelar/remarcar na UI
-- [ ] Lembrete: copy informativo apenas
-- [ ] Nenhum componente importa Axios
-- [ ] Pastas seguem `[entidade]/{domain,application,infrastructure,presentation}`
-- [ ] Sem dependência `@tanstack/react-query`
+- [x] Proprietário: registrar, login (cookie httpOnly), CRUD procedimentos, criar slots
+- [x] Proprietário: listar agendamentos, confirmar pendentes, cancelar, remarcar
+- [x] Proprietário: registrar atendimento, marcar REALIZADO / CANCELADO / FALHA
+- [x] Proprietário: visualizar avaliação de um agendamento
+- [x] Proprietário: agenda com visão semanal (grade horária)
+- [x] Cliente: fluxo agendar completo (PENDENTE + mensagem de espera + revisão)
+- [x] Cliente: meus agendamentos via cookie de sessão
+- [x] Cliente: avaliar após REALIZADO
+- [x] Cliente: **sem** cancelar/remarcar na UI
+- [x] Público: catálogo na home com estabelecimentos disponíveis
+- [x] Lembrete: copy informativo apenas
+- [x] Nenhum componente importa Axios (hooks de presentation consomem use cases)
+- [x] Pastas seguem `[entidade]/{domain,application,infrastructure,presentation}`
+- [x] Sem dependência `@tanstack/react-query`
 
 ---
 
@@ -398,7 +409,6 @@ Checklist manual complementar: [`docs/smoke-test.md`](../smoke-test.md).
 
 ## 12. Evolução planejada (pós-MVP)
 
-- Cenários BDD com API/backend em Docker (`@integracao`) no CI
 - API ou token para cliente cancelar/remarcar
 - OpenAPI opcional
 - Área de configuração de mensagens (UC 11)

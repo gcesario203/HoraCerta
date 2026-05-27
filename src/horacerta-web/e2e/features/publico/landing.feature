@@ -9,3 +9,8 @@ Funcionalidade: Página inicial
   Cenário: Exibir acesso à área do proprietário
     Dado que estou na página inicial
     Então devo ver o botão "Área do proprietário"
+
+  @smoke
+  Cenário: Exibir busca do catálogo
+    Dado que estou na página inicial
+    Então devo ver o campo de busca do catálogo

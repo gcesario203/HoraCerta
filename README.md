@@ -24,6 +24,8 @@ flowchart LR
 | Portal | `src/horacerta-web` | [docs/frontend/spec.md](docs/frontend/spec.md) |
 | Domínio | `docs/docs.md`, `docs/agregados.md` | |
 
+**MVP web:** portal + API com catálogo público (`GET /api/catalogo/estabelecimentos`), fluxo completo de agendamento e painel do proprietário. Critérios de aceite: [docs/frontend/spec.md §10](docs/frontend/spec.md#10-critérios-de-aceite-mvp), [docs/backend/spec.md §13](docs/backend/spec.md#13-critérios-de-aceite-api-mvp).
+
 ## Início rápido (Docker)
 
 ```bash

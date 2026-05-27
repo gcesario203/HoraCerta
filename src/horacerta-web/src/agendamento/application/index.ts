@@ -10,7 +10,8 @@ export const iniciarAgendamentoUseCase = {
 };
 
 export const listarAgendamentosClienteUseCase = {
-  execute: (clienteId: string) => agendamentoRepository.listarPorCliente(clienteId),
+  execute: (clienteId: string, proprietarioId?: string) =>
+    agendamentoRepository.listarPorCliente(clienteId, proprietarioId),
 };
 
 export const listarAgendamentosProprietarioUseCase = {

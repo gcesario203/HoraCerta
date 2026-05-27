@@ -12,8 +12,14 @@ export function iniciarAgendamentoApi(client: AxiosInstance, data: IniciarAgenda
   return client.post<AgendamentoDto>('/agendamentos/iniciar', data);
 }
 
-export function listarAgendamentosClienteApi(client: AxiosInstance, clienteId: string) {
-  return client.get<AgendamentoClienteListagemDto[]>(`/clientes/${clienteId}/agendamentos`);
+export function listarAgendamentosClienteApi(
+  client: AxiosInstance,
+  clienteId: string,
+  proprietarioId?: string,
+) {
+  return client.get<AgendamentoClienteListagemDto[]>(`/clientes/${clienteId}/agendamentos`, {
+    params: proprietarioId ? { proprietarioId } : undefined,
+  });
 }
 
 export function listarAgendamentosProprietarioApi(

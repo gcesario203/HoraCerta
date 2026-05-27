@@ -35,7 +35,7 @@ export function BookingSummary({
       <Divider style={{ margin: '12px 0' }} />
       <Typography.Paragraph type="secondary" style={{ marginBottom: 0, fontSize: '0.9rem' }}>
         Ao confirmar, seu pedido ficará <strong>pendente</strong> até o estabelecimento aprovar.
-        Você pode acompanhar em Meus horários.
+        Você pode acompanhar em Meus agendamentos.
       </Typography.Paragraph>
     </section>
   );

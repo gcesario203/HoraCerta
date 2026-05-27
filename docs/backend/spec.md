@@ -185,6 +185,20 @@ Estados atendimento: `REALIZADO`, `CANCELADO`, `FALHA` (enum case-insensitive).
 | GET | `/api/proprietarios/{proprietarioId}/atendimentos` | JWT + filter | `AtendimentoResposta[]` |
 | GET | `/api/proprietarios/{proprietarioId}/agendamentos/{agendamentoId}/avaliacao` | JWT + filter | `AvaliacaoResposta` / `404` |
 
+### 6.8 Catálogo público (`/api/catalogo`)
+
+| Método | Rota | Auth | Query | Response |
+|--------|------|------|-------|----------|
+| GET | `/estabelecimentos` | Não | `busca?` (filtro por nome, case-insensitive) | `200` `EstabelecimentoCatalogoResposta[]` |
+
+**Regras de listagem** (`ListarEstabelecimentosCatalogoHandler`):
+
+- Apenas proprietários **ativos** com **≥1 procedimento ativo** e **≥1 slot disponível** com `Inicio >= agora`.
+- Ordenação: próximo horário disponível, depois nome.
+- Preview: até 4 procedimentos e 3 próximos horários por estabelecimento; totais e faixa de preço (min/max) incluídos.
+
+Tag Swagger: `Catalogo`. Implementação: `CatalogoEndpoints.cs`.
+
 ---
 
 ## 7. Contratos (DTOs)
@@ -202,8 +216,9 @@ Arquivos em `HoraCerta.Api/Contratos/`:
 | `AtendimentoResposta.cs` | `Id`, `AgendamentoId`, `ValorNegociado`, `Estado` |
 | `ClienteResposta.cs` | `Id`, `Nome`, `Telefone` |
 | `ProprietarioResposta.cs` | `Id`, `Nome` |
+| `CatalogoRespostas.cs` | `EstabelecimentoCatalogoResposta`, `ProcedimentoCatalogoResposta`, `SlotCatalogoResposta` |
 
-Mapeamento: `RespostaMapeamento.cs`.
+Mapeamento: `RespostaMapeamento.cs` (catálogo mapeado em `CatalogoEndpoints.cs`).
 
 ---
 
@@ -220,8 +235,9 @@ Registro em `HoraCerta.Api/Extensions/DependencyInjection.cs` → `AddHoraCerta`
 | `ConfirmarAgendamentoHandler` / `CancelarAgendamentoHandler` / `RemarcarAgendamentoHandler` | UC 4–6 |
 | `RegistrarAtendimentoHandler` / `AlterarEstadoAtendimentoHandler` | Atendimento |
 | `AvaliarAgendamentoHandler` | UC 8 |
-| `ListarAgendamentosClienteHandler` / `ListarAgendamentosProprietarioHandler` | Consultas |
+| `ListarAgendamentosClienteHandler` (filtro opcional `proprietarioId`) / `ListarAgendamentosProprietarioHandler` | Consultas |
 | `ListarAtendimentosHandler` / `ObterAvaliacaoAgendamentoHandler` | Consultas |
+| `ListarEstabelecimentosCatalogoHandler` | Catálogo público (home do portal) |
 
 ### 8.1 Eventos de domínio (integração)
 
@@ -301,16 +317,17 @@ docker compose up --build
 
 ## 13. Critérios de aceite (API MVP)
 
-- [ ] Registrar/login proprietário com JWT válido
-- [ ] CRUD procedimentos (criar, listar ativos, inativar) com JWT
-- [ ] Criar slot e listar disponíveis
-- [ ] Iniciar agendamento (público) → estado PENDENTE
-- [ ] Confirmar, cancelar, remarcar (JWT proprietário)
-- [ ] Registrar atendimento e alterar estado REALIZADO/CANCELADO/FALHA
-- [ ] Avaliar agendamento (público) e consultar avaliação (JWT)
-- [ ] Listar agendamentos cliente e proprietário
-- [ ] Lembretes gravados e processados pelo background service
-- [ ] Compose sobe API + Web + PostgreSQL com healthcheck
+- [x] Registrar/login proprietário com JWT válido
+- [x] CRUD procedimentos (criar, listar ativos, inativar) com JWT
+- [x] Criar slot e listar disponíveis
+- [x] Iniciar agendamento (público) → estado PENDENTE
+- [x] Confirmar, cancelar, remarcar (JWT proprietário)
+- [x] Registrar atendimento e alterar estado REALIZADO/CANCELADO/FALHA
+- [x] Avaliar agendamento (público) e consultar avaliação (JWT)
+- [x] Listar agendamentos cliente e proprietário
+- [x] Catálogo público de estabelecimentos (`GET /api/catalogo/estabelecimentos`)
+- [x] Lembretes gravados e processados pelo background service
+- [x] Compose sobe API + Web + PostgreSQL com healthcheck
 
 ---
 

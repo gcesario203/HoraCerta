@@ -1,12 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { publicApiClient } from '@/shared/infrastructure/http/axios-client';
-
-type ProprietarioPublico = { id: string; nome: string };
+import { obterProprietarioPublicoUseCase } from '@/cliente/application/obter-proprietario-publico';
+import type { ProprietarioPublicoDto } from '@/cliente/application/dtos/proprietario-publico.dto';
 
 export function useEstabelecimento(proprietarioId: string) {
-  const [estabelecimento, setEstabelecimento] = useState<ProprietarioPublico | null>(null);
+  const [estabelecimento, setEstabelecimento] = useState<ProprietarioPublicoDto | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,10 +16,10 @@ export function useEstabelecimento(proprietarioId: string) {
     }
     let cancelled = false;
     setLoading(true);
-    publicApiClient
-      .get<ProprietarioPublico>(`/proprietarios/${proprietarioId}`)
-      .then((r) => {
-        if (!cancelled) setEstabelecimento(r.data);
+    obterProprietarioPublicoUseCase
+      .execute(proprietarioId)
+      .then((data) => {
+        if (!cancelled) setEstabelecimento(data);
       })
       .catch(() => {
         if (!cancelled) setEstabelecimento(null);
@@ -33,5 +32,10 @@ export function useEstabelecimento(proprietarioId: string) {
     };
   }, [proprietarioId]);
 
-  return { estabelecimento, loading, nome: estabelecimento?.nome ?? 'Estabelecimento' };
+  return {
+    estabelecimento,
+    loading,
+    invalido: !loading && !estabelecimento,
+    nome: estabelecimento?.nome ?? 'Estabelecimento',
+  };
 }

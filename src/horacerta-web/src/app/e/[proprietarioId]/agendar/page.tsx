@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import { BookingWizard } from '@/cliente/presentation/components/booking-wizard';
+import { EstabelecimentoGuard } from '@/shared/presentation/components/estabelecimento-guard';
 import { ClienteShell } from '@/shared/presentation/layouts/cliente-shell';
 
 export default function AgendarPage() {
@@ -15,7 +16,9 @@ export default function AgendarPage() {
       subtitle="Escolha o serviço, um horário na agenda e confira o resumo antes de enviar."
       wide
     >
-      <BookingWizard proprietarioId={proprietarioId} />
+      <EstabelecimentoGuard proprietarioId={proprietarioId}>
+        <BookingWizard proprietarioId={proprietarioId} />
+      </EstabelecimentoGuard>
     </ClienteShell>
   );
 }

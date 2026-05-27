@@ -28,3 +28,15 @@ export async function POST(request: Request) {
   });
   return response;
 }
+
+export async function DELETE(request: Request) {
+  const response = NextResponse.json({ ok: true });
+  response.cookies.set(CLIENTE_COOKIE, '', {
+    httpOnly: true,
+    sameSite: 'lax',
+    path: '/',
+    secure: cookieSecureFromRequest(request),
+    maxAge: 0,
+  });
+  return response;
+}

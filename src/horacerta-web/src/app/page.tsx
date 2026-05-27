@@ -75,7 +75,11 @@ export default function HomePage() {
             placeholder="Buscar por nome do estabelecimento…"
             prefix={<SearchOutlined />}
             value={busca}
-            onChange={(e) => setBusca(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setBusca(v);
+              if (!v.trim() && buscaAplicada) void carregar();
+            }}
             onPressEnter={aplicarBusca}
           />
           <Button type="primary" size="large" onClick={aplicarBusca}>

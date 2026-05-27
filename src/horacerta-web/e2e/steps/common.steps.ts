@@ -7,6 +7,12 @@ Given('que estou na página inicial', async ({ page }) => {
   await page.goto('/');
 });
 
+Then('devo ver o campo de busca do catálogo', async ({ page }) => {
+  await expect(
+    page.getByPlaceholder('Buscar por nome do estabelecimento…'),
+  ).toBeVisible();
+});
+
 Given('que estou na página de login', async ({ page }) => {
   await page.goto('/login');
 });

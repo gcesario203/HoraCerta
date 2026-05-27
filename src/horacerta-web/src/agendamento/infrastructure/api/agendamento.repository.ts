@@ -18,8 +18,10 @@ export class AgendamentoRepository {
     return iniciarAgendamentoApi(publicApiClient, data).then((r) => r.data);
   }
 
-  listarPorCliente(clienteId: string) {
-    return listarAgendamentosClienteApi(publicApiClient, clienteId).then((r) => r.data);
+  listarPorCliente(clienteId: string, proprietarioId?: string) {
+    return listarAgendamentosClienteApi(publicApiClient, clienteId, proprietarioId).then(
+      (r) => r.data,
+    );
   }
 
   listarPorProprietario(proprietarioId: string) {

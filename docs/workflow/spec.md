@@ -89,6 +89,8 @@ Ver skills [horacerta-frontend](../../.cursor/skills/horacerta-frontend/SKILL.md
 
 ## 5. Definition of Done (DoD)
 
+**MVP web 1.0 (fechado):** critérios marcados em [backend §13](../backend/spec.md#13-critérios-de-aceite-api-mvp) e [frontend §10](../frontend/spec.md#10-critérios-de-aceite-mvp); checklist em [smoke-test.md](../smoke-test.md). Escopo pós-MVP (WhatsApp, cancelar pelo cliente) permanece fora — ver specs §11/§14.
+
 Um item está **pronto** quando:
 
 - [ ] Critérios da spec afetada cobertos ([backend §13](../backend/spec.md#13-critérios-de-aceite-api-mvp), [frontend §10](../frontend/spec.md#10-critérios-de-aceite-mvp))
@@ -259,7 +261,7 @@ cd src/horacerta-web && npm run test:bdd:smoke
 
 ## 14. Critérios de aceite (workflow)
 
-- [ ] Novo contribuidor consegue seguir README + este doc até rodar stack local ou Docker
-- [ ] Feature full-stack segue ordem domínio → API → portal → testes
-- [ ] PRs referenciam testes executados e specs atualizadas quando necessário
-- [ ] CI reflete os comandos documentados em §7
+- [x] Novo contribuidor consegue seguir README + este doc até rodar stack local ou Docker
+- [x] Feature full-stack segue ordem domínio → API → portal → testes
+- [x] PRs referenciam testes executados e specs atualizadas quando necessário
+- [x] CI reflete os comandos documentados em §7

@@ -72,7 +72,15 @@ When('confirmo o agendamento pendente do cliente', async ({ page }) => {
   await aguardarSessaoProprietario(page);
   const row = page.locator('tr', { hasText: ctx.nomeCliente });
   await expect(row).toBeVisible({ timeout: 15_000 });
+  const confirmar = page.waitForResponse(
+    (r) =>
+      r.url().includes('/confirmar') &&
+      r.request().method() === 'POST' &&
+      r.ok(),
+  );
   await row.getByRole('button', { name: 'Confirmar' }).click();
+  await page.locator('.ant-popconfirm').getByRole('button', { name: 'OK' }).click();
+  await confirmar;
   await expect(row.getByText('Confirmado')).toBeVisible({ timeout: 15_000 });
 });
 
@@ -81,14 +89,16 @@ When('registro o atendimento do agendamento confirmado', async ({ page }) => {
   await aguardarSessaoProprietario(page);
   const row = page.locator('tr', { hasText: ctx.nomeCliente });
   await expect(row).toBeVisible({ timeout: 15_000 });
-  await row.getByRole('button', { name: 'Atendimento' }).click();
+  await row.getByRole('button', { name: 'Registrar atendimento' }).click();
+  const drawer = page.locator('.ant-drawer');
+  await expect(drawer).toBeVisible({ timeout: 10_000 });
   const registrar = page.waitForResponse(
     (r) =>
       r.url().includes('/atendimento') &&
       r.request().method() === 'POST' &&
       r.ok(),
   );
-  await page.getByRole('button', { name: 'Registrar atendimento' }).click();
+  await drawer.getByRole('button', { name: 'Registrar atendimento' }).click();
   await registrar;
 });
 
@@ -103,7 +113,8 @@ When('marco o atendimento como realizado', async ({ page }) => {
       r.ok(),
   );
   await page.getByRole('combobox').first().click();
-  await page.getByTitle('Realizado').click();
+  await page.locator('.ant-select-item-option').filter({ hasText: 'Realizado' }).click();
+  await page.locator('.ant-modal-confirm').getByRole('button', { name: 'OK' }).click();
   await patch;
 });
 

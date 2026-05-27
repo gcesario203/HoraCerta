@@ -8,6 +8,13 @@ import { loginUseCase } from '@/auth/application';
 import { useAuthStore } from '@/auth/presentation/stores/auth.store';
 import { extractApiMessage } from '@/shared/infrastructure/http/api-error';
 
+function redirectSeguro(raw: string | null) {
+  if (!raw || !raw.startsWith('/') || raw.startsWith('//')) {
+    return '/proprietario/agenda';
+  }
+  return raw;
+}
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -20,8 +27,7 @@ export function LoginForm() {
     try {
       const res = await loginUseCase.execute(values);
       setSession(res.proprietarioId);
-      const redirect = searchParams.get('redirect') ?? '/proprietario/agendamentos';
-      router.push(redirect);
+      router.push(redirectSeguro(searchParams.get('redirect')));
     } catch (error) {
       message.error(extractApiMessage(error));
     } finally {

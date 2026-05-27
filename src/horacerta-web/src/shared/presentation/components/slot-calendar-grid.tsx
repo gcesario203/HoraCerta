@@ -2,11 +2,11 @@
 
 import { Empty, Tag } from 'antd';
 import dayjs from 'dayjs';
-import type { SlotHorarioDto } from '@/slot-horario/application/dtos/slot-horario.dto';
+import type { WeekTimeSlot } from './week-time-grid';
 import { formatarDataHora, labelEstado } from '../format';
 
 type SlotCalendarGridProps = {
-  slots: SlotHorarioDto[];
+  slots: WeekTimeSlot[];
 };
 
 export function SlotCalendarGrid({ slots }: SlotCalendarGridProps) {
@@ -14,7 +14,7 @@ export function SlotCalendarGrid({ slots }: SlotCalendarGridProps) {
     return <Empty description="Nenhum horário disponível" />;
   }
 
-  const grouped = slots.reduce<Record<string, SlotHorarioDto[]>>((acc, slot) => {
+  const grouped = slots.reduce<Record<string, WeekTimeSlot[]>>((acc, slot) => {
     const key = dayjs(slot.inicio).format('YYYY-MM-DD');
     if (!acc[key]) acc[key] = [];
     acc[key].push(slot);
@@ -35,8 +35,11 @@ export function SlotCalendarGrid({ slots }: SlotCalendarGridProps) {
             .map((slot) => (
               <div key={slot.id} className="hc-slot-chip">
                 <span className="hc-slot-chip__time">{formatarDataHora(slot.inicio)}</span>
-                <Tag color={slot.status === 'DISPONIVEL' ? 'success' : 'default'}>
-                  {labelEstado(slot.status)}
+                <span className="hc-slot-chip__label">
+                  {slot.label ?? labelEstado(slot.status ?? 'DISPONIVEL')}
+                </span>
+                <Tag color={slot.status === 'DISPONIVEL' ? 'success' : 'processing'}>
+                  {labelEstado(slot.status ?? 'DISPONIVEL')}
                 </Tag>
               </div>
             ))}

@@ -1,20 +1,20 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { App, Button, Card, Form, Input, InputNumber, Modal, Table, Tag } from 'antd';
+import { App, Button, Card, Form, Input, InputNumber, Modal, Popconfirm, Table, Tag } from 'antd';
+import { useProprietarioPage } from '@/auth/presentation/hooks/use-proprietario-page';
 import {
   criarProcedimentoUseCase,
   inativarProcedimentoUseCase,
   listarProcedimentosUseCase,
 } from '@/procedimento/application';
 import type { ProcedimentoDto } from '@/procedimento/application/dtos/procedimento.dto';
-import { useProprietarioSessao } from '@/auth/presentation/hooks/use-proprietario-sessao';
 import { extractApiMessage } from '@/shared/infrastructure/http/api-error';
 import { PageHeader } from '@/shared/presentation/components/page-header';
 import { formatarMoeda, labelEstado } from '@/shared/presentation/format';
 
 export default function ProcedimentosPage() {
-  const { proprietarioId, canAct } = useProprietarioSessao();
+  const { proprietarioId, ready, canAct } = useProprietarioPage();
   const { message } = App.useApp();
   const [lista, setLista] = useState<ProcedimentoDto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +22,10 @@ export default function ProcedimentosPage() {
   const [salvando, setSalvando] = useState(false);
 
   const carregar = useCallback(async () => {
-    if (!canAct || !proprietarioId) return;
+    if (!ready || !canAct || !proprietarioId) {
+      if (ready && !proprietarioId) setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const data = await listarProcedimentosUseCase.execute(proprietarioId);
@@ -32,10 +35,10 @@ export default function ProcedimentosPage() {
     } finally {
       setLoading(false);
     }
-  }, [canAct, proprietarioId, message]);
+  }, [ready, canAct, proprietarioId, message]);
 
   useEffect(() => {
-    carregar();
+    void carregar();
   }, [carregar]);
 
   const criar = async (values: {
@@ -68,6 +71,10 @@ export default function ProcedimentosPage() {
     }
   };
 
+  if (!ready) {
+    return null;
+  }
+
   return (
     <>
       <PageHeader
@@ -83,26 +90,34 @@ export default function ProcedimentosPage() {
         <Table
           rowKey="id"
           loading={loading}
+          pagination={{ pageSize: 15, showSizeChanger: true }}
           dataSource={lista}
-        columns={[
-          { title: 'Nome', dataIndex: 'nome' },
-          { title: 'Valor', render: (_, r) => formatarMoeda(r.valor) },
-          { title: 'Duração (min)', dataIndex: 'tempoEstimadoMinutos' },
-          {
-            title: 'Estado',
-            dataIndex: 'estado',
-            render: (e: string) => <Tag>{labelEstado(e)}</Tag>,
-          },
-          {
-            title: 'Ações',
-            render: (_, r) =>
-              r.estado === 'ATIVO' ? (
-                <Button size="small" danger onClick={() => inativar(r.id)}>
-                  Inativar
-                </Button>
-              ) : null,
-          },
-        ]}
+          locale={{ emptyText: 'Nenhum procedimento. Crie o primeiro serviço para liberar agendamentos.' }}
+          columns={[
+            { title: 'Nome', dataIndex: 'nome' },
+            { title: 'Valor', render: (_, r) => formatarMoeda(r.valor) },
+            { title: 'Duração (min)', dataIndex: 'tempoEstimadoMinutos' },
+            {
+              title: 'Estado',
+              dataIndex: 'estado',
+              render: (e: string) => <Tag>{labelEstado(e)}</Tag>,
+            },
+            {
+              title: 'Ações',
+              render: (_, r) =>
+                r.estado === 'ATIVO' ? (
+                  <Popconfirm
+                    title="Inativar este procedimento?"
+                    description="Clientes não poderão mais agendar este serviço."
+                    onConfirm={() => inativar(r.id)}
+                  >
+                    <Button size="small" danger>
+                      Inativar
+                    </Button>
+                  </Popconfirm>
+                ) : null,
+            },
+          ]}
         />
       </Card>
       <Modal

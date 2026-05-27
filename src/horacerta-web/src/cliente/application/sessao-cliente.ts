@@ -15,3 +15,7 @@ export async function obterSessaoCliente(): Promise<ClienteSessaoCookie | null> 
 export async function salvarSessaoCliente(sessao: ClienteSessaoCookie): Promise<void> {
   await bffRoot.post('/api/bff/cliente-sessao', sessao);
 }
+
+export async function limparSessaoCliente(): Promise<void> {
+  await bffRoot.delete('/api/bff/cliente-sessao');
+}

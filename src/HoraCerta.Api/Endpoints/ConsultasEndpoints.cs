@@ -14,9 +14,12 @@ public static class ConsultasEndpoints
     {
         app.MapGet("/api/clientes/{clienteId}/agendamentos", (
             string clienteId,
+            string? proprietarioId,
             ListarAgendamentosClienteHandler handler) =>
         {
-            var agendamentos = handler.Executar(new ListarAgendamentosClienteQuery(RespostaMapeamento.Id(clienteId)));
+            var agendamentos = handler.Executar(new ListarAgendamentosClienteQuery(
+                RespostaMapeamento.Id(clienteId),
+                proprietarioId is null ? null : RespostaMapeamento.Id(proprietarioId)));
             return Results.Ok(agendamentos.Select(a => new AgendamentoClienteListagemResposta(
                 a.AgendamentoId,
                 a.ProcedimentoNome,

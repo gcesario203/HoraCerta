@@ -18,7 +18,7 @@ When('faço login como proprietário', async ({ page }) => {
   await page.getByLabel('E-mail').fill(ctx.email);
   await page.getByLabel('Senha').fill(ctx.senha);
   await page.getByRole('button', { name: 'Entrar' }).click();
-  await expect(page).toHaveURL(/\/proprietario\/agendamentos/, { timeout: 15_000 });
+  await expect(page).toHaveURL(/\/proprietario\/(agenda|agendamentos)/, { timeout: 15_000 });
 
   const session = await page.request.get('/api/bff/auth/session');
   expect(session.ok()).toBeTruthy();

@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { App, Button, Card, Empty, List, Space, Tag, Typography } from 'antd';
 import {
@@ -11,9 +10,9 @@ import {
 } from '@ant-design/icons';
 import { listarAgendamentosClienteUseCase } from '@/agendamento/application';
 import type { AgendamentoClienteListagemDto } from '@/agendamento/application/dtos/agendamento.dto';
-import { obterSessaoCliente } from '@/cliente/application/sessao-cliente';
-import { useClienteSessaoStore } from '@/cliente/presentation/stores/cliente-sessao.store';
+import { useClienteEstabelecimento } from '@/cliente/presentation/hooks/use-cliente-estabelecimento';
 import { extractApiMessage } from '@/shared/infrastructure/http/api-error';
+import { EstabelecimentoGuard } from '@/shared/presentation/components/estabelecimento-guard';
 import { ClienteShell } from '@/shared/presentation/layouts/cliente-shell';
 import { formatarDataHora, labelEstado } from '@/shared/presentation/format';
 
@@ -37,7 +36,7 @@ function AgendamentoCard({
   item: AgendamentoClienteListagemDto;
   proprietarioId: string;
 }) {
-  const podeAvaliar = ['CONFIRMADO', 'FINALIZADO', 'REALIZADO'].includes(item.estado);
+  const podeAvaliar = ['CONFIRMADO', 'FINALIZADO'].includes(item.estado);
 
   return (
     <Card className="hc-agendamento-card hc-card-elevated" size="small">
@@ -51,51 +50,45 @@ function AgendamentoCard({
         </p>
       ) : null}
       {podeAvaliar ? (
-        <Link href={`/e/${proprietarioId}/avaliar/${item.agendamentoId}`}>
-          <Button type="primary" size="small" ghost icon={<StarOutlined />}>
-            Avaliar atendimento
-          </Button>
-        </Link>
+        <Button
+          type="primary"
+          size="small"
+          ghost
+          icon={<StarOutlined />}
+          href={`/e/${proprietarioId}/avaliar/${item.agendamentoId}`}
+        >
+          Avaliar atendimento
+        </Button>
       ) : null}
     </Card>
   );
 }
 
-export default function MeusAgendamentosPage() {
+function MeusAgendamentosContent() {
   const params = useParams<{ proprietarioId: string }>();
   const proprietarioId = params.proprietarioId;
   const router = useRouter();
   const { message } = App.useApp();
-  const clienteId = useClienteSessaoStore((s) => s.clienteId);
-  const setSessao = useClienteSessaoStore((s) => s.setSessao);
+  const { ready, clienteId, semSessao } = useClienteEstabelecimento(proprietarioId);
   const [lista, setLista] = useState<AgendamentoClienteListagemDto[]>([]);
   const [loading, setLoading] = useState(true);
-  const [semSessao, setSemSessao] = useState(false);
 
   const carregar = useCallback(async () => {
-    let cid = clienteId;
-    if (!cid) {
-      const sessao = await obterSessaoCliente();
-      if (!sessao || sessao.proprietarioId !== proprietarioId) {
-        setSemSessao(true);
-        setLoading(false);
-        return;
-      }
-      setSessao(sessao.clienteId, sessao.proprietarioId);
-      cid = sessao.clienteId;
+    if (!ready) return;
+    if (!clienteId) {
+      setLoading(false);
+      return;
     }
-
-    setSemSessao(false);
     setLoading(true);
     try {
-      const data = await listarAgendamentosClienteUseCase.execute(cid);
+      const data = await listarAgendamentosClienteUseCase.execute(clienteId, proprietarioId);
       setLista(data);
     } catch (error) {
       message.error(extractApiMessage(error));
     } finally {
       setLoading(false);
     }
-  }, [clienteId, proprietarioId, setSessao, message]);
+  }, [ready, clienteId, proprietarioId, message]);
 
   useEffect(() => {
     void carregar();
@@ -107,28 +100,28 @@ export default function MeusAgendamentosPage() {
     return { pendentes: pend, outros: rest };
   }, [lista]);
 
+  if (!ready) {
+    return null;
+  }
+
   if (semSessao) {
     return (
-      <ClienteShell proprietarioId={proprietarioId} title="Meus agendamentos">
-        <Card className="hc-card-elevated" variant="borderless">
-          <Empty description="Identifique-se para ver seus agendamentos">
-            <Link href={`/e/${proprietarioId}/agendar`}>
-              <Button type="primary" icon={<CalendarOutlined />}>
-                Agendar e identificar
-              </Button>
-            </Link>
-          </Empty>
-        </Card>
-      </ClienteShell>
+      <Card className="hc-card-elevated" variant="borderless">
+        <Empty description="Identifique-se para ver seus agendamentos">
+          <Button
+            type="primary"
+            icon={<CalendarOutlined />}
+            href={`/e/${proprietarioId}/agendar`}
+          >
+            Agendar e identificar
+          </Button>
+        </Empty>
+      </Card>
     );
   }
 
   return (
-    <ClienteShell
-      proprietarioId={proprietarioId}
-      title="Meus agendamentos"
-      subtitle="Cancelamento e remarcação devem ser feitos pelo estabelecimento."
-    >
+    <>
       {pendentes.length > 0 ? (
         <section className="hc-agendamentos-section">
           <Typography.Title level={5}>Aguardando confirmação</Typography.Title>
@@ -154,10 +147,10 @@ export default function MeusAgendamentosPage() {
           dataSource={pendentes.length > 0 ? outros : lista}
           locale={{
             emptyText: (
-              <Empty description="Nenhum agendamento ainda">
-                <Link href={`/e/${proprietarioId}/agendar`}>
-                  <Button type="primary">Fazer um agendamento</Button>
-                </Link>
+              <Empty description="Nenhum agendamento neste estabelecimento">
+                <Button type="primary" href={`/e/${proprietarioId}/agendar`}>
+                  Fazer um agendamento
+                </Button>
               </Empty>
             ),
           }}
@@ -175,6 +168,23 @@ export default function MeusAgendamentosPage() {
           Novo agendamento
         </Button>
       </Space>
+    </>
+  );
+}
+
+export default function MeusAgendamentosPage() {
+  const params = useParams<{ proprietarioId: string }>();
+  const proprietarioId = params.proprietarioId;
+
+  return (
+    <ClienteShell
+      proprietarioId={proprietarioId}
+      title="Meus agendamentos"
+      subtitle="Cancelamento e remarcação devem ser feitos pelo estabelecimento."
+    >
+      <EstabelecimentoGuard proprietarioId={proprietarioId}>
+        <MeusAgendamentosContent />
+      </EstabelecimentoGuard>
     </ClienteShell>
   );
 }

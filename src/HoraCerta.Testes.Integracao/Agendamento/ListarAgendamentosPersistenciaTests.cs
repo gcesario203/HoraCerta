@@ -58,8 +58,10 @@ public class ListarAgendamentosPersistenciaTests
         procedimento.Id,
         slot.Id));
 
-    var listaCliente = new ListarAgendamentosClienteHandler(_clienteRepositorio)
-      .Executar(new ListarAgendamentosClienteQuery(cliente.Id));
+    var listaCliente = new ListarAgendamentosClienteHandler(
+        _clienteRepositorio,
+        _proprietarioRepositorio)
+      .Executar(new ListarAgendamentosClienteQuery(cliente.Id, proprietario.Id));
 
     var listaProprietario = new ListarAgendamentosProprietarioHandler(
         _proprietarioRepositorio,
