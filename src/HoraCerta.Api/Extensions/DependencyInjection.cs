@@ -1,10 +1,15 @@
 using HoraCerta.Aplicacao.Agendamento.Handlers;
 using HoraCerta.Aplicacao.Autenticacao;
 using HoraCerta.Aplicacao.Autenticacao.Handlers;
+using HoraCerta.Aplicacao.Cliente.Handlers;
+using HoraCerta.Aplicacao.Comunicacao.Bot;
+using HoraCerta.Aplicacao.Comunicacao.Handlers;
 using HoraCerta.Aplicacao.Estabelecimento.Handlers;
 using HoraCerta.Aplicacao.Extensions;
 using HoraCerta.Aplicacao.Integracao.Lembretes;
 using HoraCerta.Api.Autenticacao;
+using HoraCerta.Api.Comunicacao;
+using HoraCerta.Infaestrutura.Comunicacao.Outbox;
 using HoraCerta.Infaestrutura.Extensions;
 using HoraCerta.Infaestrutura.Lembretes;
 using HoraCerta.Infaestrutura.Repositorio;
@@ -19,6 +24,7 @@ public static class DependencyInjection
         bool incluirBackgroundLembretes = true)
     {
         services.AddHoraCertaPersistencia(connectionString, configuration);
+        services.AddHoraCertaComunicacao(configuration);
         services.AddHoraCertaAplicacao();
 
         services.Configure<LembreteOptions>(configuration.GetSection(LembreteOptions.Secao));
@@ -27,7 +33,12 @@ public static class DependencyInjection
         services.AddScoped<ILembreteRepositorio, EfLembreteRepositorio>();
         services.AddScoped<ICredencialProprietarioRepositorio, EfCredencialProprietarioRepositorio>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
-        services.AddScoped<IEnviadorLembrete, ConsoleEnviadorLembrete>();
+        services.AddScoped<CriarClienteHandler>();
+        services.AddScoped<BuscarClientePorTelefoneHandler>();
+        services.AddScoped<RegistrarOptOutWhatsAppHandler>();
+        services.AddScoped<IOrquestradorBotAgendamento, OrquestradorBotAgendamento>();
+        services.AddScoped<ProcessarWebhookTwilioHandler>();
+        services.AddScoped<TwilioAssinaturaWebhook>();
 
         services.AddSingleton<Func<string, string>>(_ => SenhaHasher.Hash);
         services.AddSingleton<Func<string, string, bool>>(_ => SenhaHasher.Verificar);
@@ -54,7 +65,10 @@ public static class DependencyInjection
         services.AddScoped<ObterAvaliacaoAgendamentoHandler>();
 
         if (incluirBackgroundLembretes)
+        {
             services.AddHostedService<LembreteBackgroundService>();
+            services.AddHostedService<OutboxWhatsAppBackgroundService>();
+        }
 
         return services;
     }

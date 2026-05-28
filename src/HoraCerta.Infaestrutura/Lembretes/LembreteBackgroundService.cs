@@ -1,3 +1,8 @@
+using System.Text.Json;
+using HoraCerta.Aplicacao.Comunicacao;
+using HoraCerta.Aplicacao.Comunicacao.Dtos;
+using HoraCerta.Aplicacao.Comunicacao.Enums;
+using HoraCerta.Aplicacao.Comunicacao.Ports;
 using HoraCerta.Aplicacao.Integracao.Lembretes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -39,18 +44,28 @@ public class LembreteBackgroundService : BackgroundService
         }
     }
 
-    private async Task ProcessarLembretesAsync(CancellationToken cancellationToken)
+    private Task ProcessarLembretesAsync(CancellationToken cancellationToken)
     {
         using var scope = _scopeFactory.CreateScope();
         var repositorio = scope.ServiceProvider.GetRequiredService<ILembreteRepositorio>();
-        var enviador = scope.ServiceProvider.GetRequiredService<IEnviadorLembrete>();
+        var enfileirador = scope.ServiceProvider.GetRequiredService<IEnfileiradorMensagemWhatsApp>();
 
         var pendentes = repositorio.BuscarPendentesParaEnvio(DateTime.UtcNow);
 
         foreach (var lembrete in pendentes)
         {
-            await enviador.EnviarAsync(lembrete, cancellationToken);
-            repositorio.MarcarEnviado(lembrete.Id);
+            var payload = JsonSerializer.Serialize(new OutboxPayloadDto(lembrete.AgendamentoId, lembrete.Id));
+            var slotKey = lembrete.SlotInicio.ToString("O");
+
+            enfileirador.Enfileirar(
+                TipoMensagemOutbox.Lembrete,
+                lembrete.TelefoneCliente,
+                lembrete.ProprietarioId,
+                MensagensWhatsAppTemplates.Lembrete(lembrete.SlotInicio),
+                $"Lembrete:{lembrete.AgendamentoId}:{slotKey}",
+                payload);
         }
+
+        return Task.CompletedTask;
     }
 }

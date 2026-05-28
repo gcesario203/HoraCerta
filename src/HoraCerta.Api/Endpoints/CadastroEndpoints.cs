@@ -1,6 +1,7 @@
 using HoraCerta.Api.Contratos;
 using HoraCerta.Api.Mapeamento;
-using HoraCerta.Dominio.Cliente;
+using HoraCerta.Aplicacao.Cliente.Commands;
+using HoraCerta.Aplicacao.Cliente.Handlers;
 using HoraCerta.Dominio.Cliente.Servicos.Repositorio;
 using HoraCerta.Dominio.Proprietario;
 using HoraCerta.Dominio.Proprietario.Servicos.Repositorio;
@@ -28,10 +29,9 @@ public static class CadastroEndpoints
                 : Results.Ok(RespostaMapeamento.ParaResposta(proprietario));
         });
 
-        group.MapPost("/clientes", (CriarClienteRequisicao req, IClienteRepositorio repo) =>
+        group.MapPost("/clientes", (CriarClienteRequisicao req, CriarClienteHandler handler) =>
         {
-            var cliente = new ClienteEntidade(req.Nome, req.Telefone);
-            repo.Salvar(cliente);
+            var cliente = handler.Executar(new CriarClienteCommand(req.Nome, req.Telefone));
             return Results.Created($"/api/clientes/{cliente.Id.Valor}", RespostaMapeamento.ParaResposta(cliente));
         });
 

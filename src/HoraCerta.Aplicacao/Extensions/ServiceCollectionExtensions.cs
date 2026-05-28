@@ -1,5 +1,6 @@
 using HoraCerta.Aplicacao._Shared.Eventos;
 using HoraCerta.Aplicacao._Shared.Interfaces;
+using HoraCerta.Aplicacao.Comunicacao.Eventos;
 using HoraCerta.Aplicacao.Integracao.Eventos;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,6 +26,13 @@ public static class ServiceCollectionExtensions
             LogAgendamentoRemarcadoHandler>();
         services.AddScoped<IDomainEventHandler<Dominio.Cliente.Eventos.AgendamentoIniciadoEvent>,
             LogAgendamentoIniciadoHandler>();
+
+        services.AddScoped<IDomainEventHandler<Dominio.Cliente.Eventos.AgendamentoConfirmadoEvent>,
+            EnviarNotificacaoConfirmacaoWhatsAppHandler>();
+        services.AddScoped<IDomainEventHandler<Dominio.Cliente.Eventos.AgendamentoCanceladoEvent>,
+            EnviarNotificacaoCancelamentoWhatsAppHandler>();
+        services.AddScoped<IDomainEventHandler<Dominio.Cliente.Eventos.AgendamentoRemarcadoEvent>,
+            EnviarNotificacaoRemarcacaoWhatsAppHandler>();
 
         return services;
     }

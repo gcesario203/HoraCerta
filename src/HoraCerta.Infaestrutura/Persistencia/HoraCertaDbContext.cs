@@ -18,6 +18,12 @@ public class HoraCertaDbContext : DbContext
 
     public DbSet<CredencialProprietarioRegistro> CredenciaisProprietario => Set<CredencialProprietarioRegistro>();
 
+    public DbSet<MensagemOutboxRegistro> MensagensOutbox => Set<MensagemOutboxRegistro>();
+
+    public DbSet<SessaoConversaRegistro> SessoesConversa => Set<SessaoConversaRegistro>();
+
+    public DbSet<WebhookTwilioProcessadoRegistro> WebhooksTwilioProcessados => Set<WebhookTwilioProcessadoRegistro>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ProprietarioRegistro>(entity =>
@@ -53,6 +59,30 @@ public class HoraCertaDbContext : DbContext
             entity.Property(x => x.Email).HasMaxLength(256).IsRequired();
             entity.HasIndex(x => x.Email).IsUnique();
             entity.Property(x => x.PasswordHash).IsRequired();
+        });
+
+        modelBuilder.Entity<MensagemOutboxRegistro>(entity =>
+        {
+            entity.ToTable("mensagens_outbox");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).HasMaxLength(36);
+            entity.HasIndex(x => new { x.Status, x.ProximaTentativaEm });
+            entity.HasIndex(x => x.IdempotencyKey);
+        });
+
+        modelBuilder.Entity<SessaoConversaRegistro>(entity =>
+        {
+            entity.ToTable("sessoes_conversa");
+            entity.HasKey(x => new { x.Telefone, x.ProprietarioId });
+            entity.Property(x => x.Telefone).HasMaxLength(20);
+            entity.Property(x => x.ProprietarioId).HasMaxLength(36);
+        });
+
+        modelBuilder.Entity<WebhookTwilioProcessadoRegistro>(entity =>
+        {
+            entity.ToTable("webhooks_twilio_processados");
+            entity.HasKey(x => x.MessageSid);
+            entity.Property(x => x.MessageSid).HasMaxLength(64);
         });
     }
 }

@@ -307,11 +307,16 @@ Ver [`docker-compose.yml`](../../docker-compose.yml) na raiz do repositório.
 | `api` | `src/HoraCerta.Api/Dockerfile` | 5080 → 8080 |
 | `web` | `src/horacerta-web/Dockerfile` | 3000 |
 
+Variáveis opcionais no `.env` (ver `.env.example`): `TWILIO_*`, `NEXT_PUBLIC_WHATSAPP_NUMERO`, `OUTBOX_*`, `WHATSAPP_*`.
+
 ```bash
 docker compose up --build
 # Portal: http://localhost:3000
-# API:    http://localhost:5080/swagger (se Development) ou /api
+# API:    http://localhost:5080/swagger
+# Webhook Twilio: POST http://localhost:5080/api/webhooks/twilio/whatsapp
 ```
+
+Com Twilio Sandbox: defina `TWILIO_ENABLED=true`, credenciais e `TWILIO_WEBHOOK_BASE_URL` (URL pública do tunnel até a porta 5080).
 
 ---
 
@@ -331,9 +336,17 @@ docker compose up --build
 
 ---
 
-## 14. Evolução planejada
+## 14. WhatsApp (Twilio) — Onda 1
+
+Ver [integracao-whatsapp/spec.md](../integracao-whatsapp/spec.md).
+
+- Webhook: `POST /api/webhooks/twilio/whatsapp`
+- Outbox: `mensagens_outbox` + `OutboxWhatsAppBackgroundService`
+- Sessão bot: `sessoes_conversa`
+- Config: `Twilio`, `Outbox`, `WhatsApp` em `appsettings.json`
+
+## 15. Evolução planejada
 
 - Migrations EF provider-specific se o schema divergir entre SQLite e PostgreSQL
-- Provider de envio real de lembretes (WhatsApp / SMS / e-mail)
 - Endpoints cliente para cancelar/remarcar com token
 - OpenAPI exportável para codegen opcional do front

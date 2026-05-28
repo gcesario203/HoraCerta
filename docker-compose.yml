@@ -30,6 +30,19 @@ services:
       ConnectionStrings__HoraCerta: Host=postgres;Port=5432;Database=${POSTGRES_DB:-horacerta};Username=${POSTGRES_USER:-horacerta};Password=${POSTGRES_PASSWORD:-horacerta}
       Database__Provider: PostgreSQL
       Jwt__Key: ${JWT_KEY:-HoraCerta-Docker-Secret-Key-Min-32-Chars!!}
+      Twilio__Enabled: ${TWILIO_ENABLED:-false}
+      Twilio__AccountSid: ${TWILIO_ACCOUNT_SID:-}
+      Twilio__AuthToken: ${TWILIO_AUTH_TOKEN:-}
+      Twilio__WhatsAppFrom: ${TWILIO_WHATSAPP_FROM:-whatsapp:+14155238886}
+      Twilio__WebhookBaseUrl: ${TWILIO_WEBHOOK_BASE_URL:-}
+      Twilio__SessaoExpiracaoHoras: ${TWILIO_SESSAO_EXPIRACAO_HORAS:-24}
+      Twilio__ValidarAssinaturaWebhook: ${TWILIO_VALIDAR_ASSINATURA:-false}
+      Outbox__IntervaloProcessamentoSegundos: ${OUTBOX_INTERVALO_SEGUNDOS:-5}
+      Outbox__MaxTentativas: ${OUTBOX_MAX_TENTATIVAS:-5}
+      Outbox__LoteMaximo: ${OUTBOX_LOTE_MAXIMO:-20}
+      WhatsApp__HorarioSilenciosoInicio: ${WHATSAPP_SILENCIO_INICIO:-22:00}
+      WhatsApp__HorarioSilenciosoFim: ${WHATSAPP_SILENCIO_FIM:-08:00}
+      WhatsApp__FusoHorario: ${WHATSAPP_FUSO_HORARIO:-America/Sao_Paulo}
     ports:
       - "5080:8080"
     healthcheck:
@@ -66,6 +79,7 @@ services:
       dockerfile: Dockerfile
       args:
         API_URL: http://api:8080
+        NEXT_PUBLIC_WHATSAPP_NUMERO: ${NEXT_PUBLIC_WHATSAPP_NUMERO:-}
     env_file:
       - .env
     environment:

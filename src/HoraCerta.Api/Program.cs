@@ -66,6 +66,7 @@ app.MapSlots();
 app.MapAgendamentos();
 app.MapConsultas();
 app.MapCatalogo();
+app.MapWebhooksTwilio();
 
 app.Run();
 

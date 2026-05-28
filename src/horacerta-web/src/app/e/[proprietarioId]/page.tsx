@@ -6,13 +6,22 @@ import {
   CalendarOutlined,
   ClockCircleOutlined,
   UnorderedListOutlined,
+  WhatsAppOutlined,
 } from '@ant-design/icons';
 import { useEstabelecimento } from '@/cliente/presentation/hooks/use-estabelecimento';
 import { EstabelecimentoGuard } from '@/shared/presentation/components/estabelecimento-guard';
 import { ClienteShell } from '@/shared/presentation/layouts/cliente-shell';
 
+function buildWhatsAppUrl(proprietarioId: string): string | null {
+  const numero = process.env.NEXT_PUBLIC_WHATSAPP_NUMERO?.replace(/\D/g, '');
+  if (!numero) return null;
+  const texto = encodeURIComponent(`HC-${proprietarioId}`);
+  return `https://wa.me/${numero}?text=${texto}`;
+}
+
 function EstabelecimentoHomeContent({ proprietarioId }: { proprietarioId: string }) {
   const { nome, loading } = useEstabelecimento(proprietarioId);
+  const whatsappUrl = buildWhatsAppUrl(proprietarioId);
 
   return (
     <>
@@ -50,6 +59,19 @@ function EstabelecimentoHomeContent({ proprietarioId }: { proprietarioId: string
         >
           Meus agendamentos
         </Button>
+        {whatsappUrl ? (
+          <Button
+            block
+            size="large"
+            icon={<WhatsAppOutlined />}
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ borderColor: '#25D366', color: '#128C7E' }}
+          >
+            Agendar no WhatsApp
+          </Button>
+        ) : null}
       </Space>
 
       <Card className="hc-card-elevated" variant="borderless" style={{ marginTop: 16 }}>

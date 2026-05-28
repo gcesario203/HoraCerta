@@ -99,6 +99,62 @@ namespace HoraCerta.Infaestrutura.Persistencia.Migrations
                     b.ToTable("lembretes", (string)null);
                 });
 
+            modelBuilder.Entity("HoraCerta.Infaestrutura.Persistencia.Registros.MensagemOutboxRegistro", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Corpo")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("EnviadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("IdempotencyKey")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PayloadJson")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ProximaTentativaEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProprietarioId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TelefoneDestino")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Tentativas")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UltimoErro")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdempotencyKey");
+
+                    b.HasIndex("Status", "ProximaTentativaEm");
+
+                    b.ToTable("mensagens_outbox", (string)null);
+                });
+
             modelBuilder.Entity("HoraCerta.Infaestrutura.Persistencia.Registros.ProprietarioRegistro", b =>
                 {
                     b.Property<string>("Id")
@@ -112,6 +168,57 @@ namespace HoraCerta.Infaestrutura.Persistencia.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("proprietarios", (string)null);
+                });
+
+            modelBuilder.Entity("HoraCerta.Infaestrutura.Persistencia.Registros.SessaoConversaRegistro", b =>
+                {
+                    b.Property<string>("Telefone")
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProprietarioId")
+                        .HasMaxLength(36)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("AtualizadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClienteId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ExpiraEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NomePendente")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Passo")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProcedimentoId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SlotHorarioId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Telefone", "ProprietarioId");
+
+                    b.ToTable("sessoes_conversa", (string)null);
+                });
+
+            modelBuilder.Entity("HoraCerta.Infaestrutura.Persistencia.Registros.WebhookTwilioProcessadoRegistro", b =>
+                {
+                    b.Property<string>("MessageSid")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ProcessadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("MessageSid");
+
+                    b.ToTable("webhooks_twilio_processados", (string)null);
                 });
 #pragma warning restore 612, 618
         }

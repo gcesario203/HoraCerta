@@ -15,6 +15,7 @@ public static class ClienteMapper
             EstadoEntidade = entidade.EstadoEntidade,
             Nome = entidade.Nome,
             Telefone = entidade.Telefone,
+            OptOutWhatsApp = entidade.OptOutWhatsApp,
             Agendamentos = entidade.GerenciadorAgendamentos.BuscarAgendamentos()
                 .Select(AgendamentoMapper.ParaModelo)
                 .ToList(),
@@ -31,6 +32,7 @@ public static class ClienteMapper
             modelo.EstadoEntidade,
             modelo.Nome,
             modelo.Telefone,
+            modelo.OptOutWhatsApp,
             AgendamentoMapper.ParaEntidades(modelo.Agendamentos, proprietario),
             modelo.Avaliacoes.Select(AvaliacaoMapper.ParaEntidade).ToList());
 
@@ -45,6 +47,7 @@ public static class ClienteMapper
             modelo.EstadoEntidade,
             modelo.Nome,
             modelo.Telefone,
+            modelo.OptOutWhatsApp,
             modelo.Agendamentos.Select(AgendamentoMapper.ParaEntidadeLegado).ToList(),
             modelo.Avaliacoes.Select(AvaliacaoMapper.ParaEntidade).ToList());
 }

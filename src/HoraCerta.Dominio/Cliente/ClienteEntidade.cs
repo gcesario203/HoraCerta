@@ -10,16 +10,20 @@ public class ClienteEntidade : AggregateRootBase<ClienteEntidade>
 
     public string Telefone { get; private set; }
 
+    public bool OptOutWhatsApp { get; private set; }
+
     public IGerenciadorAgendamentos GerenciadorAgendamentos { get; private set; }
 
     public ClienteEntidade(
         string nome,
         string telefone,
+        bool optOutWhatsApp = false,
         ICollection<AgendamentoEntidade>? agendamentos = null,
         ICollection<AvaliacaoEntidade>? avaliacoes = null) : base(new ValidadorCliente())
     {
         Nome = nome;
         Telefone = telefone;
+        OptOutWhatsApp = optOutWhatsApp;
 
         _validador?.Validar(this);
 
@@ -33,12 +37,14 @@ public class ClienteEntidade : AggregateRootBase<ClienteEntidade>
         EstadoEntidade estadoEntidade,
         string nome,
         string telefone,
+        bool optOutWhatsApp = false,
         ICollection<AgendamentoEntidade>? agendamentos = null,
         ICollection<AvaliacaoEntidade>? avaliacoes = null)
         : base(id, dataCriacao, dataAlteracao, estadoEntidade, new ValidadorCliente())
     {
         Nome = nome;
         Telefone = telefone;
+        OptOutWhatsApp = optOutWhatsApp;
 
         _validador?.Validar(this);
 
@@ -56,6 +62,12 @@ public class ClienteEntidade : AggregateRootBase<ClienteEntidade>
     {
         Telefone = telefone;
         _validador?.Validar(this);
+        Atualizar();
+    }
+
+    public void RegistrarOptOutWhatsApp()
+    {
+        OptOutWhatsApp = true;
         Atualizar();
     }
 }
